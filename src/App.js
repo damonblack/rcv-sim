@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
+import AppBar from 'material-ui/AppBar';
+import Avatar from 'material-ui/Avatar';
+import TextField from 'material-ui/TextField';
+import { List, ListItem } from 'material-ui/List';
 
 import { auth, googleAuth, database } from './services';
 import './App.css';
@@ -10,6 +15,8 @@ class App extends Component {
       userName: '',
       user: null,
       elections: [],
+      creating: false,
+      electionTitle: '',
     }
   }
 
@@ -27,7 +34,7 @@ class App extends Component {
         let elections = [];
         if (electionsVal && this.state.user) {
           elections = Object.keys(electionsVal).map((key) => {
-            return { id: key, name: electionsVal[key].name }
+            return { id: key, title: electionsVal[key].title }
           });
         }
         this.setState({ elections });
@@ -48,38 +55,60 @@ class App extends Component {
     }
   }
 
-  createElection = () => {
+  handleChange = (e) => {
+    const value = e.target.value;
+    const fieldName = e.target.dataset.name;
+    this.setState({ [fieldName]: value });
+  }
+
+  handleSubmit = () => {
     const electionsRef = database.ref(`elections/${this.state.user.uid}`);
-    electionsRef.push({ name: 'John' });
+    electionsRef.push({ title: this.state.electionTitle });
+    this.setState({creating: false, electionTitle: ''});
   }
 
   render() {
-    // console.log('ELECTIONS', this.state.elections);
+    const { user, electionTitle } = this.state;
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Welcome to the Ranked Choice Vote Splainer</h1>
-        </header>
+      <div>
+        <AppBar>
+          <h2>Welcome to the Ranked Choice Vote Splainer</h2>
+        </AppBar>
         {this.state.user ?
           <div>
-            <span>Logged in as {this.state.user.displayName}</span>
-            <span>UID: {this.state.user.uid}</span>
-            <div className='user-profile'>
-              <img src={this.state.user.photoURL} />
-            </div>
-            <button onClick={this.logout}>Log Out</button> 
+            <span>Logged in as {user.displayName}</span>
+            <Avatar src={user.photoURL} />
+            <RaisedButton onClick={this.logout}>Log Out</RaisedButton> 
           </div>
           :
-          <button onClick={this.login}>Log In</button>
+          <RaisedButton onClick={this.login}>Log In</RaisedButton>
         }
-        {this.state.user && this.state.elections.length < 4 &&
-          <button onClick={this.createElection}>Create an Election</button>
+        {this.state.user && !this.state.creating && this.state.elections.length < 4 &&
+          <RaisedButton onClick={() => this.setState({creating: true})}>Create an Election</RaisedButton>
+        }
+
+        {this.state.creating && 
+          <form onSubmit={this.handleSubmit}>
+            <TextField 
+              type="text" 
+              hintText="My Election Name" 
+              floatingLabelText="Name your election" 
+              value={electionTitle} 
+              data-name="electionTitle" 
+              onChange={this.handleChange}
+            />
+            <RaisedButton type='submit'>Submit</RaisedButton>
+          </form>
         }
 
         {this.state.user && 
-          <ul>
-            {this.state.elections.map((election) => <li key={election.id}>{election.id}/{election.name}</li>)}
-          </ul>
+          <div className="election-list">
+            <span>My Elections</span>
+            <List>
+              {this.state.elections.map((election) => 
+                <ListItem>{election.title}</ListItem>)}
+            </List>
+          </div>
         }
 
       </div>
