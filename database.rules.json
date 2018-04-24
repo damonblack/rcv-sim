@@ -3,7 +3,13 @@
     "elections": {
       "$uid": {
         ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "candidates": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
       }
     }
   }
