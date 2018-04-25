@@ -1,15 +1,16 @@
 {
   "rules": {
+    ".read": true,
     "elections": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+      "$electionId": {
+        ".write": "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
       }
     },
     "candidates": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+      "$electionId": {
+        "$candidateId": {
+          ".write": "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
+        }
       }
     }
   }

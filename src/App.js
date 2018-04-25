@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {  Route } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
@@ -12,40 +13,60 @@ import Paper from 'material-ui/Paper';
 import { blue500 } from 'material-ui/styles/colors';
 
 import { auth, googleAuth, database } from './services';
+import Election from './components/Election';
 import './App.css';
 
 class App extends Component {
+  defaultState = {
+    userName: '',
+    user: null,
+    elections: [],
+    creating: false,
+    electionTitle: '',
+    candidates: [ '','' ],
+  }
+
   constructor() {
     super();
-    this.state = {
-      userName: '',
-      user: null,
-      elections: [],
-      creating: false,
-      electionTitle: '',
-      candidates: [ '','' ],
-    }
+    this.state = this.defaultState;
   }
 
   componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ user });
+        this.watchElections(user.uid);
+      } else {
+        this.setState(this.defaultState);
+      }
+    });
+  }
+
+  watchElections = (uid) => {
+    console.log('UID -------- ', uid);
+    const electionsRef = database.ref('elections').orderByChild('owner').equalTo(uid);
+    
+    electionsRef.on('value', (snapshot) => {
+      console.log('watchElections called');
+      const electionsVal = snapshot.val();
+      console.log('electionsRef on value called', snapshot.val());
+      
+      
+      let elections = [];
+      if (electionsVal && this.state.user) {
+        elections = Object.keys(electionsVal).map((key) => {
+          return { id: key, title: electionsVal[key].title }
+        });
+      }
+      this.setState({ elections });
+    })
   }
 
   login = async () => {
     try {
       const result = await auth.signInWithPopup(googleAuth);
       this.setState({ user: result.user });
-      const electionsRef = database.ref(`elections/${result.user.uid}`);
-      electionsRef.on('value', (snapShot) => {
-        const electionsVal = snapShot.val();
-        
-        let elections = [];
-        if (electionsVal && this.state.user) {
-          elections = Object.keys(electionsVal).map((key) => {
-            return { id: key, title: electionsVal[key].title }
-          });
-        }
-        this.setState({ elections });
-      })
+      this.watchElections(result.user.uid);
     } catch (e) {
       console.log('LOGIN FAILED: ', e.stack);
       alert('login failed');
@@ -55,7 +76,7 @@ class App extends Component {
   logout = async () => {
     try {
       await auth.signOut();
-      this.setState({ user: null, elections: [] });
+      this.setState(this.defaultState);
     } catch (e) {
       console.log('LOGIN FAILED: ', e);
       alert('logout failed');
@@ -83,15 +104,25 @@ class App extends Component {
   }
 
   handleSubmit = () => {
-    const electionsRef = database.ref(`elections/${this.state.user.uid}`);
-    const electionKey = electionsRef.push({ title: this.state.electionTitle }).key;
-    const candidatesRef = database.ref(`candidates/${this.state.user.uid}/${electionKey}`);
+    const electionsRef = database.ref(`elections`);
+    const electionKey = electionsRef.push({ 
+      title: this.state.electionTitle,
+      owner: this.state.user.uid
+    }).key;
+    const candidatesRef = database.ref(`candidates/${electionKey}`);
 
     this.state.candidates.forEach((candidate) => {
-      candidatesRef.push(candidate);
+      const candidateEntry = {
+        candidate, owner: this.state.user.uid
+      }
+      candidatesRef.push(candidateEntry);
     });
 
-    this.setState({creating: false, electionTitle: ''});
+    this.setState({
+      creating: false, 
+      electionTitle: '', 
+      candidates: ['', '']
+    });
   }
 
   render() {
@@ -112,11 +143,11 @@ class App extends Component {
           :
           <RaisedButton onClick={this.login}>Log In</RaisedButton>
         }
-        {this.state.user && !this.state.creating && this.state.elections.length < 4 &&
+        {this.state.user && !this.state.creating &&
           <RaisedButton onClick={() => this.setState({creating: true})}>Create an Election</RaisedButton>
         }
 
-        {this.state.creating && 
+        {this.state.user && this.state.creating && 
           <form onSubmit={this.handleSubmit}>
             <Paper zDepth={2}>
               <TextField
@@ -163,11 +194,14 @@ class App extends Component {
                     <Avatar icon={<EditorInsertChart />} backgroundColor={blue500} />
                   }
                   primaryText={election.title}
+                  secondaryText={election.id}
                 />
               )}
             </List>
           </div>
         }
+
+        <Route path={'/elections/:id'} component={Election} />
 
       </div>
     );
