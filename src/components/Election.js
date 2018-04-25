@@ -7,6 +7,9 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table'; 
+import IconButton from 'material-ui/IconButton';
+import DoneIcon from 'material-ui/svg-icons/action/done';
+import EmptyIcon from 'material-ui/svg-icons/image/panorama-wide-angle';
 
 import { database } from '../services';
 
@@ -15,7 +18,8 @@ class Election extends Component {
 
   defaultState = {
     title: '',
-    candidates: []
+    candidates: [],
+    votes: {},
   }
 
   constructor(props) {
@@ -38,8 +42,21 @@ class Election extends Component {
       const candidates = Object.keys(candidatesVal).map((key) => (
         { id: key, name: candidatesVal[key].name}
       ));
+
       this.setState({ candidates });
     });
+  }
+
+  updateVote = (candidateId, position) => {
+    if (this.state.votes[position] === candidateId) return;
+    const votes = Object.assign({}, this.state.votes);
+
+    Object.keys(votes).forEach((key) => {
+      if (votes[key] === candidateId) votes[key] = null;
+    });
+    votes[position] = candidateId;
+
+    this.setState({ votes });
   }
   
   render() {
@@ -66,8 +83,14 @@ class Election extends Component {
             {candidates.map((candidate, i) => (
               <TableRow key={i}>
                 <TableRowColumn key={0} colSpan="2">{candidate.name}</TableRowColumn>
-                { candidates.map((candidate, i) => (
-                  <TableRowColumn key={i + 1}>0</TableRowColumn>
+                { candidates.map((c, i) => (
+                  <TableRowColumn key={i + 1}>
+                    <IconButton onClick={(e) => this.updateVote(candidate.id, i + 1)}>
+                      {this.state.votes[i + 1] === candidate.id ?
+                        <DoneIcon /> : <EmptyIcon />
+                      }
+                    </IconButton>
+                  </TableRowColumn>
                 ))}
               </TableRow> 
             ))}
