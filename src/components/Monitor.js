@@ -28,7 +28,9 @@ class Monitor extends Component {
       this.setState({ candidates: candidatesArray });
     });
     database.ref(`votes/${key}`).on('value', (snapshot) => {
-      this.setState({ votes: Object.values(snapshot.val()) })
+      if (snapshot.val()) {
+        this.setState({ votes: Object.values(snapshot.val()) })
+      }
     });
   }
 
@@ -36,16 +38,15 @@ class Monitor extends Component {
     const results = this.state.votes.reduce((total, vote) => (
       vote[position] === candidateId ? total + 1 : total
     ), 0);
-    console.log('results', results);
     return results;
   };
 
   render() {
-    const { candidates } = this.state;
+    const { candidates, votes, election } = this.state;
 
     return (
       <div>
-        { this.state.election && this.state.candidates && this.state.votes ?
+        { election && candidates ?
           <div>
             <Typography>{this.state.election.title}</Typography>
             <Table>
@@ -68,7 +69,7 @@ class Monitor extends Component {
                     <TableCell key={0} colSpan="2">{candidate.name}</TableCell>
                     { candidates.map((c, i) => (
                       <TableCell key={i + 1}>
-                        <Typography>{this.getVotesForPosition(i + 1, candidate.id) }</Typography>
+                        <Typography>{votes ? this.getVotesForPosition(i + 1, candidate.id) : 0 }</Typography>
                       </TableCell>
                     ))}
                   </TableRow> 
