@@ -1,17 +1,29 @@
 import React, { Component } from 'react'; 
+import { withStyles } from 'material-ui/styles';
 import Table, {
   TableBody,
   TableHead,
   TableRow,
   TableCell,
 } from 'material-ui/Table'; 
-import IconButton from 'material-ui/IconButton';
-import Button from 'material-ui/Button';
-import CheckIcon from '@material-ui/icons/Done';
-import EmptyIcon from '@material-ui/icons/PanoramaWideAngle';
+import {
+  Button,
+  IconButton,
+  Typography,
+  Paper
+} from 'material-ui';
+import {
+  Done as CheckIcon,
+  PanoramaWideAngle as EmptyIcon
+} from '@material-ui/icons';
 
 import { database } from '../services';
 
+
+const styles = { 
+  wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' },
+  results: { width: '50%' },
+};
 
 class Vote extends Component {
 
@@ -70,49 +82,51 @@ class Vote extends Component {
   submitVote = () => {
     const electionKey = this.props.match.params.key;
     Vote.votesRef(electionKey).push(this.state.votes);
+    this.setState({ votes: {} });
   }
   
   render() {
     const { title, candidates } = this.state;
+    const { classes } = this.props;
+
     return (
-      <div>
-        <h2>Vote</h2>
-        <span>{title}</span>
-        <Table>
-          <TableHead
-            displaySelectAll={false}
-            adjustForCheckbox={false}
-          >
-            <TableRow>
-              <TableCell key={0} colSpan="2"/>
-              {candidates.map((candidate, i) => (
-                <TableCell key={i + 1}>{i + 1}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody
-            displayRowCheckbox={false}
-          >
-            {candidates.map((candidate, i) => (
-              <TableRow key={i}>
-                <TableCell key={0} colSpan="2">{candidate.name}</TableCell>
-                { candidates.map((c, i) => (
-                  <TableCell key={i + 1}>
-                    <IconButton onClick={(e) => this.updateVote(candidate.id, i + 1)}>
-                      {this.state.votes[i + 1] === candidate.id ?
-                        <CheckIcon /> : <EmptyIcon />
-                      }
-                    </IconButton>
-                  </TableCell>
+      <div className={classes.wrapper}>
+        <div className={classes.voting}>
+          <Typography>Vote</Typography>
+          <Typography>{title}</Typography>
+          <Paper>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell key={0} colSpan="2"/>
+                  {candidates.map((candidate, i) => (
+                    <TableCell key={i + 1}>{i + 1}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {candidates.map((candidate, i) => (
+                  <TableRow key={i}>
+                    <TableCell key={0} colSpan="2">{candidate.name}</TableCell>
+                    { candidates.map((c, i) => (
+                      <TableCell key={i + 1}>
+                        <IconButton onClick={(e) => this.updateVote(candidate.id, i + 1)}>
+                          {this.state.votes[i + 1] === candidate.id ?
+                            <CheckIcon /> : <EmptyIcon />
+                          }
+                        </IconButton>
+                      </TableCell>
+                    ))}
+                  </TableRow> 
                 ))}
-              </TableRow> 
-            ))}
-          </TableBody>
-        </Table>
-        <Button onClick={this.submitVote}>Submit Vote</Button>
+              </TableBody>
+            </Table>
+          </Paper>
+          <Button onClick={this.submitVote}>Submit Vote</Button>
+        </div>
       </div>
     );
   }
 }
 
-export default Vote;
+export default withStyles(styles)(Vote);

@@ -1,29 +1,33 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles'
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
-import Button from 'material-ui/Button';
-import ButtonBase from 'material-ui/ButtonBase';
-import Paper from 'material-ui/Paper';
-import TextField from 'material-ui/TextField';
-import Divider from 'material-ui/Divider';
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import ChartIcon from '@material-ui/icons/InsertChart';
-import VoteIcon from '@material-ui/icons/Done';
-import blue from 'material-ui/colors/blue';
 import { Link } from 'react-router-dom';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import { 
+  Typography,
+  Chip,
+  Avatar,
+  Button,
+  ButtonBase,
+  Paper,
+  TextField,
+  Divider,
+  Tooltip
+} from 'material-ui';
+import {
+  InsertChart as ChartIcon,
+  Done as VoteIcon,
+  Cancel as LogoutIcon,
+  Delete as DeleteIcon
+ } from '@material-ui/icons';
+import blue from 'material-ui/colors/blue';
 
 import { auth, googleAuth, database } from '../services';
 
 
-const styles = {
-  wrapper: {
-    maxWidth: 400
-  },
-  chartIcon: {
-    fontSize: '2.5em'
-  }
-
+const styles = { 
+  wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  results: { width: '400px', minWidth: '30%' },
+  chartIcon: { fontSize: '2.5em' }
 };
 
 class Home extends Component {
@@ -33,7 +37,7 @@ class Home extends Component {
     elections: [],
     creating: false,
     electionTitle: '',
-    candidates: [ '','' ],
+    candidates: [ '','','' ],
   }
 
   constructor() {
@@ -114,6 +118,13 @@ class Home extends Component {
     this.setState({ candidates: [ ...this.state.candidates, '']});
   }
 
+  removeCandidate = (i) => {
+    const candidates = this.state.candidates.slice(0);
+    candidates.splice(i, 1);
+
+    this.setState({ candidates });
+  }
+
   handleSubmit = () => {
     const electionKey = Home.allElectionsRef().push({ 
       title: this.state.electionTitle,
@@ -132,67 +143,92 @@ class Home extends Component {
 
   render() {
     const { user, elections, candidates, electionTitle, creating } = this.state;
-    const classes = this.props.classes;
+    const { classes } = this.props;
 
+    const logout = <Tooltip title="Logout"><LogoutIcon /></Tooltip>
     return (
-      <div className={this.props.classes.wrapper}>
-        {user ?
+      <div>
+        <div>
           <div>
-            <Chip avatar={<Avatar src={user.photoURL} />} 
-              label={user.displayName} onDelete={this.logout} />
+            {user ?
+                <Tooltip title={`Logged in with ${user.email}. Click 'x' to logout`}>          
+                  <Chip avatar={<Avatar src={user.photoURL} />} deleteIcon={<LogoutIcon />}
+                    label={user.displayName} onDelete={this.logout} />
+                </Tooltip>
+                :
+                <Button onClick={this.login}>Log In</Button>
+            }
           </div>
-          :
-          <Button onClick={this.login}>Log In</Button>
-        }
-        {user && !creating &&
-          <Button onClick={() => this.setState({creating: true})}>Create an Election</Button>
-        }
-        {user && creating &&
-          <form onSubmit={this.handleSubmit}>
-            <Paper zDepth={2}>
-              <TextField
-                key={1}
-                placeholder="My Election Name"
-                label="Name your election"
-                value={electionTitle}
-                onChange={this.handleChange('electionTitle')}
-              />
-              <Divider />
-              <Divider />
-              {candidates.map((candidate, i) => (
-                <div>
+          {user && !creating &&
+            <div>
+              <Tooltip title="Create an Election">
+              <Button onClick={() => this.setState({creating: true})}>Create an Election</Button>
+              </Tooltip>
+            </div>
+          }
+        </div>
+        <div className={classes.wrapper}>
+          {user && creating &&
+            <div className={classes.results}>
+              <form onSubmit={this.handleSubmit}>
+                <Paper elevation="5">
                   <TextField
-                    key={i + 1}
-                    placeholder="John Denver"
-                    label={`Candidate ${i + 1}`}
-                    value={candidate}
-                    onChange={this.handleChangeCandidate(i)}
+                    key={1}
+                    placeholder="My Election Name"
+                    label="Name your election"
+                    value={electionTitle}
+                    onChange={this.handleChange('electionTitle')}
                   />
                   <Divider />
-                </div>
-              ))}
-              <Button type='button' onClick={this.addCandidate}>Add</Button>
-              <Button type='submit'>Submit</Button>
-            </Paper>
-          </form>
-        }
+                  <Divider />
+                  {candidates.map((candidate, i) => (
+                    <div>
+                      <TextField
+                        key={i + 1}
+                        placeholder="John Denver"
+                        label={`Candidate ${i + 1}`}
+                        value={candidate}
+                        onChange={this.handleChangeCandidate(i)}
+                      />
+                      <ButtonBase onClick={() => this.removeCandidate(i)}>
+                        <DeleteIcon />
+                      </ButtonBase>
+                      <Divider />
+                    </div>
+                  ))}
+                  <Button type='button' onClick={this.addCandidate}>Add</Button>
+                  <Button type='submit'>Submit</Button>
+                  <Button type='button' onClick={() => this.setState({creating: false, candidates: ['','','']})}>Cancel</Button>
+                </Paper>
+              </form>
+            </div>
+          }
+        </div>
 
-        {user &&
-          <div className="election-list">
-            <List>
-              <div>Elections</div>
-              {elections.map((election, i) =>
-                <ListItem key={i}>
-                  <ButtonBase component={Link} to={`/monitor/${election.id}`}>
-                    <ChartIcon className={classes.chartIcon} color="primary" />
-                  </ButtonBase>
-                  <ListItemText primary={election.title} />
-                  <Avatar component={Link} to={`/vote/${election.id}`}><VoteIcon color="red" /></Avatar>
-                </ListItem>
-              )}
-            </List>
-          </div>
-        }
+        <div className={classes.wrapper}>
+          {user && !creating &&
+            <div className={classes.results}>
+              <Paper>
+                <Typography>Elections</Typography>
+                <List component="nav">
+                  {elections.map((election, i) =>
+                    <ListItem key={i} button>
+                      <Tooltip title="View Results">
+                        <ButtonBase component={Link} to={`/monitor/${election.id}`}>
+                          <ChartIcon className={classes.chartIcon} color="primary" />
+                        </ButtonBase>
+                      </Tooltip>
+                      <ListItemText primary={election.title} />
+                      <Tooltip title="Vote">
+                        <Avatar component={Link} to={`/vote/${election.id}`}><VoteIcon color="action" /></Avatar>
+                      </Tooltip>
+                    </ListItem>
+                  )}
+                </List>
+              </Paper>
+            </div>
+          }
+        </div>
       </div>
     )
   }

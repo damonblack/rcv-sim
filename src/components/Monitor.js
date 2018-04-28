@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
+import { withStyles } from 'material-ui/styles';
 import { 
   Typography, 
   Table, 
   TableBody,
   TableHead, 
   TableRow,
-  TableCell
+  TableCell,
+  Paper
 } from 'material-ui';
 
 import { database } from '../services';
 
+
+const styles = { 
+  wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' },
+  results: { width: '50%' },
+};
+
 class Monitor extends Component {
-  state = {
-
-  }
-
+  state = {};
   componentDidMount() {
     const { key } = this.props.match.params;
     database.ref(`elections/${key}`).on('value', (snapshot) => {
@@ -43,17 +48,16 @@ class Monitor extends Component {
 
   render() {
     const { candidates, votes, election } = this.state;
+    const { classes } = this.props;
 
     return (
-      <div>
+      <div className={classes.wrapper}>
         { election && candidates ?
-          <div>
-            <Typography>{this.state.election.title}</Typography>
+        <div className={classes.results}>
+          <Typography>{this.state.election.title}</Typography>
+          <Paper elevation="5">
             <Table>
-              <TableHead
-                displaySelectAll={false}
-                adjustForCheckbox={false}
-              >
+              <TableHead displaySelectAll={false} adjustForCheckbox={false}>
                 <TableRow>
                   <TableCell key={0} colSpan="2"/>
                   {this.state.candidates.map((candidate, i) => (
@@ -61,21 +65,22 @@ class Monitor extends Component {
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody
-                displayRowCheckbox={false}
-              >
+              <TableBody displayRowCheckbox={false}>
                 {this.state.candidates.map((candidate, i) => (
                   <TableRow key={i}>
                     <TableCell key={0} colSpan="2">{candidate.name}</TableCell>
                     { candidates.map((c, i) => (
                       <TableCell key={i + 1}>
-                        <Typography>{votes ? this.getVotesForPosition(i + 1, candidate.id) : 0 }</Typography>
+                        <Typography>
+                          {votes ? this.getVotesForPosition(i + 1, candidate.id) : 0 }
+                        </Typography>
                       </TableCell>
                     ))}
                   </TableRow> 
                 ))}
               </TableBody>
             </Table>
+          </Paper>
           </div>
         : 
           <Typography>Loading...</Typography>
@@ -85,4 +90,4 @@ class Monitor extends Component {
   }
 }
 
-export default Monitor;
+export default withStyles(styles)(Monitor);
