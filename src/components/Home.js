@@ -1,18 +1,30 @@
 import React, { Component } from 'react';
+import { withStyles } from 'material-ui/styles'
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
+import ButtonBase from 'material-ui/ButtonBase';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
-import { List, ListItem } from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
-import { blue500 } from 'material-ui/styles/colors';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import ChartIcon from '@material-ui/icons/InsertChart';
+import VoteIcon from '@material-ui/icons/Done';
+import blue from 'material-ui/colors/blue';
 import { Link } from 'react-router-dom';
 
 import { auth, googleAuth, database } from '../services';
 
+
+const styles = {
+  wrapper: {
+    maxWidth: 400
+  },
+  chartIcon: {
+    fontSize: '2.5em'
+  }
+
+};
 
 class Home extends Component {
   defaultState = {
@@ -29,27 +41,32 @@ class Home extends Component {
     this.state = this.defaultState;
   }
 
+  static myElectionsRef(uid) {
+    return database.ref('elections').orderByChild('owner').equalTo(uid);
+  }
+
+  static allElectionsRef() {
+    return database.ref('elections');
+  }
+
+  static candidatesForElectionRef(electionKey) {
+    return database.ref(`candidates/${electionKey}`);
+  }
+
   componentDidMount() {
     auth.onAuthStateChanged((user) => {
       if (user) {
         this.setState({ user });
-        this.watchElections(user.uid);
+        this.watchMyElections(user.uid);
       } else {
         this.setState(this.defaultState);
       }
     });
   }
 
-  watchElections = (uid) => {
-    console.log('UID -------- ', uid);
-    const electionsRef = database.ref('elections').orderByChild('owner').equalTo(uid);
-    
-    electionsRef.on('value', (snapshot) => {
-      console.log('watchElections called');
+  watchMyElections = (uid) => {
+    Home.myElectionsRef(uid).on('value', (snapshot) => {
       const electionsVal = snapshot.val();
-      console.log('electionsRef on value called', snapshot.val());
-      
-      
       let elections = [];
       if (electionsVal && this.state.user) {
         elections = Object.keys(electionsVal).map((key) => {
@@ -64,7 +81,7 @@ class Home extends Component {
     try {
       const result = await auth.signInWithPopup(googleAuth);
       this.setState({ user: result.user });
-      this.watchElections(result.user.uid);
+      this.watchMyElections(result.user.uid);
     } catch (e) {
       console.log('LOGIN FAILED: ', e.stack);
       alert('login failed');
@@ -81,39 +98,33 @@ class Home extends Component {
     }
   }
 
-  handleChange = (e) => {
+  handleChange = field => e => {
     const value = e.target.value;
-    const fieldName = e.target.dataset.name;
-    this.setState({ [fieldName]: value });
+    this.setState({ [field]: value });
   }
 
-  handleChangeCandidate = (e) => {
+  handleChangeCandidate = index => e => {
     const value = e.target.value;
-    const index = e.target.dataset.index;
     const candidates = this.state.candidates.slice(0);
     candidates[index] = value;
     this.setState({ candidates });
   }
 
   addCandidate = () => {
-    const candidates = this.state.candidates;
-    candidates.push('');
-    this.setState({candidates});
+    this.setState({ candidates: [ ...this.state.candidates, '']});
   }
 
   handleSubmit = () => {
-    const electionsRef = database.ref(`elections`);
-    const electionKey = electionsRef.push({ 
+    const electionKey = Home.allElectionsRef().push({ 
       title: this.state.electionTitle,
       owner: this.state.user.uid
     }).key;
-    const candidatesRef = database.ref(`candidates/${electionKey}`);
-
+    const candidateDB = Home.candidatesForElectionRef(electionKey);    
     this.state.candidates.forEach((candidate) => {
       const candidateEntry = {
         name: candidate, owner: this.state.user.uid
       }
-      candidatesRef.push(candidateEntry);
+      candidateDB.push(candidateEntry);
     });
 
     this.setState({ creating: false, electionTitle: '', candidates: ['', ''] });
@@ -121,35 +132,30 @@ class Home extends Component {
 
   render() {
     const { user, elections, candidates, electionTitle, creating } = this.state;
+    const classes = this.props.classes;
 
     return (
-      <div>
+      <div className={this.props.classes.wrapper}>
         {user ?
           <div>
-            <Chip>
-              <Avatar src={user.photoURL} />
-              {user.displayName}
-            </Chip>
-            <RaisedButton onClick={this.logout}>Log Out</RaisedButton> 
+            <Chip avatar={<Avatar src={user.photoURL} />} 
+              label={user.displayName} onDelete={this.logout} />
           </div>
           :
-          <RaisedButton onClick={this.login}>Log In</RaisedButton>
+          <Button onClick={this.login}>Log In</Button>
         }
         {user && !creating &&
-          <RaisedButton onClick={() => this.setState({creating: true})}>Create an Election</RaisedButton>
+          <Button onClick={() => this.setState({creating: true})}>Create an Election</Button>
         }
         {user && creating &&
           <form onSubmit={this.handleSubmit}>
             <Paper zDepth={2}>
               <TextField
                 key={1}
-                type="text"
-                hintText="My Election Name"
-                floatingLabelText="Name your election"
+                placeholder="My Election Name"
+                label="Name your election"
                 value={electionTitle}
-                data-name="electionTitle"
-                underlineShow={false}
-                onChange={this.handleChange}
+                onChange={this.handleChange('electionTitle')}
               />
               <Divider />
               <Divider />
@@ -157,19 +163,16 @@ class Home extends Component {
                 <div>
                   <TextField
                     key={i + 1}
-                    type="text"
-                    hintText="John Denver"
-                    floatingLabelText={`Candidate ${i + 1}`}
+                    placeholder="John Denver"
+                    label={`Candidate ${i + 1}`}
                     value={candidate}
-                    data-index={i}
-                    underlineShow={false}
-                    onChange={this.handleChangeCandidate}
+                    onChange={this.handleChangeCandidate(i)}
                   />
                   <Divider />
                 </div>
               ))}
-              <RaisedButton type='button' onClick={this.addCandidate}>Add</RaisedButton>
-              <RaisedButton type='submit'>Submit</RaisedButton>
+              <Button type='button' onClick={this.addCandidate}>Add</Button>
+              <Button type='submit'>Submit</Button>
             </Paper>
           </form>
         }
@@ -177,17 +180,15 @@ class Home extends Component {
         {user &&
           <div className="election-list">
             <List>
-              <Subheader>Elections</Subheader>
+              <div>Elections</div>
               {elections.map((election, i) =>
-                <Link to={`/elections/${election.id}`}>
-                  <ListItem
-                    key={i}
-                    leftAvatar={
-                      <Avatar icon={<EditorInsertChart />} backgroundColor={blue500} />
-                    }
-                    primaryText={election.title}
-                  />
-                </Link>
+                <ListItem key={i}>
+                  <ButtonBase component={Link} to={`/monitor/${election.id}`}>
+                    <ChartIcon className={classes.chartIcon} color="primary" />
+                  </ButtonBase>
+                  <ListItemText primary={election.title} />
+                  <Avatar component={Link} to={`/vote/${election.id}`}><VoteIcon color="red" /></Avatar>
+                </ListItem>
               )}
             </List>
           </div>
@@ -197,4 +198,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default withStyles(styles)(Home);
