@@ -1,3 +1,42 @@
+## Ranked Choice Vote Runner
+
+It's in the cloud. As a service. Distributed and scalable.
+
+Or so I have read.
+
+This vote runner is intended to demonstrate the process and features of Ranked Choice Voting. 
+
+- https://en.wikipedia.org/wiki/Ranked_voting
+- http://www.fairvote.org/rcv
+
+
+To set up and run locally:
+
+- If you haven't already, install node - https://nodejs.org
+- Install yarn(?)
+- Install firebase cli
+
+
+Common tasks
+- `yarn start` - Compile code and run development server locally. This defaults to 'hot reload' mode, so that any changes saved to project files will trigger a rebuild and changes will be pushed to the browser'. I do not know how this works.
+
+- `yarn build` - Compile a production build to the app to the build folder. A production build strips out type checking and other bloat for the smallest bundle.
+
+- `yarn test` - Run the non-existent unit tests
+
+- `yarn deploy` - Compiles a production bundle and deployes it to Firebase Hosting.
+
+- `yarn fire` - As above but starts the server locally as well. 
+
+These tasks are kept in the scripts section of package.json.
+
+
+### Material-UI
+
+This project leverage the [Material-UI(next)](https://material-ui-next.com/) component library. These are self-supporting react components designed according to Google's [Material Design](https://en.wikipedia.org/wiki/Material_Design) spec. 
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
