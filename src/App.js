@@ -5,6 +5,7 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
+import CssBaseline from 'material-ui/CssBaseline';
 import Home from './components/Home';
 import Vote from './components/Vote';
 import Monitor from './components/Monitor';
@@ -31,6 +32,7 @@ class App extends Component {
 
     return (
       <div className="app">
+        <CssBaseline />
         <AppBar position="static">
           <Toolbar>
             <Typography variant="title" color="inherit" className={classes.flex}>

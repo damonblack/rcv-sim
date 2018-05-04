@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles'
 import { Link } from 'react-router-dom';
 import List, { ListItem, ListItemText } from 'material-ui/List';
-import { 
+import {
   Typography,
   Chip,
   Avatar,
@@ -19,12 +19,11 @@ import {
   Cancel as LogoutIcon,
   Delete as DeleteIcon
  } from '@material-ui/icons';
-import blue from 'material-ui/colors/blue';
 
 import { auth, googleAuth, database } from '../services';
 
 
-const styles = { 
+const styles = {
   wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   results: { width: '400px', minWidth: '30%' },
   chartIcon: { fontSize: '2.5em' }
@@ -126,11 +125,11 @@ class Home extends Component {
   }
 
   handleSubmit = () => {
-    const electionKey = Home.allElectionsRef().push({ 
+    const electionKey = Home.allElectionsRef().push({
       title: this.state.electionTitle,
       owner: this.state.user.uid
     }).key;
-    const candidateDB = Home.candidatesForElectionRef(electionKey);    
+    const candidateDB = Home.candidatesForElectionRef(electionKey);
     this.state.candidates.forEach((candidate) => {
       const candidateEntry = {
         name: candidate, owner: this.state.user.uid
@@ -145,13 +144,12 @@ class Home extends Component {
     const { user, elections, candidates, electionTitle, creating } = this.state;
     const { classes } = this.props;
 
-    const logout = <Tooltip title="Logout"><LogoutIcon /></Tooltip>
     return (
       <div>
         <div>
           <div>
             {user ?
-                <Tooltip title={`Logged in with ${user.email}. Click 'x' to logout`}>          
+                <Tooltip title={`Logged in with ${user.email}. Click 'x' to logout`}>
                   <Chip avatar={<Avatar src={user.photoURL} />} deleteIcon={<LogoutIcon />}
                     label={user.displayName} onDelete={this.logout} />
                 </Tooltip>
@@ -185,7 +183,6 @@ class Home extends Component {
                     <div>
                       <TextField
                         key={i + 1}
-                        placeholder="John Denver"
                         label={`Candidate ${i + 1}`}
                         value={candidate}
                         onChange={this.handleChangeCandidate(i)}
