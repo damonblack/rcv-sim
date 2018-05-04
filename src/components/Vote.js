@@ -31,6 +31,7 @@ class Vote extends Component {
     title: '',
     candidates: [],
     votes: {},
+    lastAction: ''
   }
 
   constructor(props) {
@@ -48,6 +49,24 @@ class Vote extends Component {
 
   static votesRef(electionKey) {
     return database.ref(`/votes/${electionKey}`);
+  }
+
+  static rankName(number) {
+    if (number === 1) return "first";
+    if (number === 2) return "second";
+    if (number === 3) return "third";
+    return number + "th";
+  }
+
+  static actionText(candidateName, displacedName, position, previousPosition) {
+    const replacing = displacedName === "" ? "" : `, replacing ${displacedName}`;
+    const goFirstPlace = position === 1 ? ` Go ${candidateName}!` : "";
+
+    if (!previousPosition) return `You've chosen ${candidateName} as your ${Vote.rankName(position)} choice${replacing}.${goFirstPlace}`;
+
+    const verb = (previousPosition > position) ? "promoting" : "demoting";
+
+    return `You've changed your vote for ${candidateName}, ${verb} them to your ${Vote.rankName(position)} choice${replacing}.`;
   }
 
   componentDidMount() {
@@ -71,12 +90,23 @@ class Vote extends Component {
     if (this.state.votes[position] === candidateId) return;
     const votes = Object.assign({}, this.state.votes);
 
+    const candidateName = this.state.candidates.filter(c => c.id == candidateId)[0].name;
+    const displacedName = votes[position] ?
+      this.state.candidates.filter(c => c.id == votes[position])[0].name
+      : "";
+
+    let previousPosition;
     Object.keys(votes).forEach((key) => {
-      if (votes[key] === candidateId) votes[key] = null;
+      if (votes[key] === candidateId) {
+        previousPosition = key;
+        votes[key] = null;
+      }
     });
     votes[position] = candidateId;
 
-    this.setState({ votes });
+    const lastAction = Vote.actionText(candidateName, displacedName, position, previousPosition);
+
+    this.setState({ votes, lastAction });
   }
 
   submitVote = () => {
@@ -94,6 +124,9 @@ class Vote extends Component {
         <div className={classes.voting}>
           <Typography>Vote</Typography>
           <Typography>{title}</Typography>
+          <br />
+          <Typography>{this.state.lastAction}</Typography>
+          <br />
           <Paper>
             <Table>
               <TableHead>
