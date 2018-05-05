@@ -11,15 +11,22 @@ import {
 } from 'material-ui';
 
 import { database } from '../services';
+import {
+
+} from 'material-ui/colors';
 
 
 const styles = { 
   wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' },
+  splitWrapper: { display: 'flex', justifyContent: 'space-between' },
   results: { width: '50%' },
 };
 
 class Monitor extends Component {
   state = {};
+
+  candidateColors = ['green', 'red', 'blue', 'gold', 'purple', 'cyan', 'dark-blue' ]
+
   componentDidMount() {
     const { key } = this.props.match.params;
     database.ref(`elections/${key}`).on('value', (snapshot) => {
@@ -46,41 +53,57 @@ class Monitor extends Component {
     return results;
   };
 
+  getGraphTickInterval = (votesToWin) => {
+    if (votesToWin < 20) {
+      return 100/votesToWin;
+    } else if (votesToWin < 200) {
+      return 1000/votesToWin;
+    } else {
+      return 10000/votesToWin;
+    }
+  }
+
+
   render() {
     const { candidates, votes, election } = this.state;
     const { classes } = this.props;
+    const votesToWin = votes ? Math.ceil(votes.length / 2) : ''; 
+    const tick = this.getGraphTickInterval(votesToWin);
+
 
     return (
       <div className={classes.wrapper}>
         { election && candidates ?
         <div className={classes.results}>
-          <Typography>{this.state.election.title}</Typography>
-          <Paper elevation="5">
-            <Table>
-              <TableHead displaySelectAll={false} adjustForCheckbox={false}>
-                <TableRow>
-                  <TableCell key={0} colSpan="2"/>
-                  {this.state.candidates.map((candidate, i) => (
-                    <TableCell key={i + 1}>{i + 1}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody displayRowCheckbox={false}>
-                {this.state.candidates.map((candidate, i) => (
-                  <TableRow key={i}>
-                    <TableCell key={0} colSpan="2">{candidate.name}</TableCell>
-                    { candidates.map((c, i) => (
-                      <TableCell key={i + 1}>
-                        <Typography>
-                          {votes ? this.getVotesForPosition(i + 1, candidate.id) : 0 }
-                        </Typography>
-                      </TableCell>
-                    ))}
-                  </TableRow> 
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
+          <Typography variant="headline">{this.state.election.title}</Typography> 
+          <div className={classes.splitWrapper}>
+            <Typography>Total Votes: { votes ? votes.length : '0' }</Typography>
+            <Typography>Votes to Win: { votesToWin }</Typography>
+          </div>
+          { votes ?
+            <Paper 
+              style={{ 
+                background: `repeating-linear-gradient(to right, #eee, #eee 1px, #fff 1px, #fff ${tick}%)` 
+              }} 
+              elevation={8}>
+              {this.state.candidates.map((candidate, i) => {
+                const voteCount = this.getVotesForPosition(1, candidate.id);
+                const style = {
+                  width: voteCount / Math.ceil(votes.length / 2) * 100 + '%',
+                  height: '50px',
+                  backgroundColor: this.candidateColors[i]
+                };
+                return (
+                  <div key={candidate.id}>
+                    <Typography variant="subheading">{candidate.name} : {voteCount}</Typography>
+                    <Paper style={style} square />
+                  </div>
+                );
+              })}
+            </Paper>
+             :
+            <Typography>No votes yet.</Typography>
+          }
           </div>
         : 
           <Typography>Loading...</Typography>

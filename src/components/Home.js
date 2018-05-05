@@ -23,10 +23,15 @@ import {
 import { auth, googleAuth, database } from '../services';
 
 
-const styles = {
-  wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  results: { width: '400px', minWidth: '30%' },
-  chartIcon: { fontSize: '2.5em' }
+const styles = (theme) => {
+  return {
+    avatarChip: { backgroundColor: theme.palette.primary.contrastText },
+    wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    splitWrapper: { display: 'flex', justifyContent: 'space-between' },
+    results: { width: '400px', minWidth: '30%' },
+    chartIcon: { fontSize: '2.5em' },
+    candidateEntry: { display: 'flex', justifyContent: 'space-between' }
+  }
 };
 
 class Home extends Component {
@@ -146,12 +151,17 @@ class Home extends Component {
 
     return (
       <div>
-        <div>
+        <div className={classes.splitWrapper}>
           <div>
             {user ?
                 <Tooltip title={`Logged in with ${user.email}. Click 'x' to logout`}>
-                  <Chip avatar={<Avatar src={user.photoURL} />} deleteIcon={<LogoutIcon />}
-                    label={user.displayName} onDelete={this.logout} />
+                  <Chip 
+                    className={classes.avatarChip} 
+                    avatar={<Avatar src={user.photoURL} />} 
+                    deleteIcon={<LogoutIcon />}
+                    label={user.displayName} 
+                    onDelete={this.logout} 
+                  />
                 </Tooltip>
                 :
                 <Button onClick={this.login}>Log In</Button>
@@ -160,7 +170,7 @@ class Home extends Component {
           {user && !creating &&
             <div>
               <Tooltip title="Create an Election">
-              <Button onClick={() => this.setState({creating: true})}>Create an Election</Button>
+                <Button variant="raised" color="secondary" onClick={() => this.setState({creating: true})}>Create an Election</Button>
               </Tooltip>
             </div>
           }
@@ -169,23 +179,25 @@ class Home extends Component {
           {user && creating &&
             <div className={classes.results}>
               <form onSubmit={this.handleSubmit}>
-                <Paper elevation="5">
+                <Paper elevation={5}>
                   <TextField
                     key={1}
                     placeholder="My Election Name"
                     label="Name your election"
                     value={electionTitle}
                     onChange={this.handleChange('electionTitle')}
+                    fullWidth
                   />
                   <Divider />
                   <Divider />
                   {candidates.map((candidate, i) => (
-                    <div>
+                    <div className={classes.candidateEntry}>
                       <TextField
                         key={i + 1}
                         label={`Candidate ${i + 1}`}
                         value={candidate}
                         onChange={this.handleChangeCandidate(i)}
+                        fullWidth
                       />
                       <ButtonBase onClick={() => this.removeCandidate(i)}>
                         <DeleteIcon />
