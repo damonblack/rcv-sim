@@ -67,7 +67,7 @@ class Monitor extends Component {
   render() {
     const { candidates, votes, election } = this.state;
     const { classes } = this.props;
-    const votesToWin = votes ? Math.ceil(votes.length / 2) : ''; 
+    const votesToWin = votes ? votes.length / 2 : ''; 
     const tick = this.getGraphTickInterval(votesToWin);
 
 
@@ -78,18 +78,18 @@ class Monitor extends Component {
           <Typography variant="headline">{this.state.election.title}</Typography> 
           <div className={classes.splitWrapper}>
             <Typography>Total Votes: { votes ? votes.length : '0' }</Typography>
-            <Typography>Votes to Win: { votesToWin }</Typography>
+            <Typography>Votes to Win: { Math.ceil(votesToWin) }</Typography>
           </div>
           { votes ?
             <Paper 
               style={{ 
-                background: `repeating-linear-gradient(to right, #eee, #eee 1px, #fff 1px, #fff ${tick}%)` 
+                background: `repeating-linear-gradient(to right, #eee, #eee 1px, #fff 1px, #fff 20%)` 
               }} 
               elevation={8}>
               {this.state.candidates.map((candidate, i) => {
                 const voteCount = this.getVotesForPosition(1, candidate.id);
                 const style = {
-                  width: voteCount / Math.ceil(votes.length / 2) * 100 + '%',
+                  width: voteCount / votesToWin * 100 + '%',
                   height: '50px',
                   backgroundColor: this.candidateColors[i]
                 };

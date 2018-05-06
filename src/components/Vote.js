@@ -128,8 +128,7 @@ class Vote extends Component {
     return (
       <div className={classes.wrapper}>
         <div className={classes.voting}>
-          <Typography>Vote</Typography>
-          <Typography>{title}</Typography>
+          <Typography variant="headline">{title}</Typography>
           <Paper>
             <Table>
               <TableHead>
@@ -158,7 +157,7 @@ class Vote extends Component {
               </TableBody>
             </Table>
           </Paper>
-          <Button onClick={this.submitVote}>Submit Vote</Button>
+          <Button variant="raised" color="secondary" onClick={this.submitVote}>Submit Vote</Button>
         </div>
         <Snackbar
           anchorOrigin={{
