@@ -10,11 +10,13 @@ import {
   Button,
   IconButton,
   Typography,
-  Paper
+  Paper,
+  Snackbar
 } from 'material-ui';
 import {
   Done as CheckIcon,
-  PanoramaWideAngle as EmptyIcon
+  PanoramaWideAngle as EmptyIcon,
+  Close as CloseIcon
 } from '@material-ui/icons';
 
 import { database } from '../services';
@@ -23,6 +25,7 @@ import { database } from '../services';
 const styles = { 
   wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' },
   results: { width: '50%' },
+  positionHeader: { textAlign: 'center' },
 };
 
 class Vote extends Component {
@@ -31,7 +34,8 @@ class Vote extends Component {
     title: '',
     candidates: [],
     votes: {},
-    lastAction: ''
+    lastAction: '',
+    notifierOpen: false,
   }
 
   constructor(props) {
@@ -106,7 +110,7 @@ class Vote extends Component {
 
     const lastAction = Vote.actionText(candidateName, displacedName, position, previousPosition);
 
-    this.setState({ votes, lastAction });
+    this.setState({ votes, lastAction, notifierOpen: true });
   }
 
   submitVote = () => {
@@ -114,9 +118,11 @@ class Vote extends Component {
     Vote.votesRef(electionKey).push(this.state.votes);
     this.setState({ votes: {} });
   }
+
+  closeNotifier = () => this.setState({ notifierOpen: false });
   
   render() {
-    const { title, candidates } = this.state;
+    const { title, candidates, notifierOpen, lastAction } = this.state;
     const { classes } = this.props;
 
     return (
@@ -124,16 +130,13 @@ class Vote extends Component {
         <div className={classes.voting}>
           <Typography>Vote</Typography>
           <Typography>{title}</Typography>
-          <br />
-          <Typography>{this.state.lastAction}</Typography>
-          <br />
           <Paper>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell key={0} colSpan="2"/>
                   {candidates.map((candidate, i) => (
-                    <TableCell key={i + 1}>{i + 1}</TableCell>
+                    <TableCell key={i + 1} className={classes.positionHeader}>{i + 1}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -157,6 +160,30 @@ class Vote extends Component {
           </Paper>
           <Button onClick={this.submitVote}>Submit Vote</Button>
         </div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={notifierOpen}
+          autoHideDuration={4000}
+          onClose={this.closeNotifier}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{lastAction}</span>}
+          action={[
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              className={classes.close}
+              onClick={this.closeNotifier}
+            >
+              <CloseIcon />
+            </IconButton>,
+          ]}
+         />
       </div>
     );
   }
