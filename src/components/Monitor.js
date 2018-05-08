@@ -59,12 +59,12 @@ class Monitor extends Component {
     const totalVotes = results ? results.overallTotal : 0;
     const votesToWin = totalVotes / 2; 
     const nextRound = roundInt + 1;
-    const lastRound = roundInt < 2 ? 1 : roundInt - 1;
+    const previousRound = roundInt < 2 ? 1 : roundInt - 1;
 
     return (
       <div className={classes.wrapper}>
-        <Button variant="raised" component={Link} to={`/monitor/${key}/round/${lastRound}`}>
-          Last Round
+        <Button variant="raised" component={Link} to={`/monitor/${key}/round/${previousRound}`}>
+          Previous Round
         </Button>
         <div className={classes.results}>
           <Typography variant="headline">{election.title}</Typography> 
