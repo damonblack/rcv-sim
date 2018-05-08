@@ -154,17 +154,17 @@ class Home extends Component {
         <div className={classes.splitWrapper}>
           <div>
             {user ?
-                <Tooltip title={`Logged in with ${user.email}. Click 'x' to logout`}>
-                  <Chip 
-                    className={classes.avatarChip} 
-                    avatar={<Avatar src={user.photoURL} />} 
-                    deleteIcon={<LogoutIcon />}
-                    label={user.displayName} 
-                    onDelete={this.logout} 
-                  />
-                </Tooltip>
+              <Tooltip title={`Logged in with ${user.email}. Click 'x' to logout`}>
+                <Chip 
+                  className={classes.avatarChip} 
+                  avatar={<Avatar src={user.photoURL} />} 
+                  deleteIcon={<LogoutIcon />}
+                  label={user.displayName} 
+                  onDelete={this.logout} 
+                />
+              </Tooltip>
                 :
-                <Button onClick={this.login}>Log In</Button>
+              <Button onClick={this.login}>Log In</Button>
             }
           </div>
           {user && !creating &&
@@ -223,7 +223,7 @@ class Home extends Component {
                   {elections.map((election, i) =>
                     <ListItem key={i} button>
                       <Tooltip title="View Results">
-                        <ButtonBase component={Link} to={`/monitor/${election.id}`}>
+                        <ButtonBase component={Link} to={`/monitor/${election.id}/round/1`}>
                           <ChartIcon className={classes.chartIcon} color="primary" />
                         </ButtonBase>
                       </Tooltip>
