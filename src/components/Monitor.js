@@ -1,20 +1,11 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
-import { 
-  Typography, 
-  Table, 
-  TableBody,
-  TableHead, 
-  TableRow,
-  TableCell,
-  Paper
-} from 'material-ui';
+import { Typography, Paper, Button } from 'material-ui';
 
 import { database } from '../services';
-import {
-
-} from 'material-ui/colors';
-
+import { getResultsForRound } from '../lib/voteCounter';
+import Candidate from './chart/Candidate';
 
 const styles = { 
   wrapper: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' },
@@ -23,91 +14,86 @@ const styles = {
 };
 
 class Monitor extends Component {
-  state = {};
+  state = { };
 
-  candidateColors = ['green', 'red', 'blue', 'gold', 'purple', 'cyan', 'dark-blue' ]
+  candidateColors = ['green', 'red', 'blue', 'gold', 'purple', 'cyan', 'dark-blue', 'pink', 'brown' ]
+
 
   componentDidMount() {
-    const { key } = this.props.match.params;
+    const { key, round } = this.props.match.params;
     database.ref(`elections/${key}`).on('value', (snapshot) => {
       this.setState({ election: snapshot.val() })
     });
     database.ref(`candidates/${key}`).on('value', (snapshot) => {
       const candidatesObj = snapshot.val();
-      const candidatesArray = Object.keys(snapshot.val()).map(key => (
-        { id: key, name: candidatesObj[key].name}
+      const candidateIds = Object.keys(snapshot.val());
+      const candidatesArray = candidateIds.map((key, index) => (
+        { id: key, name: candidatesObj[key].name }
       ));
-      this.setState({ candidates: candidatesArray });
+
+      const colorMap = {};
+
+      candidateIds.forEach((key, i) => colorMap[key] = this.candidateColors[i]);
+
+      this.setState({ 
+        candidates: candidatesArray,  
+        colorMap
+      });
+      
     });
     database.ref(`votes/${key}`).on('value', (snapshot) => {
       if (snapshot.val()) {
-        this.setState({ votes: Object.values(snapshot.val()) })
+        const votes = Object.values(snapshot.val());
+        this.setState({ votes });
       }
     });
   }
 
-  getVotesForPosition = (position, candidateId) => {
-    const results = this.state.votes.reduce((total, vote) => (
-      vote[position] === candidateId ? total + 1 : total
-    ), 0);
-    return results;
-  };
-
-  getGraphTickInterval = (votesToWin) => {
-    if (votesToWin < 20) {
-      return 100/votesToWin;
-    } else if (votesToWin < 200) {
-      return 1000/votesToWin;
-    } else {
-      return 10000/votesToWin;
-    }
-  }
-
 
   render() {
-    const { candidates, votes, election } = this.state;
-    const { classes } = this.props;
-    const votesToWin = votes ? votes.length / 2 : ''; 
-    const tick = this.getGraphTickInterval(votesToWin);
-
+    const { election, votes, candidates, colorMap } = this.state;
+    if (!(election && candidates && votes)) return <Typography>Loading...</Typography>;
+    const { classes, match: { params: { key, round } } } = this.props;
+    const results = getResultsForRound(votes, round);
+    const roundInt = parseInt(round, 10);
+    const totalVotes = results ? results.overallTotal : 0;
+    const votesToWin = totalVotes / 2; 
+    const nextRound = roundInt + 1;
+    const lastRound = roundInt < 2 ? 1 : roundInt - 1;
 
     return (
       <div className={classes.wrapper}>
-        { election && candidates ?
+        <Button variant="raised" component={Link} to={`/monitor/${key}/round/${lastRound}`}>
+          Last Round
+        </Button>
         <div className={classes.results}>
-          <Typography variant="headline">{this.state.election.title}</Typography> 
+          <Typography variant="headline">{election.title}</Typography> 
           <div className={classes.splitWrapper}>
-            <Typography>Total Votes: { votes ? votes.length : '0' }</Typography>
+            <Typography>Total Votes: { results ? results.overallTotal : '0' }</Typography>
             <Typography>Votes to Win: { Math.ceil(votesToWin) }</Typography>
           </div>
-          { votes ?
-            <Paper 
-              style={{ 
-                background: `repeating-linear-gradient(to right, #eee, #eee 1px, #fff 1px, #fff 20%)` 
-              }} 
-              elevation={8}>
-              {this.state.candidates.map((candidate, i) => {
-                const voteCount = this.getVotesForPosition(1, candidate.id);
-                const style = {
-                  width: voteCount / votesToWin * 100 + '%',
-                  height: '50px',
-                  backgroundColor: this.candidateColors[i]
-                };
-                return (
-                  <div key={candidate.id}>
-                    <Typography variant="subheading">{candidate.name} : {voteCount}</Typography>
-                    <Paper style={style} square />
-                  </div>
-                );
-              })}
-            </Paper>
-             :
-            <Typography>No votes yet.</Typography>
-          }
-          </div>
-        : 
-          <Typography>Loading...</Typography>
-        }
+          <Paper 
+            style={{ 
+              background: `repeating-linear-gradient(to right, #eee, #eee 1px, #fff 1px, #fff 20%)` 
+            }} 
+            elevation={8}>
+            {this.state.candidates.map((candidate) => {
+              if (results.segments[candidate.id]) {
+                return <Candidate 
+                  key={candidate.id} 
+                  voteSegments={results.segments[candidate.id]} 
+                  totalVotesForCandidate={results.candidateTotals[candidate.id]}
+                  percentageOfWin={results.candidateTotals[candidate.id] / votesToWin * 100}
+                  candidate={candidate} 
+                  colorMap={colorMap}
+                />;
+              }
+            })}
+          </Paper>
+        </div>
+        <Button variant="raised" component={Link} to={`/monitor/${key}/round/${nextRound}`}>
+          Next Round
+        </Button>
       </div>
     );
   }

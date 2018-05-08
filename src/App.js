@@ -42,8 +42,8 @@ class App extends Component {
         </AppBar>
 
         <Route exact path={'/'} component={Home} />
-        <Route path={'/vote/:key/'} component={Vote} />
-        <Route path={'/monitor/:key/'} component={Monitor} />
+        <Route path={'/vote/:key'} component={Vote} />
+        <Route path={'/monitor/:key/round/:round'} component={Monitor} />
       </div>
     );
   }
