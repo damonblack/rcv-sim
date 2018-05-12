@@ -29,23 +29,30 @@ exports.addMessage = functions.https.onRequest((req, res) => {
 // https://us-central1-rcv-sim.cloudfunctions.net/deleteOldMessages
 exports.deleteOldMessages = functions.https.onRequest((req, res) => {
 
+    console.info('version 9');
+
     const messages = admin.database().ref('/messages');
     
     const now = Date.now();
     //cutoff is 14 days in the past, as milliseconds
-    const cutoff = now - 14 * 24 * 60 * 60 * 1000;
+    //const cutoff = now - 14 * 24 * 60 * 60 * 1000;
+    const cutoff = now - 2 * 60 * 60 * 1000;
 
     // https://stackoverflow.com/questions/32004582/delete-firebase-data-older-than-2-hours
     const oldItemsQuery = messages.orderByChild('created').endAt(cutoff);
 
-    return oldItemsQuery.once('value', function(snapshot) {
+    var results = oldItemsQuery.once('value', function(snapshot) {
         // create a map with all children that need to be removed
         const updates = {};
         snapshot.forEach(function(child) {
           updates[child.key] = null
         });
+
+        console.log(updates);
         // execute all updates in one go and return the result to end the function
         return messages.update(updates);
       });
+
+    return res.send("trying something");
   });
 
