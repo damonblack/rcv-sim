@@ -4,28 +4,29 @@ import { Typography } from 'material-ui';
 
 import MultiBar from './MultiBar';
 
+const styles = {};
 
-const styles = {
-}
-
-const Candidate = (props) => {
-  const { 
-    classes, 
-    voteSegments, 
+const Candidate = props => {
+  const {
+    classes,
+    voteSegments,
     totalVotesForCandidate,
     percentageOfWin,
-    candidate: { id, name }, 
+    candidate: { id, name },
     colorMap
   } = props;
 
-  const segments = Object.keys(voteSegments).map((key) => {
-    const percent = voteSegments[key] / totalVotesForCandidate * 100
-    return [ colorMap[key], percent ];
+  const segments = [];
+  voteSegments.forEach((value, key) => {
+    const percent = value / totalVotesForCandidate * 100;
+    segments.push([colorMap[key], percent]);
   });
 
   return (
     <div key={id}>
-      <Typography variant="subheading">{name} : {totalVotesForCandidate}</Typography>
+      <Typography variant="subheading">
+        {name} : {totalVotesForCandidate}
+      </Typography>
       <MultiBar width={`${percentageOfWin}%`} segments={segments} />
     </div>
   );
