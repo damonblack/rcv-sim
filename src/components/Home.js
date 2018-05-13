@@ -1,3 +1,4 @@
+//@flow
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import { Link } from 'react-router-dom';
@@ -9,18 +10,16 @@ import {
   Button,
   ButtonBase,
   Paper,
-  TextField,
-  Divider,
   Tooltip
 } from 'material-ui';
 import {
   InsertChart as ChartIcon,
   Done as VoteIcon,
-  Cancel as LogoutIcon,
-  Delete as DeleteIcon
+  Cancel as LogoutIcon
 } from '@material-ui/icons';
 
-import { auth, googleAuth, database } from '../services';
+import { auth, googleAuth, myElectionsRef } from '../services';
+import ElectionForm from './ElectionForm';
 
 const styles = theme => {
   return {
@@ -30,41 +29,32 @@ const styles = theme => {
       alignItems: 'center',
       justifyContent: 'center'
     },
-    splitWrapper: { display: 'flex', justifyContent: 'space-between' },
     results: { width: '400px', minWidth: '30%' },
-    chartIcon: { fontSize: '2.5em' },
-    candidateEntry: { display: 'flex', justifyContent: 'space-between' }
+    splitWrapper: { display: 'flex', justifyContent: 'space-between' },
+    chartIcon: { fontSize: '2.5em' }
   };
 };
 
-class Home extends Component {
+type Props = {
+  classes: Object
+};
+
+type State = {
+  user: ?{ uid: string, displayName: string, photoURL: string, email: string },
+  elections: Array<Object>,
+  creating: boolean
+};
+
+class Home extends Component<Props, State> {
   defaultState = {
-    userName: '',
     user: null,
     elections: [],
-    creating: false,
-    electionTitle: '',
-    candidates: ['', '', '']
+    creating: false
   };
 
   constructor() {
     super();
     this.state = this.defaultState;
-  }
-
-  static myElectionsRef(uid) {
-    return database
-      .ref('elections')
-      .orderByChild('owner')
-      .equalTo(uid);
-  }
-
-  static allElectionsRef() {
-    return database.ref('elections');
-  }
-
-  static candidatesForElectionRef(electionKey) {
-    return database.ref(`candidates/${electionKey}`);
   }
 
   componentDidMount() {
@@ -79,7 +69,7 @@ class Home extends Component {
   }
 
   watchMyElections = uid => {
-    Home.myElectionsRef(uid).on('value', snapshot => {
+    myElectionsRef(uid).on('value', snapshot => {
       const electionsVal = snapshot.val();
       let elections = [];
       if (electionsVal && this.state.user) {
@@ -112,48 +102,8 @@ class Home extends Component {
     }
   };
 
-  handleChange = field => e => {
-    const value = e.target.value;
-    this.setState({ [field]: value });
-  };
-
-  handleChangeCandidate = index => e => {
-    const value = e.target.value;
-    const candidates = this.state.candidates.slice(0);
-    candidates[index] = value;
-    this.setState({ candidates });
-  };
-
-  addCandidate = () => {
-    this.setState({ candidates: [...this.state.candidates, ''] });
-  };
-
-  removeCandidate = i => {
-    const candidates = this.state.candidates.slice(0);
-    candidates.splice(i, 1);
-
-    this.setState({ candidates });
-  };
-
-  handleSubmit = () => {
-    const electionKey = Home.allElectionsRef().push({
-      title: this.state.electionTitle,
-      owner: this.state.user.uid
-    }).key;
-    const candidateDB = Home.candidatesForElectionRef(electionKey);
-    this.state.candidates.forEach(candidate => {
-      const candidateEntry = {
-        name: candidate,
-        owner: this.state.user.uid
-      };
-      candidateDB.push(candidateEntry);
-    });
-
-    this.setState({ creating: false, electionTitle: '', candidates: ['', ''] });
-  };
-
   render() {
-    const { user, elections, candidates, electionTitle, creating } = this.state;
+    const { user, elections, creating } = this.state;
     const { classes } = this.props;
 
     return (
@@ -192,54 +142,7 @@ class Home extends Component {
             )}
         </div>
         <div className={classes.wrapper}>
-          {user &&
-            creating && (
-              <div className={classes.results}>
-                <form onSubmit={this.handleSubmit}>
-                  <Paper elevation={5}>
-                    <TextField
-                      key={1}
-                      placeholder="My Election Name"
-                      label="Name your election"
-                      value={electionTitle}
-                      onChange={this.handleChange('electionTitle')}
-                      fullWidth
-                    />
-                    <Divider />
-                    <Divider />
-                    {candidates.map((candidate, i) => (
-                      <div key={i + 1} className={classes.candidateEntry}>
-                        <TextField
-                          label={`Candidate ${i + 1}`}
-                          value={candidate}
-                          onChange={this.handleChangeCandidate(i)}
-                          fullWidth
-                        />
-                        <ButtonBase onClick={() => this.removeCandidate(i)}>
-                          <DeleteIcon />
-                        </ButtonBase>
-                        <Divider />
-                      </div>
-                    ))}
-                    <Button type="button" onClick={this.addCandidate}>
-                      Add
-                    </Button>
-                    <Button type="submit">Submit</Button>
-                    <Button
-                      type="button"
-                      onClick={() =>
-                        this.setState({
-                          creating: false,
-                          candidates: ['', '', '']
-                        })
-                      }
-                    >
-                      Cancel
-                    </Button>
-                  </Paper>
-                </form>
-              </div>
-            )}
+          {user && creating && <ElectionForm user={user} />}
         </div>
 
         <div className={classes.wrapper}>
