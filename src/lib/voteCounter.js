@@ -1,66 +1,98 @@
-const getBestRemainingChoice = (vote, losers) => {
-  let position = 1;
+//@flow
 
-  while(vote[position]) {
-    if (!losers.includes(vote[position])) return vote[position];
+import type {
+  Vote,
+  VoteSegments,
+  Election,
+  Round,
+  CandidateId
+} from './voteTypes';
+
+export const getResults = (
+  votes: Array<Vote>,
+  candidates: Array<CandidateId>
+): Election => {
+  const losers: Array<CandidateId> = [];
+  const election: Election = [];
+  do {
+    const remainingCandidates = candidates.filter(c => !losers.includes(c));
+    const round = countRound(remainingCandidates, votes, losers);
+    const loser = round.loser;
+    election.push(round);
+    if (loser) losers.push(loser);
+  } while (!election.slice(-1)[0].winner);
+  //!election.slice(-1)[0].winner);
+
+  return election;
+};
+
+const countRound = (
+  candidates: Array<CandidateId>,
+  votes: Array<Vote>,
+  losers: Array<CandidateId>
+): Round => {
+  const round = votes.reduce((round: Round, vote: Vote) => {
+    const candidate = resolveVote(vote, candidates);
+    if (candidate) {
+      const favorite = vote[1];
+      const previousCount = round[candidate].get(favorite) || 0;
+      round[candidate].set(favorite, previousCount + 1);
+      round.validVoteCount++;
+    }
+    return round;
+  }, emptyRound(candidates, losers));
+  round.winner = winner(round, candidates);
+  round.loser = loser(round, candidates);
+  return round;
+};
+
+const emptyRound = (
+  candidates: Array<CandidateId>,
+  losers: Array<CandidateId>
+): Round => {
+  const round = { validVoteCount: 0, loser: null, winner: null };
+  const loserVotes = losers.map(loser => [loser, 0]);
+  candidates.forEach(c => (round[c] = new Map([[c, 0], ...loserVotes])));
+  return round;
+};
+
+const resolveVote = (
+  vote: Vote,
+  candidates: Array<CandidateId>
+): ?CandidateId => {
+  let position = 1;
+  //For now we're bailing on skipped-rank votes
+  while (vote[position]) {
+    //find first candidate still in the running
+    if (candidates.includes(vote[position])) return vote[position];
     position = position + 1;
   }
+  return null;
 };
 
-const getTotal = (segments) => (
-  Object.values(segments).reduce((total, voteCount) => total + voteCount)
-);
-
-const getLoser = (results) => {
-  let loser;
-  let min;
-  Object.keys(results).map((key) => {
-    const total = getTotal(results[key])
-    if (!min || total < min) {
-      loser = key;
-      min = total;
-    }
-  })
-  return loser;
-}
-
-const getVoteSegments = (votes, losers) => {
-  return votes.reduce((counts, vote) => {
-    const topChoice = vote[1]; 
-    const bestRemainingChoice = getBestRemainingChoice(vote, losers);
-    if (bestRemainingChoice) {
-      if (!counts[bestRemainingChoice]) counts[bestRemainingChoice] = {};
-      if (!counts[bestRemainingChoice][topChoice]) counts[bestRemainingChoice][topChoice] = 0;
-      counts[bestRemainingChoice][topChoice] = counts[bestRemainingChoice][topChoice] + 1;
-    }
-    return counts;
-  }, { });
-};
-
-const getVoteSegmentsForRound = (votes, round) => {
-  const losers = [];
-  let thisRound = round;
-  let segments = {};
-  while(thisRound) {
-    segments = getVoteSegments(votes, losers);
-    losers.push(getLoser(segments));
-    thisRound = thisRound - 1;
-  }
-  return segments;
-}
-
-export const getResultsForRound = (votes, round) => {
-  const segments = getVoteSegmentsForRound(votes, round);
-  const results = { candidateTotals: {}, segments };
-  let overallTotal = 0;
-  Object.keys(segments).forEach((key) => {
-    const total = getTotal(segments[key]);
-    results.candidateTotals[key] = total;
-    overallTotal = overallTotal + total;
+const winner = (round: Round, candidates: Array<CandidateId>): ?CandidateId => {
+  const goal = round.validVoteCount / 2;
+  return candidates.find(candidate => {
+    const count = candidateCount(round[candidate]);
+    return count > goal;
   });
+};
 
-  results.overallTotal = overallTotal;
+const loser = (round: Round, candidates: Array<CandidateId>): CandidateId => {
+  let loser = '';
+  let min: number;
+  candidates.forEach((candidate: CandidateId) => {
+    const count = candidateCount(round[candidate]);
+    if (!min || count < min) {
+      loser = candidate;
+      min = count;
+    }
+  });
+  return loser;
+};
 
-  return results;
-}
-
+const candidateCount = (segments: VoteSegments): number => {
+  let total = 0;
+  segments.forEach(value => (total = total + value));
+  return total;
+};

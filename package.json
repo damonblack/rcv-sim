@@ -6,6 +6,7 @@
     "@firebase/app-types": "^0.2.0",
     "@material-ui/icons": "^1.0.0-beta.43",
     "firebase": "^4.12.1",
+    "flow-types": "^1.0.0",
     "material-ui": "^1.0.0-beta.43",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
@@ -15,9 +16,21 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "react-scripts build && firebase deploy",
-    "fire": "react-scripts build && firebase deploy && yarn start"
+    "fire": "react-scripts build && firebase deploy && yarn start",
+    "precommit": "pretty-quick --staged"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-flow": "^6.23.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "flow-bin": "^0.72.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.1.0",
+    "prettier": "^1.12.1",
+    "pretty-quick": "^1.4.1"
   }
 }
