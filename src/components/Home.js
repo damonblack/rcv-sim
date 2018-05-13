@@ -132,7 +132,8 @@ class Home extends Component {
   handleSubmit = () => {
     const electionKey = Home.allElectionsRef().push({
       title: this.state.electionTitle,
-      owner: this.state.user.uid
+      owner: this.state.user.uid,
+      created: Date.now()
     }).key;
     const candidateDB = Home.candidatesForElectionRef(electionKey);
     this.state.candidates.forEach((candidate) => {
