@@ -6,13 +6,6 @@ admin.initializeApp();
 // cloud functions getting started: https://firebase.google.com/docs/functions/get-started
 // to deploy, run from CLI: firebase deploy --only functions
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
-
 // https://us-central1-rcv-sim.cloudfunctions.net/addMessage?text=yourmessagetext
 exports.addMessage = functions.https.onRequest((req, res) => {
     // Grab the text parameter.
@@ -29,7 +22,7 @@ exports.addMessage = functions.https.onRequest((req, res) => {
 // https://us-central1-rcv-sim.cloudfunctions.net/deleteOldMessages
 exports.deleteOldMessages = functions.https.onRequest((req, res) => {
 
-    console.info('version 9');
+    console.info('version 7');
 
     const messages = admin.database().ref('/messages');
     
@@ -39,20 +32,24 @@ exports.deleteOldMessages = functions.https.onRequest((req, res) => {
     const cutoff = now - 2 * 60 * 60 * 1000;
 
     // https://stackoverflow.com/questions/32004582/delete-firebase-data-older-than-2-hours
-    const oldItemsQuery = messages.orderByChild('created').endAt(cutoff);
-
-    var results = oldItemsQuery.once('value', function(snapshot) {
-        // create a map with all children that need to be removed
-        const updates = {};
-        snapshot.forEach(function(child) {
-          updates[child.key] = null
-        });
-
-        console.log(updates);
-        // execute all updates in one go and return the result to end the function
-        return messages.update(updates);
+    const oldItemsQuery = messages.orderByChild('created').startAt(0).endAt(cutoff);
+    const updates = {};
+    // cloud functions don't yet support "await": https://stackoverflow.com/questions/49117972/how-to-make-http-request-async-await-in-cloud-functions-for-firebase
+    oldItemsQuery.once('value', snapshot => {
+      snapshot.forEach(child => {
+        updates[child.key] = null
       });
 
-    return res.send("trying something");
-  });
+      return messages.update(updates);
+    }).then(result => {
+      console.log(result);
+      console.log(updates);
+      console.log(`deleted ${Object.keys(updates).length} elections with related data`);
+      return true;
+    }).catch((err) => {
+      console.log(err);
+      throw Error('failure completing updates');
+    });
 
+    return res.send("delete request was queued without errors, review database log for results");
+  });
