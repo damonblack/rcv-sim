@@ -64,13 +64,13 @@ class ElectionForm extends Component<Props, State> {
 
   handleSubmit = () => {
     const electionKey = electionsRef().push({
-      title: this.state.electionTitle,
+      title: this.state.electionTitle.trim(),
       owner: this.props.user.uid
     }).key;
     const candidateDB = candidatesForElectionRef(electionKey);
     this.state.candidates.forEach(candidate => {
       const candidateEntry = {
-        name: candidate,
+        name: candidate.trim(),
         owner: this.props.user.uid
       };
       candidateDB.push(candidateEntry);
