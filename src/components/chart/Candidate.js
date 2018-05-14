@@ -1,14 +1,10 @@
 import React from 'react';
-import { withStyles } from 'material-ui/styles';
 import { Typography } from 'material-ui';
 
 import MultiBar from './MultiBar';
 
-const styles = {};
-
 const Candidate = props => {
   const {
-    classes,
     voteSegments,
     totalVotesForCandidate,
     percentageOfWin,
@@ -32,4 +28,4 @@ const Candidate = props => {
   );
 };
 
-export default withStyles(styles)(Candidate);
+export default Candidate;

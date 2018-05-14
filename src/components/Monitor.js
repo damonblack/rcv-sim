@@ -34,7 +34,7 @@ class Monitor extends Component {
   ];
 
   componentDidMount() {
-    const { key, round } = this.props.match.params;
+    const { key } = this.props.match.params;
     database.ref(`elections/${key}`).on('value', snapshot => {
       this.setState({ election: snapshot.val() });
     });
@@ -127,6 +127,8 @@ class Monitor extends Component {
                     colorMap={colorMap}
                   />
                 );
+              } else {
+                return null;
               }
             })}
           </Paper>

@@ -108,10 +108,10 @@ class Vote extends Component {
     const votes = Object.assign({}, this.state.votes);
 
     const candidateName = this.state.candidates.filter(
-      c => c.id == candidateId
+      c => c.id === candidateId
     )[0].name;
     const displacedName = votes[position]
-      ? this.state.candidates.filter(c => c.id == votes[position])[0].name
+      ? this.state.candidates.filter(c => c.id === votes[position])[0].name
       : '';
 
     let previousPosition;
