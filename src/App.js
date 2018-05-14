@@ -11,22 +11,20 @@ import Vote from './components/Vote';
 import Monitor from './components/Monitor';
 import './App.css';
 
-
 const styles = {
   root: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   flex: {
-    flex: 1,
+    flex: 1
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20,
-  },
+    marginRight: 20
+  }
 };
 
 class App extends Component {
-
   render() {
     const { classes } = this.props;
 
@@ -35,7 +33,11 @@ class App extends Component {
         <CssBaseline />
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="title" color="inherit" className={classes.flex}>
+            <Typography
+              variant="title"
+              color="inherit"
+              className={classes.flex}
+            >
               Welcome to the Ranked Choice Vote Runner
             </Typography>
           </Toolbar>
