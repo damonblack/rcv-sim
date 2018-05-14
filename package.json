@@ -18,7 +18,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "react-scripts build && firebase deploy",
+    "functions": "yarn --cwd ./functions",
+    "deploy": "react-scripts build && yarn functions && firebase deploy",
     "fire": "react-scripts build && firebase deploy && yarn start",
     "precommit": "pretty-quick --staged"
   },
@@ -27,6 +28,7 @@
     "babel-preset-flow": "^6.23.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-promise": "^3.7.0",
     "flow-bin": "^0.72.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.1.0",

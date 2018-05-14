@@ -13,7 +13,8 @@ const styles = {
 
 type Props = {
   classes: { results: Object, candidateEntry: Object },
-  user: { uid: string }
+  user: { uid: string },
+  onCancel: () => void
 };
 
 type State = {
@@ -76,12 +77,12 @@ class ElectionForm extends Component<Props, State> {
       candidateDB.push(candidateEntry);
     });
 
-    this.setState({ electionTitle: '', candidates: ['', ''] });
+    this.props.onCancel();
   };
 
   render() {
     const { candidates, electionTitle } = this.state;
-    const { classes } = this.props;
+    const { classes, onCancel } = this.props;
     return (
       <div className={classes.results}>
         <form onSubmit={this.handleSubmit}>
@@ -116,15 +117,7 @@ class ElectionForm extends Component<Props, State> {
               Add
             </Button>
             <Button type="submit">Submit</Button>
-            <Button
-              type="button"
-              onClick={() =>
-                this.setState({
-                  creating: false,
-                  candidates: ['', '', '']
-                })
-              }
-            >
+            <Button type="button" onClick={onCancel}>
               Cancel
             </Button>
           </Paper>

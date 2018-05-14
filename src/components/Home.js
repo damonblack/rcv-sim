@@ -29,7 +29,7 @@ const styles = theme => {
       alignItems: 'center',
       justifyContent: 'center'
     },
-    results: { width: '400px', minWidth: '30%' },
+    results: { minWidth: '60vw' },
     splitWrapper: { display: 'flex', justifyContent: 'space-between' },
     chartIcon: { fontSize: '2.5em' }
   };
@@ -142,7 +142,13 @@ class Home extends Component<Props, State> {
             )}
         </div>
         <div className={classes.wrapper}>
-          {user && creating && <ElectionForm user={user} />}
+          {user &&
+            creating && (
+              <ElectionForm
+                user={user}
+                onCancel={() => this.setState({ creating: false })}
+              />
+            )}
         </div>
 
         <div className={classes.wrapper}>
@@ -150,10 +156,12 @@ class Home extends Component<Props, State> {
             !creating && (
               <div className={classes.results}>
                 <Paper>
-                  <Typography>Elections</Typography>
+                  <Typography variant="title" align="center">
+                    Elections
+                  </Typography>
                   <List component="nav">
                     {elections.map((election, i) => (
-                      <ListItem key={i} button>
+                      <ListItem key={i} divider>
                         <Tooltip title="View Results">
                           <ButtonBase
                             component={Link}
