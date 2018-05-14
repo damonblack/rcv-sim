@@ -15,10 +15,11 @@ import {
 import {
   InsertChart as ChartIcon,
   Done as VoteIcon,
-  Cancel as LogoutIcon
+  Cancel as LogoutIcon,
+  Delete as DeleteIcon
 } from '@material-ui/icons';
 
-import { auth, googleAuth, myElectionsRef } from '../services';
+import { auth, googleAuth, myElectionsRef, database } from '../services';
 import ElectionForm from './ElectionForm';
 
 const styles = theme => {
@@ -31,7 +32,8 @@ const styles = theme => {
     },
     results: { minWidth: '60vw' },
     splitWrapper: { display: 'flex', justifyContent: 'space-between' },
-    chartIcon: { fontSize: '2.5em' }
+    chartIcon: { fontSize: '2.5em' },
+    deleteIcon: { paddingLeft: '1em', paddingRight: '1em' }
   };
 };
 
@@ -68,6 +70,29 @@ class Home extends Component<Props, State> {
     });
   }
 
+  // MWCTODO: call this from a confirm dialog, not directly from button click.
+  deleteMyElection = electionKey => {
+    const updates = {}
+
+    // MWCTODO: this fails with a permission error: FIREBASE WARNING: update at / failed: permission_denied 
+    // suspecting that "update at /" means we're ignoring the detail rules and looking at the root rule only.
+    // proberly, we will need to make these as separate updates.
+
+    updates['/elections/' + electionKey] = null;
+    updates['/candidates/' + electionKey] = null;
+    updates['/votes/' + electionKey] = null;
+
+    database.ref().update(updates)
+      .then(result => {
+        const remainingElections = this.state.elections.filter(e => e.id !== electionKey);
+        this.setState({ elections: remainingElections })
+      })
+      .catch(err => {
+        console.error(err);
+        // MWCTODO: snackbar here? a RED one.
+      });
+  }
+
   watchMyElections = uid => {
     myElectionsRef(uid).on('value', snapshot => {
       const electionsVal = snapshot.val();
@@ -97,7 +122,7 @@ class Home extends Component<Props, State> {
       await auth.signOut();
       this.setState(this.defaultState);
     } catch (e) {
-      console.log('LOGIN FAILED: ', e);
+      console.log('LOGOUT FAILED: ', e);
       alert('logout failed');
     }
   };
@@ -178,6 +203,13 @@ class Home extends Component<Props, State> {
                           <Avatar component={Link} to={`/vote/${election.id}`}>
                             <VoteIcon color="action" />
                           </Avatar>
+                        </Tooltip>
+                        <Tooltip title="Delete Election Completely">
+                          <ButtonBase onClick={() => this.deleteMyElection(election.id) }>
+                            <DeleteIcon
+                              className={classes.deleteIcon}
+                            />
+                          </ButtonBase>
                         </Tooltip>
                       </ListItem>
                     ))}

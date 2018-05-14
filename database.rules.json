@@ -3,20 +3,21 @@
     ".read": true,
     "elections": {
       "$electionId": {
-        ".write": "!data.exists() && newData.child('owner').val() == auth.uid"
+        ".write": "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
       }
     },
     "candidates": {
       "$electionId": {
         "$candidateId": {
-          ".write": "!data.exists() && newData.child('owner').val() == auth.uid"
+          ".write": "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
         }
       }
     },
     "votes": {
       "$electionId": {
+        ".write": "auth != null",
         "$voteId": {
-          ".write": "!data.exists()"
+          ".write": true
         }
       }
     }
