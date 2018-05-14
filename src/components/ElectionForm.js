@@ -63,19 +63,27 @@ class ElectionForm extends Component<Props, State> {
     this.setState({ candidates });
   };
 
-  handleSubmit = () => {
-    const electionKey = electionsRef().push({
-      title: this.state.electionTitle.trim(),
-      owner: this.props.user.uid
-    }).key;
-    const candidateDB = candidatesForElectionRef(electionKey);
-    this.state.candidates.forEach(candidate => {
-      const candidateEntry = {
-        name: candidate.trim(),
-        owner: this.props.user.uid
-      };
-      candidateDB.push(candidateEntry);
-    });
+  handleSubmit = e => {
+    e.preventDefault();
+    const title = this.state.electionTitle.trim();
+    const key = title.replace(/\s+/g, '-').toLowerCase();
+    electionsRef()
+      .child(key)
+      .set({ title: title, owner: this.props.user.uid })
+      .then(result => {
+        console.log('RESULT', result);
+        const candidateDB = candidatesForElectionRef(key);
+        this.state.candidates.forEach(candidate => {
+          const candidateEntry = {
+            name: candidate.trim(),
+            owner: this.props.user.uid
+          };
+          candidateDB.push(candidateEntry);
+        });
+      })
+      .catch(error =>
+        alert('Unable to create election. Try a different name.')
+      );
 
     this.props.onCancel();
   };
