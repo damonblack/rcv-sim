@@ -1,14 +1,10 @@
 import React from 'react';
-import { withStyles } from 'material-ui/styles';
 import { Typography } from 'material-ui';
 
 import MultiBar from './MultiBar';
 
-const styles = {};
-
 const Candidate = props => {
   const {
-    classes,
     voteSegments,
     totalVotesForCandidate,
     percentageOfWin,
@@ -17,19 +13,25 @@ const Candidate = props => {
   } = props;
 
   const segments = [];
-  voteSegments.forEach((value, key) => {
-    const percent = value / totalVotesForCandidate * 100;
-    segments.push([colorMap[key], percent]);
-  });
+  let width;
+  if (voteSegments) {
+    voteSegments.forEach((value, key) => {
+      const percent = value / totalVotesForCandidate * 100;
+      segments.push([colorMap[key], percent]);
+    });
+    width = `${percentageOfWin}%`;
+  } else {
+    width = '1px';
+  }
 
   return (
     <div key={id}>
       <Typography variant="subheading">
         {name} : {totalVotesForCandidate}
       </Typography>
-      <MultiBar width={`${percentageOfWin}%`} segments={segments} />
+      <MultiBar width={width} segments={segments} />
     </div>
   );
 };
 
-export default withStyles(styles)(Candidate);
+export default Candidate;

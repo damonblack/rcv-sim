@@ -8,16 +8,18 @@ import Table, {
   TableCell
 } from 'material-ui/Table';
 import {
+  Avatar,
   Button,
   IconButton,
-  ButtonBase,
   Typography,
+  Tooltip,
   Paper,
   Snackbar
 } from 'material-ui';
 import {
   Done as CheckIcon,
   PanoramaWideAngle as EmptyIcon,
+  InsertChart as ChartIcon,
   Close as CloseIcon,
   Home as HomeIcon
 } from '@material-ui/icons';
@@ -31,8 +33,16 @@ const styles = {
     justifyContent: 'center',
     height: '80vh'
   },
-  results: { width: '50%' },
-  positionHeader: { textAlign: 'center' }
+  voting: {
+    width: '100vw'
+  },
+  navButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    width: '10vw',
+    maxWidth: '80px'
+  },
+  cell: { justifyContent: 'center', textAlign: 'center' }
 };
 
 class Vote extends Component {
@@ -108,10 +118,10 @@ class Vote extends Component {
     const votes = Object.assign({}, this.state.votes);
 
     const candidateName = this.state.candidates.filter(
-      c => c.id == candidateId
+      c => c.id === candidateId
     )[0].name;
     const displacedName = votes[position]
-      ? this.state.candidates.filter(c => c.id == votes[position])[0].name
+      ? this.state.candidates.filter(c => c.id === votes[position])[0].name
       : '';
 
     let previousPosition;
@@ -143,22 +153,33 @@ class Vote extends Component {
 
   render() {
     const { title, candidates, notifierOpen, lastAction } = this.state;
-    const { classes } = this.props;
+    const {
+      classes,
+      match: {
+        params: { key }
+      }
+    } = this.props;
 
     return (
       <div className={classes.wrapper}>
-        <ButtonBase component={Link} to="/">
-          <HomeIcon color="secondary" />
-        </ButtonBase>
+        <div className={classes.navButton}>
+          <Tooltip title="Dashboard">
+            <Avatar component={Link} to="/">
+              <HomeIcon color="primary" />
+            </Avatar>
+          </Tooltip>
+        </div>
         <div className={classes.voting}>
-          <Typography variant="headline">{title}</Typography>
+          <Typography variant="headline" align="center" gutterBottom>
+            {title}
+          </Typography>
           <Paper>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell key={0} colSpan="2" />
                   {candidates.map((candidate, i) => (
-                    <TableCell key={i + 1} className={classes.positionHeader}>
+                    <TableCell key={i + 1} className={classes.cell}>
                       {i + 1}
                     </TableCell>
                   ))}
@@ -171,7 +192,7 @@ class Vote extends Component {
                       {candidate.name}
                     </TableCell>
                     {candidates.map((c, i) => (
-                      <TableCell key={i + 1}>
+                      <TableCell className={classes.cell} key={i + 1}>
                         <IconButton
                           onClick={e => this.updateVote(candidate.id, i + 1)}
                         >
@@ -191,6 +212,13 @@ class Vote extends Component {
           <Button variant="raised" color="secondary" onClick={this.submitVote}>
             Submit Vote
           </Button>
+        </div>
+        <div className={classes.navButton}>
+          <Tooltip title="Results">
+            <Avatar component={Link} to={`/monitor/${key}/round/1`}>
+              <ChartIcon color="primary" />
+            </Avatar>
+          </Tooltip>
         </div>
         <Snackbar
           anchorOrigin={{

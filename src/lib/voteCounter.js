@@ -1,29 +1,22 @@
 //@flow
 
-import type {
-  Vote,
-  VoteSegments,
-  Election,
-  Round,
-  CandidateId
-} from './voteTypes';
+import type { Vote, Results, Round, Totals, CandidateId } from './voteTypes';
 
 export const getResults = (
-  votes: Array<Vote>,
+  votes: Array<any>,
   candidates: Array<CandidateId>
-): Election => {
+): Results => {
   const losers: Array<CandidateId> = [];
-  const election: Election = [];
+  const results: Results = [];
   do {
     const remainingCandidates = candidates.filter(c => !losers.includes(c));
     const round = countRound(remainingCandidates, votes, losers);
     const loser = round.loser;
-    election.push(round);
+    results.push(round);
     if (loser) losers.push(loser);
-  } while (!election.slice(-1)[0].winner);
-  //!election.slice(-1)[0].winner);
+  } while (!results.slice(-1)[0].winner);
 
-  return election;
+  return results;
 };
 
 const countRound = (
@@ -35,14 +28,16 @@ const countRound = (
     const candidate = resolveVote(vote, candidates);
     if (candidate) {
       const favorite = vote[1];
-      const previousCount = round[candidate].get(favorite) || 0;
-      round[candidate].set(favorite, previousCount + 1);
-      round.validVoteCount++;
+      const previousCount = round.segments[candidate].get(favorite) || 0;
+      round.segments[candidate].set(favorite, previousCount + 1);
+      const total = round.totals[candidate] || 0;
+      round.totals[candidate] = total + 1;
+      round.validVoteCount = round.validVoteCount + 1;
     }
     return round;
   }, emptyRound(candidates, losers));
   round.winner = winner(round, candidates);
-  round.loser = loser(round, candidates);
+  round.loser = loser(round.totals, candidates);
   return round;
 };
 
@@ -50,9 +45,18 @@ const emptyRound = (
   candidates: Array<CandidateId>,
   losers: Array<CandidateId>
 ): Round => {
-  const round = { validVoteCount: 0, loser: null, winner: null };
+  const round = {
+    segments: {},
+    totals: {},
+    validVoteCount: 0,
+    loser: null,
+    winner: null
+  };
   const loserVotes = losers.map(loser => [loser, 0]);
-  candidates.forEach(c => (round[c] = new Map([[c, 0], ...loserVotes])));
+  candidates.forEach(c => {
+    round.totals[c] = 0;
+    round.segments[c] = new Map([[c, 0], ...loserVotes]);
+  });
   return round;
 };
 
@@ -73,26 +77,20 @@ const resolveVote = (
 const winner = (round: Round, candidates: Array<CandidateId>): ?CandidateId => {
   const goal = round.validVoteCount / 2;
   return candidates.find(candidate => {
-    const count = candidateCount(round[candidate]);
+    const count = round.totals[candidate];
     return count > goal;
   });
 };
 
-const loser = (round: Round, candidates: Array<CandidateId>): CandidateId => {
+const loser = (totals: Totals, candidates: Array<CandidateId>): CandidateId => {
   let loser = '';
   let min: number;
   candidates.forEach((candidate: CandidateId) => {
-    const count = candidateCount(round[candidate]);
+    const count = totals[candidate];
     if (!min || count < min) {
       loser = candidate;
       min = count;
     }
   });
   return loser;
-};
-
-const candidateCount = (segments: VoteSegments): number => {
-  let total = 0;
-  segments.forEach(value => (total = total + value));
-  return total;
 };
