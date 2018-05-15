@@ -69,7 +69,7 @@ class ElectionForm extends Component<Props, State> {
     const key = title.replace(/\s+/g, '-').toLowerCase();
     electionsRef()
       .child(key)
-      .set({ title: title, owner: this.props.user.uid })
+      .set({ title: title, owner: this.props.user.uid, created: Date.now() })
       .then(result => {
         console.log('RESULT', result);
         const candidateDB = candidatesForElectionRef(key);
