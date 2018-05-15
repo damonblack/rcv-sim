@@ -19,8 +19,9 @@ import {
   Delete as DeleteIcon
 } from '@material-ui/icons';
 
-import { auth, googleAuth, myElectionsRef, database } from '../services';
+import { auth, googleAuth, myElectionsRef } from '../services';
 import ElectionForm from './ElectionForm';
+import Vote from './Vote';
 
 const styles = theme => {
   return {
@@ -72,26 +73,31 @@ class Home extends Component<Props, State> {
 
   // MWCTODO: call this from a confirm dialog, not directly from button click.
   deleteMyElection = electionKey => {
-    const updates = {}
+    const updates = {};
 
-    // MWCTODO: this fails with a permission error: FIREBASE WARNING: update at / failed: permission_denied 
+    // MWCTODO: this fails with a permission error: FIREBASE WARNING: update at / failed: permission_denied
     // suspecting that "update at /" means we're ignoring the detail rules and looking at the root rule only.
     // proberly, we will need to make these as separate updates.
 
-    updates['/elections/' + electionKey] = null;
-    updates['/candidates/' + electionKey] = null;
-    updates['/votes/' + electionKey] = null;
+    updates[electionKey] = null;
+    console.log(updates);
 
-    database.ref().update(updates)
-      .then(result => {
-        const remainingElections = this.state.elections.filter(e => e.id !== electionKey);
-        this.setState({ elections: remainingElections })
-      })
-      .catch(err => {
-        console.error(err);
-        // MWCTODO: snackbar here? a RED one.
-      });
-  }
+    // updates['/elections/' + electionKey] = null;
+    // updates['/candidates/' + electionKey] = null;
+    // updates['/votes/' + electionKey] = null;
+    Vote.votesRef(electionKey).remove();
+    //    Vote.candidatesRef(electionKey).remove();
+
+    // database.ref().update(updates)
+    //   .then(result => {
+    //     const remainingElections = this.state.elections.filter(e => e.id !== electionKey);
+    //     this.setState({ elections: remainingElections })
+    //   })
+    //   .catch(err => {
+    //     console.error(err);
+    //     // MWCTODO: snackbar here? a RED one.
+    //   });
+  };
 
   watchMyElections = uid => {
     myElectionsRef(uid).on('value', snapshot => {
@@ -205,10 +211,10 @@ class Home extends Component<Props, State> {
                           </Avatar>
                         </Tooltip>
                         <Tooltip title="Delete Election Completely">
-                          <ButtonBase onClick={() => this.deleteMyElection(election.id) }>
-                            <DeleteIcon
-                              className={classes.deleteIcon}
-                            />
+                          <ButtonBase
+                            onClick={() => this.deleteMyElection(election.id)}
+                          >
+                            <DeleteIcon className={classes.deleteIcon} />
                           </ButtonBase>
                         </Tooltip>
                       </ListItem>
