@@ -132,8 +132,8 @@ class Monitor extends Component<Props, State> {
           </Button>
         </Tooltip>
         <div className={classes.results}>
-          <Typography variant="headline" align="center" gutterBottom>
-            {election.title}
+          <Typography variant="title" align="center" gutterBottom>
+            {election.title} - Round {round}
           </Typography>
           <div className={classes.splitWrapper}>
             <Typography>Total Votes: {thisRound.validVoteCount}</Typography>
