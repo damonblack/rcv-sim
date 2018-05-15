@@ -15,7 +15,7 @@ const MultiBar = props => {
   const getSegmentStyle = segment => {
     return {
       width: `${segment[1]}%`,
-      height: '50px',
+      height: '5vh',
       backgroundColor: segment[0]
     };
   };
@@ -25,7 +25,7 @@ const MultiBar = props => {
       <Paper
         key={-1}
         elevation={0}
-        style={{ width: '1px', height: '50px', backgroundColor: '#fff' }}
+        style={{ width: '1px', height: '5vh', backgroundColor: '#fff' }}
         square
       />
       {segments.map((segment, i) => (

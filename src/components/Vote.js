@@ -42,7 +42,9 @@ const styles = {
     width: '10vw',
     maxWidth: '80px'
   },
-  cell: { justifyContent: 'center', textAlign: 'center' }
+  cell: { padding: '0', textAlign: 'left' },
+  nameCell: { paddingLeft: '1vw' },
+  headerCell: { paddingLeft: '1.37vw', textAlign: 'left' }
 };
 
 class Vote extends Component {
@@ -170,16 +172,16 @@ class Vote extends Component {
           </Tooltip>
         </div>
         <div className={classes.voting}>
-          <Typography variant="headline" align="center" gutterBottom>
+          <Typography variant="title" align="center" gutterBottom>
             {title}
           </Typography>
           <Paper>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell key={0} colSpan="2" />
+                  <TableCell key={0} className={classes.nameCell} />
                   {candidates.map((candidate, i) => (
-                    <TableCell key={i + 1} className={classes.cell}>
+                    <TableCell key={i + 1} className={classes.headerCell}>
                       {i + 1}
                     </TableCell>
                   ))}
@@ -188,7 +190,7 @@ class Vote extends Component {
               <TableBody>
                 {candidates.map((candidate, i) => (
                   <TableRow key={i}>
-                    <TableCell key={0} colSpan="2">
+                    <TableCell key={0} className={classes.nameCell}>
                       {candidate.name}
                     </TableCell>
                     {candidates.map((c, i) => (
