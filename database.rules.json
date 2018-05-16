@@ -3,21 +3,26 @@
     ".read": true,
     "elections": {
       "$electionId": {
-        ".write": "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
+        ".write":
+          "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
       }
     },
     "candidates": {
       "$electionId": {
+        ".write":
+          "root.child('elections').child($electionId).child('owner').val() == auth.uid",
         "$candidateId": {
-          ".write": "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
+          ".write":
+            "(data.exists() && data.child('owner').val() == auth.uid) || (!data.exists() && newData.child('owner').val() == auth.uid)"
         }
       }
     },
     "votes": {
       "$electionId": {
-        ".write": "auth != null",
+        ".write":
+          "root.child('elections').child($electionId).child('owner').val() == auth.uid",
         "$voteId": {
-          ".write": true
+          ".write": "!data.exists()"
         }
       }
     }

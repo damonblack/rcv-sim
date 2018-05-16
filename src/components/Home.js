@@ -73,30 +73,15 @@ class Home extends Component<Props, State> {
 
   // MWCTODO: call this from a confirm dialog, not directly from button click.
   deleteMyElection = electionKey => {
-    const updates = {};
+    //MWCTODO: we want to do something like promise.all here? with setState in the .then(). red snackbar on error? (i'm fixated)
 
-    // MWCTODO: this fails with a permission error: FIREBASE WARNING: update at / failed: permission_denied
-    // suspecting that "update at /" means we're ignoring the detail rules and looking at the root rule only.
-    // proberly, we will need to make these as separate updates.
-
-    updates[electionKey] = null;
-    console.log(updates);
-
-    // updates['/elections/' + electionKey] = null;
-    // updates['/candidates/' + electionKey] = null;
-    // updates['/votes/' + electionKey] = null;
+    //if votesRef() is empty, this throws a permissions error--but this is a legit scenario if the election hasn't gotten any votes yet.
+    // however, maybe in that scenario that we just want to swallow the error. if the error doesn't indicate an actual problem . . .
     Vote.votesRef(electionKey).remove();
-    //    Vote.candidatesRef(electionKey).remove();
+    Vote.candidatesRef(electionKey).remove();
+    Vote.electionRef(electionKey).remove();
 
-    // database.ref().update(updates)
-    //   .then(result => {
-    //     const remainingElections = this.state.elections.filter(e => e.id !== electionKey);
-    //     this.setState({ elections: remainingElections })
-    //   })
-    //   .catch(err => {
-    //     console.error(err);
-    //     // MWCTODO: snackbar here? a RED one.
-    //   });
+    //we don't need to setState here, bc watchMyElections takes care of it automatically.
   };
 
   watchMyElections = uid => {
