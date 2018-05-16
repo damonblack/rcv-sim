@@ -1,8 +1,8 @@
 //@flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { withStyles } from 'material-ui/styles';
-import { Avatar, Typography, Paper, Button, Tooltip } from 'material-ui';
+import { withStyles } from '@material-ui/core/styles';
+import { Avatar, Typography, Paper, Button, Tooltip } from '@material-ui/core';
 import {
   ArrowBack,
   ArrowForward,

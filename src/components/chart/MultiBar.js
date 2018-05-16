@@ -1,6 +1,7 @@
+//@flow
 import React from 'react';
-import { withStyles } from 'material-ui/styles';
-import { Paper } from 'material-ui';
+import { withStyles } from '@material-ui/core/styles';
+import { Paper } from '@material-ui/core';
 
 const styles = {
   multiBar: {
