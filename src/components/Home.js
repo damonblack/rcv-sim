@@ -75,15 +75,13 @@ class Home extends Component<Props, State> {
 
   // MWCTODO: call this from a confirm dialog, not directly from button click.
   deleteMyElection = electionKey => {
-    //MWCTODO: we want to do something like promise.all here? with setState in the .then(). red snackbar on error? (i'm fixated)
-
-    //if votesRef() is empty, this throws a permissions error--but this is a legit scenario if the election hasn't gotten any votes yet.
-    // however, maybe in that scenario that we just want to swallow the error. if the error doesn't indicate an actual problem . . .
+    // MWCTODO: do we really want to use Vote...Ref here? do we need error handling?
+    // in firebase, transactions only operate within a node, afaik we can't txn these at all. (firestore is different)
     Vote.votesRef(electionKey).remove();
     Vote.candidatesRef(electionKey).remove();
     Vote.electionRef(electionKey).remove();
 
-    //we don't need to setState here, bc watchMyElections takes care of it automatically.
+    // watchMyElections handles the state updates for us.
   };
 
   watchMyElections = uid => {

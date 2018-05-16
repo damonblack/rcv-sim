@@ -123,12 +123,16 @@ class Vote extends Component<Props, State> {
 
     Vote.candidatesRef(electionKey).on('value', snapshot => {
       const candidatesVal = snapshot.val();
-      const candidates = Object.keys(candidatesVal).map(key => ({
-        id: key,
-        name: candidatesVal[key].name
-      }));
 
-      this.setState({ candidates });
+      //MWCTODO: discuss this with damon, the fact that it's done, the fact that it's necessary.
+      if (candidatesVal) {
+        const candidates = Object.keys(candidatesVal).map(key => ({
+          id: key,
+          name: candidatesVal[key].name
+        }));
+
+        this.setState({ candidates });
+      }
     });
   }
 
