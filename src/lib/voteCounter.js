@@ -1,5 +1,4 @@
 //@flow
-
 import type { Vote, Results, Round, Totals, CandidateId } from './voteTypes';
 
 export const getResults = (
