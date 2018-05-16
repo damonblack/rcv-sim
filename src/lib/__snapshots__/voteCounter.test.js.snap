@@ -3,63 +3,87 @@
 exports[`balanced win 1`] = `
 Array [
   Object {
-    "A": Map {
-      "A" => 1,
-    },
-    "B": Map {
-      "B" => 1,
-    },
-    "C": Map {
-      "C" => 1,
-    },
-    "D": Map {
-      "D" => 2,
-    },
-    "E": Map {
-      "E" => 2,
-    },
     "loser": "A",
+    "segments": Object {
+      "A": Map {
+        "A" => 1,
+      },
+      "B": Map {
+        "B" => 1,
+      },
+      "C": Map {
+        "C" => 1,
+      },
+      "D": Map {
+        "D" => 2,
+      },
+      "E": Map {
+        "E" => 2,
+      },
+    },
+    "totals": Object {
+      "A": 1,
+      "B": 1,
+      "C": 1,
+      "D": 2,
+      "E": 2,
+    },
     "validVoteCount": 7,
     "winner": undefined,
   },
   Object {
-    "B": Map {
-      "B" => 1,
-      "A" => 0,
-    },
-    "C": Map {
-      "C" => 1,
-      "A" => 0,
-    },
-    "D": Map {
-      "D" => 2,
-      "A" => 1,
-    },
-    "E": Map {
-      "E" => 2,
-      "A" => 0,
-    },
     "loser": "B",
+    "segments": Object {
+      "B": Map {
+        "B" => 1,
+        "A" => 0,
+      },
+      "C": Map {
+        "C" => 1,
+        "A" => 0,
+      },
+      "D": Map {
+        "D" => 2,
+        "A" => 1,
+      },
+      "E": Map {
+        "E" => 2,
+        "A" => 0,
+      },
+    },
+    "totals": Object {
+      "B": 1,
+      "C": 1,
+      "D": 3,
+      "E": 2,
+    },
     "validVoteCount": 7,
     "winner": undefined,
   },
   Object {
-    "C": Map {
-      "C" => 1,
-      "A" => 0,
-      "B" => 0,
-    },
-    "D": Map {
-      "D" => 2,
-      "A" => 1,
-      "B" => 1,
-    },
-    "E": Map {
-      "E" => 2,
-      "A" => 0,
-      "B" => 0,
-    },
     "loser": "C",
+    "segments": Object {
+      "C": Map {
+        "C" => 1,
+        "A" => 0,
+        "B" => 0,
+      },
+      "D": Map {
+        "D" => 2,
+        "A" => 1,
+        "B" => 1,
+      },
+      "E": Map {
+        "E" => 2,
+        "A" => 0,
+        "B" => 0,
+      },
+    },
+    "totals": Object {
+      "C": 1,
+      "D": 4,
+      "E": 2,
+    },
     "validVoteCount": 7,
     "winner": "D",
   },
@@ -69,22 +93,31 @@ Array [
 exports[`early win 1`] = `
 Array [
   Object {
-    "A": Map {
-      "A" => 1,
-    },
-    "B": Map {
-      "B" => 0,
-    },
-    "C": Map {
-      "C" => 1,
-    },
-    "D": Map {
-      "D" => 4,
-    },
-    "E": Map {
-      "E" => 1,
-    },
     "loser": "C",
+    "segments": Object {
+      "A": Map {
+        "A" => 1,
+      },
+      "B": Map {
+        "B" => 0,
+      },
+      "C": Map {
+        "C" => 1,
+      },
+      "D": Map {
+        "D" => 4,
+      },
+      "E": Map {
+        "E" => 1,
+      },
+    },
+    "totals": Object {
+      "A": 1,
+      "B": 0,
+      "C": 1,
+      "D": 4,
+      "E": 1,
+    },
     "validVoteCount": 7,
     "winner": "D",
   },

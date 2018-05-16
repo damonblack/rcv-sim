@@ -1,13 +1,13 @@
+//@flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { withStyles } from 'material-ui/styles';
-import Table, {
+import { withStyles } from '@material-ui/core/styles';
+import {
+  Table,
   TableBody,
   TableHead,
   TableRow,
-  TableCell
-} from 'material-ui/Table';
-import {
+  TableCell,
   Avatar,
   Button,
   IconButton,
@@ -15,7 +15,7 @@ import {
   Tooltip,
   Paper,
   Snackbar
-} from 'material-ui';
+} from '@material-ui/core';
 import {
   Done as CheckIcon,
   PanoramaWideAngle as EmptyIcon,
@@ -47,7 +47,24 @@ const styles = {
   headerCell: { paddingLeft: '1.37vw', textAlign: 'left' }
 };
 
-class Vote extends Component {
+type Props = {
+  classes: Object,
+  match: {
+    params: {
+      key: string
+    }
+  }
+};
+type State = {
+  title: string,
+  candidates: Array<string>,
+  votes: Object,
+  lastAction: string,
+  notifierOpen: boolean,
+  candidates: Array<{ id: string, name: string }>
+};
+
+class Vote extends Component<Props, State> {
   defaultState = {
     title: '',
     candidates: [],

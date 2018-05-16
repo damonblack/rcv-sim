@@ -1,7 +1,13 @@
 //@flow
 import React, { Component } from 'react';
-import { withStyles } from 'material-ui/styles';
-import { Paper, TextField, Divider, Button, ButtonBase } from 'material-ui';
+import { withStyles } from '@material-ui/core/styles';
+import {
+  Paper,
+  TextField,
+  Divider,
+  Button,
+  ButtonBase
+} from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
 import { electionsRef, candidatesForElectionRef } from '../services';

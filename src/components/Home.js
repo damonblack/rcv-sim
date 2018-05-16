@@ -1,8 +1,7 @@
 //@flow
 import React, { Component } from 'react';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import List, { ListItem, ListItemText } from 'material-ui/List';
 import {
   Typography,
   Chip,
@@ -10,8 +9,11 @@ import {
   Button,
   ButtonBase,
   Paper,
-  Tooltip
-} from 'material-ui';
+  Tooltip,
+  List,
+  ListItem,
+  ListItemText
+} from '@material-ui/core';
 import {
   InsertChart as ChartIcon,
   Done as VoteIcon,
