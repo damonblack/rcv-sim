@@ -1,9 +1,18 @@
+//@flow
 import React from 'react';
-import { Typography } from 'material-ui';
+import { Typography } from '@material-ui/core';
 
 import MultiBar from './MultiBar';
+import type { VoteSegments } from '../../lib/voteTypes';
 
-const Candidate = props => {
+type Props = {
+  voteSegments: VoteSegments,
+  totalVotesForCandidate: number,
+  percentageOfWin: number,
+  candidate: { id: string, name: string },
+  colorMap: Object
+};
+const Candidate = (props: Props) => {
   const {
     voteSegments,
     totalVotesForCandidate,
