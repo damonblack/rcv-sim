@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -9,63 +8,45 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-const options = [
-  'None',
-  'Atria',
-  'Callisto',
-  'Dione',
-  'Ganymede',
-  'Hangouts Call',
-  'Luna',
-  'Oberon',
-  'Phobos',
-  'Pyxis',
-  'Sedna',
-  'Titania',
-  'Triton',
-  'Umbriel'
-];
 
 class ConfirmationDialog extends React.Component {
   constructor(props, context) {
     super(props, context);
-
-    this.state.value = this.props.value;
   }
 
   state = {};
 
   // TODO
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.setState({ value: nextProps.value });
-    }
-  }
-
-  radioGroup = null;
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.value !== this.props.value) {
+  //     this.setState({ value: nextProps.value });
+  //   }
+  // }
 
   handleEntering = () => {
-    this.radioGroup.focus();
+    console.log('entering!');
+    //this.radioGroup.focus();
   };
 
   handleCancel = () => {
-    this.props.onClose(this.props.value);
+    this.props.onClose('cancelled');
+    //this.props.onClose(this.props.value);
   };
 
   handleOk = () => {
-    this.props.onClose(this.state.value);
+    this.props.onClose('confirmed');
+    //this.props.onClose(this.state.value);
   };
 
-  handleChange = (event, value) => {
-    this.setState({ value });
-  };
+  // handleChange = (event, value) => {
+  //   console.log('change', event, value);
+  //   this.setState({ value });
+  // };
 
   render() {
-    const { value, ...other } = this.props;
+    const { ...other } = this.props;
+    //const { value, ...other } = this.props;
 
     return (
       <Dialog
@@ -73,29 +54,14 @@ class ConfirmationDialog extends React.Component {
         disableEscapeKeyDown
         maxWidth="xs"
         onEntering={this.handleEntering}
-        aria-labelledby="confirmation-dialog-title"
+        aria-labelledby="Confirmation-dialog-title"
         {...other}
       >
-        <DialogTitle id="confirmation-dialog-title">Phone Ringtone</DialogTitle>
+        <DialogTitle id="Confirmation-dialog-title">
+          {this.props.title}
+        </DialogTitle>
         <DialogContent>
-          <RadioGroup
-            ref={node => {
-              this.radioGroup = node;
-            }}
-            aria-label="ringtone"
-            name="ringtone"
-            value={this.state.value}
-            onChange={this.handleChange}
-          >
-            {options.map(option => (
-              <FormControlLabel
-                value={option}
-                key={option}
-                control={<Radio />}
-                label={option}
-              />
-            ))}
-          </RadioGroup>
+          <p>{this.props.text}</p>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleCancel} color="primary">
@@ -109,11 +75,6 @@ class ConfirmationDialog extends React.Component {
     );
   }
 }
-
-ConfirmationDialog.propTypes = {
-  onClose: PropTypes.func,
-  value: PropTypes.string
-};
 
 const styles = theme => ({
   root: {
@@ -129,18 +90,18 @@ const styles = theme => ({
 
 class ConfirmationDialogDemo extends React.Component {
   state = {
-    open: false,
-    value: 'Dione'
+    confirmDeleteIsOpen: false
   };
 
   button = undefined;
 
-  handleClickListItem = () => {
-    this.setState({ open: true });
+  tempOpenDialogMethod = () => {
+    this.setState({ confirmDeleteIsOpen: true });
   };
 
-  handleClose = value => {
-    this.setState({ value, open: false });
+  handleConfirmDeleteResults = results => {
+    console.log(results);
+    this.setState({ results, confirmDeleteIsOpen: false });
   };
 
   render() {
@@ -148,44 +109,27 @@ class ConfirmationDialogDemo extends React.Component {
     return (
       <div className={classes.root}>
         <List>
-          <ListItem button divider disabled>
-            <ListItemText primary="Interruptions" />
-          </ListItem>
           <ListItem
             button
             divider
             aria-haspopup="true"
-            aria-controls="ringtone-menu"
-            aria-label="Phone ringtone"
-            onClick={this.handleClickListItem}
+            onClick={this.tempOpenDialogMethod}
           >
-            <ListItemText
-              primary="Phone ringtone"
-              secondary={this.state.value}
-            />
+            <ListItemText primary="Later, this will be triggered by event instead of listitem click." />
           </ListItem>
-          <ListItem button divider disabled>
-            <ListItemText
-              primary="Default notification ringtone"
-              secondary="Tethys"
-            />
-          </ListItem>
-          <ConfirmationDialog
-            classes={{
-              paper: classes.dialog
-            }}
-            open={this.state.open}
-            onClose={this.handleClose}
-            value={this.state.value}
-          />
         </List>
+        <ConfirmationDialog
+          classes={{
+            paper: classes.dialog
+          }}
+          title="Ride With Toonces?"
+          text="You're about to drive off a cliff to your death. Continue?"
+          open={this.state.confirmDeleteIsOpen}
+          onClose={this.handleConfirmDeleteResults}
+        />
       </div>
     );
   }
 }
-
-ConfirmationDialogDemo.propTypes = {
-  classes: PropTypes.object.isRequired
-};
 
 export default withStyles(styles)(ConfirmationDialogDemo);
