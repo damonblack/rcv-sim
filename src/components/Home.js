@@ -20,6 +20,7 @@ import {
   Cancel as LogoutIcon,
   Delete as DeleteIcon
 } from '@material-ui/icons';
+import ConfirmationDialogDemo from './ConfirmationDialog';
 
 import { auth, googleAuth, myElectionsRef } from '../services';
 import ElectionForm from './ElectionForm';
@@ -209,6 +210,8 @@ class Home extends Component<Props, State> {
               </div>
             )}
         </div>
+        <p>MWCTODO: don't keep this</p>
+        <ConfirmationDialogDemo />
       </div>
     );
   }
