@@ -25,5 +25,13 @@ export const myElectionsRef = (uid: string): Object => {
     .equalTo(uid);
 };
 
+export const electionRef = (key: string): Object =>
+  database.ref(`/elections/${key}`);
+
+export const candidatesRef = (key: string): Object =>
+  database.ref(`/candidates/${key}`);
+
+export const votesRef = (key: string): Object => database.ref(`/votes/${key}`);
+
 export const candidatesForElectionRef = (electionKey: string): Object =>
   database.ref(`candidates/${electionKey}`);

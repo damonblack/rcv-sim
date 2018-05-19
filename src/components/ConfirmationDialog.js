@@ -1,5 +1,5 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+//@flow
+import React, { Component } from 'react';
 import {
   Typography,
   Dialog,
@@ -9,49 +9,52 @@ import {
   Button
 } from '@material-ui/core';
 
-class ConfirmationDialog extends React.Component {
-  // REVIEW: "open" must reference mutable state in caller. there is no sensible default. how best to handle if it's missing?
-  static defaultProps = {
-    title: 'Confirm Action',
-    text: 'To confirm your action, click Ok. To cancel, click Cancel.',
-    cancelButtonText: 'Cancel',
-    confirmButtonText: 'Ok',
-    onConfirm: cc => {},
-    onCancel: cc => {}
-  };
+type Props = {
+  open: boolean,
+  title: string,
+  text: string,
+  onCancel: () => void,
+  cancelButtonText: string,
+  onConfirm: () => void,
+  confirmButtonText: string
+};
 
-  handleCancel = () => {
-    this.props.onCancel();
-  };
+const ConfirmationDialog = (props: Props) => {
+  const {
+    open,
+    title,
+    text,
+    onCancel,
+    cancelButtonText,
+    onConfirm,
+    confirmButtonText
+  } = props;
 
-  handleConfirm = () => {
-    this.props.onConfirm();
-  };
+  return (
+    <Dialog disableBackdropClick disableEscapeKeyDown maxWidth="xs" open={open}>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <Typography>{text}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel} color="primary">
+          {cancelButtonText}
+        </Button>
+        <Button onClick={onConfirm} color="primary">
+          {confirmButtonText}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
-  render() {
-    return (
-      <Dialog
-        disableBackdropClick
-        disableEscapeKeyDown
-        maxWidth="xs"
-        open={this.props.open}
-        classes={this.props.classes}
-      >
-        <DialogTitle>{this.props.title}</DialogTitle>
-        <DialogContent>
-          <Typography>{this.props.text}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleCancel} color="primary">
-            {this.props.cancelButtonText}
-          </Button>
-          <Button onClick={this.handleConfirm} color="primary">
-            {this.props.confirmButtonText}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
-}
+ConfirmationDialog.defaultProps = {
+  title: 'Confirm Action',
+  text: 'To confirm your action, click Ok. To cancel, click Cancel.',
+  cancelButtonText: 'Cancel',
+  confirmButtonText: 'Ok',
+  onConfirm: cc => {},
+  onCancel: cc => {}
+};
 
 export default ConfirmationDialog;

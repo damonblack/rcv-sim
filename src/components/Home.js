@@ -21,9 +21,15 @@ import {
   Delete as DeleteIcon
 } from '@material-ui/icons';
 
-import { auth, googleAuth, myElectionsRef } from '../services';
+import {
+  auth,
+  googleAuth,
+  myElectionsRef,
+  votesRef,
+  candidatesRef,
+  electionRef
+} from '../services';
 import ElectionForm from './ElectionForm';
-import Vote from './Vote';
 import ConfirmationDialog from './ConfirmationDialog';
 
 const styles = theme => {
@@ -50,7 +56,7 @@ type State = {
   elections: Array<Object>,
   creating: boolean,
   confirmDeleteIsOpen: boolean,
-  confirmDeleteElectionKey: string
+  confirmDeleteElectionKey: ?string
 };
 
 class Home extends Component<Props, State> {
@@ -79,7 +85,8 @@ class Home extends Component<Props, State> {
   }
 
   handleConfirmDeleteYes = () => {
-    this.deleteMyElection(this.state.confirmDeleteElectionKey);
+    const key = this.state.confirmDeleteElectionKey;
+    key && this.deleteMyElection(key);
     this.setState({
       confirmDeleteIsOpen: false,
       confirmDeleteElectionKey: null
@@ -93,10 +100,6 @@ class Home extends Component<Props, State> {
     });
   };
 
-  // REVIEW: I'm not thrilled about setting state here and trusting it has stayed unchanged through to handleConfirmDeleteYes().
-  //  if all the pieces do what they're supposed to we'll never have an issue . . . but yes, a promise/closure would suit me better.
-  //  perhaps there's a way to do this with the MUI Dialog base, but for today I just wanted to get what I started finally working.
-  //  (for a while, I was passing in a reference to confirmDeleteElectionKey as part of the dialog properties, similar to confirmDeleteIsOpen but that seemed pointless and I removed.)
   confirmElectionDelete = electionKey => {
     this.setState({
       confirmDeleteIsOpen: true,
@@ -105,14 +108,9 @@ class Home extends Component<Props, State> {
   };
 
   deleteMyElection = electionKey => {
-    // REVIEW: do we really want to use Vote...Ref here? I would guess we want to move votesRef etc into /services/index.js as a single common reference.
-    // REVIEW: do we need error handling? we need to have a useful thing to do in case of error, and I'm not sure what that is.
-    // in firebase, transactions only operate within a node, afaik we can't txn these at all. (firestore is different)
-    Vote.votesRef(electionKey).remove();
-    Vote.candidatesRef(electionKey).remove();
-    Vote.electionRef(electionKey).remove();
-
-    // watchMyElections handles the state updates for us.
+    votesRef(electionKey).remove();
+    candidatesRef(electionKey).remove();
+    electionRef(electionKey).remove();
   };
 
   watchMyElections = uid => {
@@ -150,7 +148,7 @@ class Home extends Component<Props, State> {
   };
 
   render() {
-    const { user, elections, creating } = this.state;
+    const { user, elections, creating, confirmDeleteIsOpen } = this.state;
     const { classes } = this.props;
 
     return (
@@ -245,9 +243,9 @@ class Home extends Component<Props, State> {
         </div>
         {/* REVIEW: the demo code set classes.paper in a way I was copying incorrectly, getting errors from, was confused by, and punted on. defaults look OK . . . */}
         <ConfirmationDialog
+          open={confirmDeleteIsOpen}
           title="Delete Election Completely?"
           text="You're about to delete this election completely, including all results. This can't be undone. Continue?"
-          open={this.state.confirmDeleteIsOpen}
           onConfirm={this.handleConfirmDeleteYes}
           onCancel={this.handleConfirmDeleteNo}
         />

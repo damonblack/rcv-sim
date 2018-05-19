@@ -15,7 +15,7 @@ import {
   Close as CloseIcon
 } from '@material-ui/icons';
 
-import { database, auth } from '../../services';
+import { auth, electionRef, candidatesRef, votesRef } from '../../services';
 import type { Election } from '../../lib/voteTypes';
 import LegacyBallot from './LegacyBallot';
 
@@ -71,18 +71,6 @@ class Vote extends Component<Props, State> {
     this.state = this.defaultState;
   }
 
-  static electionRef(electionKey: string): Object {
-    return database.ref(`/elections/${electionKey}`);
-  }
-
-  static candidatesRef(electionKey: string): Object {
-    return database.ref(`/candidates/${electionKey}`);
-  }
-
-  static votesRef(electionKey: string): Object {
-    return database.ref(`/votes/${electionKey}`);
-  }
-
   static rankName(number: number) {
     if (number === 1) return 'first';
     if (number === 2) return 'second';
@@ -112,30 +100,35 @@ class Vote extends Component<Props, State> {
     )} choice${replacing}.`;
   }
 
+  updateUser = user =>
+    user ? this.setState({ user }) : this.setState(this.defaultState);
+
+  updateElection = electionKey => snapshot => {
+    const election = snapshot.val();
+    election.key = electionKey;
+    this.setState({ election: election });
+  };
+
+  updateCandidate = snapshot => {
+    const candidatesVal = snapshot.val();
+    const candidates = Object.keys(candidatesVal).map(key => ({
+      id: key,
+      name: candidatesVal[key].name
+    }));
+    this.setState({ candidates });
+  };
+
   componentDidMount() {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        this.setState({ user });
-      } else {
-        this.setState(this.defaultState);
-      }
-    });
+    auth.onAuthStateChanged(this.updateUser);
     const electionKey = this.props.match.params.key;
-    Vote.electionRef(electionKey).on('value', snapshot => {
-      const election = snapshot.val();
-      election.key = electionKey;
-      this.setState({ election: election });
-    });
+    electionRef(electionKey).on('value', this.updateElection(electionKey));
+    candidatesRef(electionKey).on('value', this.updateCandidate);
+  }
 
-    Vote.candidatesRef(electionKey).on('value', snapshot => {
-      const candidatesVal = snapshot.val();
-      const candidates = Object.keys(candidatesVal).map(key => ({
-        id: key,
-        name: candidatesVal[key].name
-      }));
-
-      this.setState({ candidates });
-    });
+  componentWillUnmount() {
+    const electionKey = this.props.match.params.key;
+    electionRef(electionKey).off('value', this.updateElection(electionKey));
+    candidatesRef(electionKey).off('value', this.updateCandidate);
   }
 
   updateVote = (candidateId: string, position: number) => {
@@ -170,7 +163,7 @@ class Vote extends Component<Props, State> {
 
   submitVote = () => {
     const electionKey = this.props.match.params.key;
-    Vote.votesRef(electionKey).push(this.state.votes);
+    votesRef(electionKey).push(this.state.votes);
     localStorage.setItem('RCV' + electionKey, JSON.stringify(this.state.votes));
     this.setState({ votes: {} });
   };
