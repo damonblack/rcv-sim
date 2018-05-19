@@ -13,16 +13,24 @@ const styles = {
 const MultiBar = props => {
   const { classes, segments, width } = props;
 
+  const segmentWidth = segment => {
+    if (width === 0) return 0;
+    return segment[1] / 100 * width;
+  };
+
   const getSegmentStyle = segment => {
-    return {
-      width: `${segment[1]}%`,
+    const segWidth = segmentWidth(segment);
+    const style = {
+      width: `${segWidth}%`,
       height: '5vh',
-      backgroundColor: segment[0]
+      backgroundColor: segment[0],
+      transition: 'width 3s ease-in-out'
     };
+    return style;
   };
 
   return (
-    <div style={{ width }} className={classes.multiBar}>
+    <div className={classes.multiBar}>
       <Paper
         key={-1}
         elevation={0}

@@ -15,15 +15,17 @@ import { getResults } from '../lib/voteCounter';
 import Candidate from './chart/Candidate';
 import type { Results } from '../lib/voteTypes';
 
-const styles = {
-  wrapper: {
-    display: 'flex',
-    alignItems: 'top',
-    justifyContent: 'center',
-    height: '80vh'
-  },
-  splitWrapper: { display: 'flex', justifyContent: 'space-between' },
-  results: { width: '100%' }
+const styles = theme => {
+  return {
+    wrapper: {
+      display: 'flex',
+      alignItems: 'top',
+      justifyContent: 'center',
+      height: '80vh'
+    },
+    splitWrapper: { display: 'flex', justifyContent: 'space-between' },
+    results: { width: '100%' }
+  };
 };
 
 type Props = {
@@ -68,20 +70,12 @@ class Monitor extends Component<Props, State> {
       this.setState({ election });
     });
     database.ref(`candidates/${key}`).once('value', snapshot => {
-      const candidatesObj = snapshot.val();
-      const candidateIds = Object.keys(snapshot.val());
+      const candidatesData = snapshot.val();
+      const candidateIds = Object.keys(candidatesData);
       const candidatesArray = candidateIds.map((key, index) => ({
         id: key,
-        name: candidatesObj[key].name
+        name: candidatesData[key].name
       }));
-
-      database.ref(`votes/${key}`).on('value', snapshot => {
-        if (snapshot.val()) {
-          const votes = Object.values(snapshot.val());
-          const results = getResults(votes, candidatesArray.map(c => c.id));
-          this.setState({ votes, results });
-        }
-      });
 
       const colorMap = {};
 
@@ -93,13 +87,22 @@ class Monitor extends Component<Props, State> {
         candidates: candidatesArray,
         colorMap
       });
+
+      //Re-runs the election on every vote. Throttle this ?
+      database.ref(`votes/${key}`).on('value', snapshot => {
+        if (snapshot.val()) {
+          const votes = Object.values(snapshot.val());
+          const results = getResults(votes, candidatesArray.map(c => c.id));
+          this.setState({ votes, results });
+        }
+      });
     });
   }
 
   render() {
     const { election, votes, candidates, colorMap, results } = this.state;
 
-    if (!(election && candidates && votes && results))
+    if (!(election && candidates && votes && results && colorMap))
       return <Typography>Loading...</Typography>;
 
     const firstTotals = results[0].totals;
@@ -165,7 +168,7 @@ class Monitor extends Component<Props, State> {
                   totalVotesForCandidate={total}
                   percentageOfWin={total / votesToWin * 100}
                   candidate={candidate}
-                  colorMap={colorMap}
+                  colorMap={colorMap || {}}
                 />
               );
             })}
