@@ -30,7 +30,20 @@ it('should run only round 0 and return results', () => {
   expect(results).toMatchSnapshot('early win');
 });
 
-it('should multiple rounds with the winner on the last only', () => {
+it('should run multiple rounds with the winner on the last only', () => {
+  const results = getResults(balanced, candidates);
+  const firstRound = results[0];
+  const secondRound = results[1];
+  const lastRound = results[results.length - 1];
+
+  expect(results.length).toEqual(3);
+  expect(firstRound.winner).toBeUndefined();
+  expect(secondRound.winner).toBeUndefined();
+  expect(lastRound.winner).toEqual('D');
+  expect(results).toMatchSnapshot('balanced win');
+});
+
+it('should provide full segment lists for each candidate', () => {
   const results = getResults(balanced, candidates);
   const firstRound = results[0];
   const secondRound = results[1];

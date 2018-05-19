@@ -8,8 +8,7 @@ export const getResults = (
   const losers: Array<CandidateId> = [];
   const results: Results = [];
   do {
-    const remainingCandidates = candidates.filter(c => !losers.includes(c));
-    const round = countRound(remainingCandidates, votes, losers);
+    const round = countRound(candidates, votes, losers);
     const loser = round.loser;
     results.push(round);
     if (loser) losers.push(loser);
@@ -18,13 +17,19 @@ export const getResults = (
   return results;
 };
 
+const remainingCandidates = (
+  candidates: Array<CandidateId>,
+  losers: Array<CandidateId>
+) => candidates.filter(c => !losers.includes(c));
+
 const countRound = (
   candidates: Array<CandidateId>,
   votes: Array<Vote>,
   losers: Array<CandidateId>
 ): Round => {
+  const remainder = remainingCandidates(candidates, losers);
   const round = votes.reduce((round: Round, vote: Vote) => {
-    const candidate = resolveVote(vote, candidates);
+    const candidate = resolveVote(vote, remainder);
     if (candidate) {
       const favorite = vote[1];
       const previousCount = round.segments[candidate].get(favorite) || 0;
@@ -36,7 +41,7 @@ const countRound = (
     return round;
   }, emptyRound(candidates, losers));
   round.winner = winner(round, candidates);
-  round.loser = loser(round.totals, candidates);
+  round.loser = loser(round.totals, remainder);
   return round;
 };
 
@@ -52,9 +57,15 @@ const emptyRound = (
     winner: null
   };
   const loserVotes = losers.map(loser => [loser, 0]);
+  const remaining = remainingCandidates(candidates, losers).map(c => [c, 0]);
   candidates.forEach(c => {
     round.totals[c] = 0;
-    round.segments[c] = new Map([[c, 0], ...loserVotes]);
+    const newSegmentMap = new Map([
+      [c, 0],
+      ...loserVotes,
+      ...remaining.filter(s => s[0] !== c)
+    ]);
+    round.segments[c] = newSegmentMap; //new Map([[c, 0], ...competitorVotes, ...loserVotes]);
   });
   return round;
 };

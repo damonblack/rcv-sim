@@ -90,6 +90,134 @@ Array [
 ]
 `;
 
+exports[`balanced win 2`] = `
+Array [
+  Object {
+    "loser": "A",
+    "segments": Object {
+      "A": Map {
+        "A" => 1,
+        "B" => 0,
+        "C" => 0,
+        "D" => 0,
+      },
+      "B": Map {
+        "B" => 1,
+        "C" => 0,
+        "D" => 0,
+      },
+      "C": Map {
+        "C" => 1,
+        "B" => 0,
+        "D" => 0,
+      },
+      "D": Map {
+        "D" => 2,
+        "B" => 0,
+        "C" => 0,
+      },
+      "E": Map {
+        "E" => 2,
+        "B" => 0,
+        "C" => 0,
+        "D" => 0,
+      },
+    },
+    "totals": Object {
+      "A": 1,
+      "B": 1,
+      "C": 1,
+      "D": 2,
+      "E": 2,
+    },
+    "validVoteCount": 7,
+    "winner": undefined,
+  },
+  Object {
+    "loser": "B",
+    "segments": Object {
+      "A": Map {
+        "A" => 0,
+        "C" => 0,
+        "D" => 0,
+      },
+      "B": Map {
+        "B" => 1,
+        "C" => 0,
+        "D" => 0,
+        "A" => 0,
+      },
+      "C": Map {
+        "C" => 1,
+        "D" => 0,
+        "A" => 0,
+      },
+      "D": Map {
+        "D" => 2,
+        "C" => 0,
+        "A" => 1,
+      },
+      "E": Map {
+        "E" => 2,
+        "C" => 0,
+        "D" => 0,
+        "A" => 0,
+      },
+    },
+    "totals": Object {
+      "A": 0,
+      "B": 1,
+      "C": 1,
+      "D": 3,
+      "E": 2,
+    },
+    "validVoteCount": 7,
+    "winner": undefined,
+  },
+  Object {
+    "loser": "C",
+    "segments": Object {
+      "A": Map {
+        "A" => 0,
+        "D" => 0,
+        "B" => 0,
+      },
+      "B": Map {
+        "B" => 0,
+        "D" => 0,
+        "A" => 0,
+      },
+      "C": Map {
+        "C" => 1,
+        "D" => 0,
+        "A" => 0,
+        "B" => 0,
+      },
+      "D": Map {
+        "D" => 2,
+        "A" => 1,
+        "B" => 1,
+      },
+      "E": Map {
+        "E" => 2,
+        "D" => 0,
+        "A" => 0,
+        "B" => 0,
+      },
+    },
+    "totals": Object {
+      "A": 0,
+      "B": 0,
+      "C": 1,
+      "D": 4,
+      "E": 2,
+    },
+    "validVoteCount": 7,
+    "winner": "D",
+  },
+]
+`;
+
 exports[`early win 1`] = `
 Array [
   Object {

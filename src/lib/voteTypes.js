@@ -18,3 +18,9 @@ export type Round = {
 };
 
 export type Results = Array<Round>;
+
+export type Election = {
+  key: string,
+  title: string,
+  owner: string
+};

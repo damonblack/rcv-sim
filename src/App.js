@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './components/Home';
-import Vote from './components/Vote';
+import Vote from './components/vote/Vote';
 import Monitor from './components/Monitor';
 import './App.css';
 
