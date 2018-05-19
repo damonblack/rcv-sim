@@ -34,7 +34,6 @@ class ExConfirmationDialog extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    console.log(props);
     this.state.value = this.props.value;
   }
 

@@ -8,67 +8,46 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Typography from '@material-ui/core/Typography';
 
 class ConfirmationDialog extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-
-  state = {};
-
-  // TODO
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.value !== this.props.value) {
-  //     this.setState({ value: nextProps.value });
-  //   }
-  // }
-
-  handleEntering = () => {
-    console.log('entering!');
-    //this.radioGroup.focus();
+  // "open" and probably "openContext" must reference mutable state in caller. there are no sensible defaults. how best to handle if they're missing?
+  static defaultProps = {
+    title: 'Confirm Action',
+    text: 'To confirm your action, click Ok. To cancel, click Cancel.',
+    cancelButtonText: 'Cancel',
+    confirmButtonText: 'Ok',
+    onConfirm: cc => {},
+    onCancel: cc => {}
   };
 
   handleCancel = () => {
-    this.props.onClose('cancelled');
-    //this.props.onClose(this.props.value);
+    this.props.onCancel(this.props.openContext);
   };
 
-  handleOk = () => {
-    this.props.onClose('confirmed');
-    //this.props.onClose(this.state.value);
+  handleConfirm = () => {
+    this.props.onConfirm(this.props.openContext);
   };
-
-  // handleChange = (event, value) => {
-  //   console.log('change', event, value);
-  //   this.setState({ value });
-  // };
 
   render() {
-    const { ...other } = this.props;
-    //const { value, ...other } = this.props;
-
     return (
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
         maxWidth="xs"
-        onEntering={this.handleEntering}
-        aria-labelledby="Confirmation-dialog-title"
-        {...other}
+        open={this.props.open}
+        classes={this.props.classes}
       >
-        <DialogTitle id="Confirmation-dialog-title">
-          {this.props.title}
-        </DialogTitle>
+        <DialogTitle>{this.props.title}</DialogTitle>
         <DialogContent>
-          <p>{this.props.text}</p>
+          <Typography>{this.props.text}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleCancel} color="primary">
-            Cancel
+            {this.props.cancelButtonText}
           </Button>
-          <Button onClick={this.handleOk} color="primary">
-            Ok
+          <Button onClick={this.handleConfirm} color="primary">
+            {this.props.confirmButtonText}
           </Button>
         </DialogActions>
       </Dialog>
@@ -88,20 +67,32 @@ const styles = theme => ({
   }
 });
 
+//export default withStyles(styles)(ConfirmationDialog);
+
 class ConfirmationDialogDemo extends React.Component {
   state = {
-    confirmDeleteIsOpen: false
+    confirmDeleteIsOpen: false,
+    confirmDeleteContext: 0
   };
 
   button = undefined;
 
   tempOpenDialogMethod = () => {
-    this.setState({ confirmDeleteIsOpen: true });
+    const newContext = this.state.confirmDeleteContext + 1;
+    this.setState({
+      confirmDeleteIsOpen: true,
+      confirmDeleteContext: newContext
+    });
   };
 
-  handleConfirmDeleteResults = results => {
-    console.log(results);
-    this.setState({ results, confirmDeleteIsOpen: false });
+  handleConfirmDeleteYes = results => {
+    console.log('yes', results);
+    this.setState({ confirmDeleteIsOpen: false });
+  };
+
+  handleConfirmDeleteNo = results => {
+    console.log('no', results);
+    this.setState({ confirmDeleteIsOpen: false });
   };
 
   render() {
@@ -125,7 +116,9 @@ class ConfirmationDialogDemo extends React.Component {
           title="Ride With Toonces?"
           text="You're about to drive off a cliff to your death. Continue?"
           open={this.state.confirmDeleteIsOpen}
-          onClose={this.handleConfirmDeleteResults}
+          openContext={this.state.confirmDeleteContext}
+          onConfirm={this.handleConfirmDeleteYes}
+          onCancel={this.handleConfirmDeleteNo}
         />
       </div>
     );
