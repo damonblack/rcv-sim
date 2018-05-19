@@ -17,11 +17,14 @@ import {
 import {
   InsertChart as ChartIcon,
   Done as VoteIcon,
-  Cancel as LogoutIcon
+  Cancel as LogoutIcon,
+  Delete as DeleteIcon
 } from '@material-ui/icons';
 
 import { auth, googleAuth, myElectionsRef } from '../services';
 import ElectionForm from './ElectionForm';
+import Vote from './Vote';
+import ConfirmationDialog from './ConfirmationDialog';
 
 const styles = theme => {
   return {
@@ -33,7 +36,8 @@ const styles = theme => {
     },
     results: { minWidth: '60vw' },
     splitWrapper: { display: 'flex', justifyContent: 'space-between' },
-    chartIcon: { fontSize: '2.5em' }
+    chartIcon: { fontSize: '2.5em' },
+    deleteIcon: { paddingLeft: '1em', paddingRight: '1em' }
   };
 };
 
@@ -44,14 +48,18 @@ type Props = {
 type State = {
   user: ?{ uid: string, displayName: string, photoURL: string, email: string },
   elections: Array<Object>,
-  creating: boolean
+  creating: boolean,
+  confirmDeleteIsOpen: boolean,
+  confirmDeleteElectionKey: string
 };
 
 class Home extends Component<Props, State> {
   defaultState = {
     user: null,
     elections: [],
-    creating: false
+    creating: false,
+    confirmDeleteIsOpen: false,
+    confirmDeleteElectionKey: null
   };
 
   constructor() {
@@ -69,6 +77,43 @@ class Home extends Component<Props, State> {
       }
     });
   }
+
+  handleConfirmDeleteYes = () => {
+    this.deleteMyElection(this.state.confirmDeleteElectionKey);
+    this.setState({
+      confirmDeleteIsOpen: false,
+      confirmDeleteElectionKey: null
+    });
+  };
+
+  handleConfirmDeleteNo = () => {
+    this.setState({
+      confirmDeleteIsOpen: false,
+      confirmDeleteElectionKey: null
+    });
+  };
+
+  // REVIEW: I'm not thrilled about setting state here and trusting it has stayed unchanged through to handleConfirmDeleteYes().
+  //  if all the pieces do what they're supposed to we'll never have an issue . . . but yes, a promise/closure would suit me better.
+  //  perhaps there's a way to do this with the MUI Dialog base, but for today I just wanted to get what I started finally working.
+  //  (for a while, I was passing in a reference to confirmDeleteElectionKey as part of the dialog properties, similar to confirmDeleteIsOpen but that seemed pointless and I removed.)
+  confirmElectionDelete = electionKey => {
+    this.setState({
+      confirmDeleteIsOpen: true,
+      confirmDeleteElectionKey: electionKey
+    });
+  };
+
+  deleteMyElection = electionKey => {
+    // REVIEW: do we really want to use Vote...Ref here? I would guess we want to move votesRef etc into /services/index.js as a single common reference.
+    // REVIEW: do we need error handling? we need to have a useful thing to do in case of error, and I'm not sure what that is.
+    // in firebase, transactions only operate within a node, afaik we can't txn these at all. (firestore is different)
+    Vote.votesRef(electionKey).remove();
+    Vote.candidatesRef(electionKey).remove();
+    Vote.electionRef(electionKey).remove();
+
+    // watchMyElections handles the state updates for us.
+  };
 
   watchMyElections = uid => {
     myElectionsRef(uid).on('value', snapshot => {
@@ -99,7 +144,7 @@ class Home extends Component<Props, State> {
       await auth.signOut();
       this.setState(this.defaultState);
     } catch (e) {
-      console.log('LOGIN FAILED: ', e);
+      console.log('LOGOUT FAILED: ', e);
       alert('logout failed');
     }
   };
@@ -181,6 +226,16 @@ class Home extends Component<Props, State> {
                             <VoteIcon color="action" />
                           </Avatar>
                         </Tooltip>
+                        <Tooltip title="Delete Election Completely">
+                          <ButtonBase
+                            // onClick={() => this.deleteMyElection(election.id)}
+                            onClick={() =>
+                              this.confirmElectionDelete(election.id)
+                            }
+                          >
+                            <DeleteIcon className={classes.deleteIcon} />
+                          </ButtonBase>
+                        </Tooltip>
                       </ListItem>
                     ))}
                   </List>
@@ -188,6 +243,14 @@ class Home extends Component<Props, State> {
               </div>
             )}
         </div>
+        {/* REVIEW: the demo code set classes.paper in a way I was copying incorrectly, getting errors from, was confused by, and punted on. defaults look OK . . . */}
+        <ConfirmationDialog
+          title="Delete Election Completely?"
+          text="You're about to delete this election completely, including all results. This can't be undone. Continue?"
+          open={this.state.confirmDeleteIsOpen}
+          onConfirm={this.handleConfirmDeleteYes}
+          onCancel={this.handleConfirmDeleteNo}
+        />
       </div>
     );
   }

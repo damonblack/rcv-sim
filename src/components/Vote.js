@@ -123,12 +123,17 @@ class Vote extends Component<Props, State> {
 
     Vote.candidatesRef(electionKey).on('value', snapshot => {
       const candidatesVal = snapshot.val();
-      const candidates = Object.keys(candidatesVal).map(key => ({
-        id: key,
-        name: candidatesVal[key].name
-      }));
 
-      this.setState({ candidates });
+      //REVIEW: this is now wrapped in an if because it was blowing up after executing deletes (candidatesVal being null)
+      // I'd have thought the Vote component wasn't even loaded when we are routed to Home, but apparently my intuition was poor there.
+      if (candidatesVal) {
+        const candidates = Object.keys(candidatesVal).map(key => ({
+          id: key,
+          name: candidatesVal[key].name
+        }));
+
+        this.setState({ candidates });
+      }
     });
   }
 
