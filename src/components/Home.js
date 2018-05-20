@@ -226,7 +226,6 @@ class Home extends Component<Props, State> {
                         </Tooltip>
                         <Tooltip title="Delete Election Completely">
                           <ButtonBase
-                            // onClick={() => this.deleteMyElection(election.id)}
                             onClick={() =>
                               this.confirmElectionDelete(election.id)
                             }
@@ -241,7 +240,6 @@ class Home extends Component<Props, State> {
               </div>
             )}
         </div>
-        {/* REVIEW: the demo code set classes.paper in a way I was copying incorrectly, getting errors from, was confused by, and punted on. defaults look OK . . . */}
         <ConfirmationDialog
           open={confirmDeleteIsOpen}
           title="Delete Election Completely?"
