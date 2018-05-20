@@ -36,7 +36,7 @@ const Candidate = (props: Props) => {
       const percent = value / totalVotesForCandidate * 100;
       segments.push([colorMap[key], percent]);
     });
-    width = percentageOfWin;
+    width = percentageOfWin / 2;
   } else {
     width = 1;
   }
