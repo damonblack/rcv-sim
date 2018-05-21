@@ -1,5 +1,5 @@
 //@flow
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Typography,
   Dialog,
@@ -53,8 +53,8 @@ ConfirmationDialog.defaultProps = {
   text: 'To confirm your action, click Ok. To cancel, click Cancel.',
   cancelButtonText: 'Cancel',
   confirmButtonText: 'Ok',
-  onConfirm: cc => {},
-  onCancel: cc => {}
+  onConfirm: () => {},
+  onCancel: () => {}
 };
 
 export default ConfirmationDialog;
