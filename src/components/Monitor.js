@@ -68,7 +68,6 @@ type Props = {
 type State = {
   election?: Object,
   candidates?: Array<Object>,
-  colorMap?: Object,
   votes?: Array<any>,
   results?: Results
 };
@@ -104,15 +103,8 @@ class Monitor extends Component<Props, State> {
         name: candidatesData[key].name
       }));
 
-      const colorMap = {};
-
-      candidateIds.forEach(
-        (key, i) => (colorMap[key] = this.candidateColors[i])
-      );
-
       this.setState({
-        candidates: candidatesArray,
-        colorMap
+        candidates: candidatesArray
       });
 
       //Re-runs the election on every vote. Throttle this ?
@@ -127,9 +119,9 @@ class Monitor extends Component<Props, State> {
   }
 
   render() {
-    const { election, votes, candidates, colorMap, results } = this.state;
+    const { election, votes, candidates, results } = this.state;
 
-    if (!(election && candidates && votes && results && colorMap))
+    if (!(election && candidates && votes && results))
       return <Typography>Loading...</Typography>;
 
     const firstTotals = results.rounds[0].totals;
@@ -155,6 +147,11 @@ class Monitor extends Component<Props, State> {
     const scalar = 10 * totalVotes / winningCount;
     // prettier-ignore
     const graphRulesGradient = `repeating-linear-gradient(to right, #BBB, #BBB 1px, transparent 1px, transparent ${scalar}%)`;
+    const colorMap = {};
+
+    sortedCandidates.forEach(
+      (candidate, i) => (colorMap[candidate.id] = this.candidateColors[i])
+    );
 
     return (
       <div className={classes.wrapper}>
@@ -205,9 +202,13 @@ class Monitor extends Component<Props, State> {
                     noWrap
                     variant="caption"
                     style={{ marginRight: '0.3vw' }}
-                  >{`${Math.round(
-                    thisRound.totals[candidate.id] / totalVotes * 100
-                  )}% (${thisRound.totals[candidate.id]} votes)`}</Typography>
+                  >
+                    {thisRound.totals[candidate.id] === 0
+                      ? 'Eliminated'
+                      : `${Math.round(
+                          thisRound.totals[candidate.id] / totalVotes * 100
+                        )}% (${thisRound.totals[candidate.id]} votes)`}
+                  </Typography>
                 </div>
               ))}
             </Paper>
@@ -253,7 +254,9 @@ class Monitor extends Component<Props, State> {
               </Paper>
             </div>
           </div>
-          <Typography>Dropped Votes: {lostVotes}</Typography>
+          <Typography>Inactive Ballots</Typography>
+          <Typography variant="caption">(no candidate choices left)</Typography>
+          <Typography>{lostVotes} votes</Typography>
         </div>
         <Tooltip title="Next Round">
           <Button
