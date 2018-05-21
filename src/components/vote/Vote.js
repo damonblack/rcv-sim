@@ -29,8 +29,7 @@ const styles = {
     justifyContent: 'center',
     width: '10vw',
     maxWidth: '80px'
-  },
-  chartIcon: { transform: 'rotate(90deg)' }
+  }
 };
 
 type Props = {

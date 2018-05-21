@@ -39,9 +39,19 @@ const styles = theme => {
     results: { width: '100%' },
     chartHeader: {
       background: 'transparent',
-      height: '2em'
+      height: '5vh'
     },
-    chartLabel: { transform: 'translate(-50%, 0)' }
+    chartLabel: { transform: 'translate(-50%, 0)' },
+    chart: {
+      display: 'flex'
+    },
+    bars: {
+      width: '100%'
+    },
+    candidateName: {
+      textAlign: 'right',
+      height: '8vh'
+    }
   };
 };
 
@@ -139,6 +149,7 @@ class Monitor extends Component<Props, State> {
     const nextRound = roundInt + 1;
     const lastRound = roundInt < 2 ? 1 : roundInt - 1;
     const finalRound = results.rounds.slice(-1)[0];
+    const lostVotes = votes.length - totalVotes;
     // prettier-ignore
     const winningCount = finalRound.winner ? finalRound.totals[finalRound.winner] : 0;
     const scalar = 10 * totalVotes / winningCount;
@@ -173,42 +184,76 @@ class Monitor extends Component<Props, State> {
               </Avatar>
             </Tooltip>
           </div>
-          <Paper className={classes.chartHeader}>
-            <Chip
-              className={classes.chartLabel}
-              label="50%"
-              style={{ marginLeft: `${5 * scalar}%` }}
-            />
-          </Paper>
-          <Paper
-            style={{
-              // prettier-ignore
-              backgroundImage: graphRulesGradient + ', ' + checkeredGradient,
-              backgroundPosition: `left, ${5 * scalar + 0.5}% 0, ${5 * scalar +
-                1}%, ${5 * scalar + 1.5}%`,
-              backgroundRepeat: 'no-repeat, no-repeat, no-repeat, no-repeat',
-              backgroundSize: 'contain, 0.5% 100%, 0.5% 100%, 0.5% 100%'
-            }}
-            elevation={8}
-          >
-            {sortedCandidates.map(candidate => {
-              const segments = thisRound.segments[candidate.id];
-              const total = thisRound.totals[candidate.id];
-              return (
-                <Candidate
-                  key={candidate.id}
-                  winningCount={winningCount}
-                  voteSegments={segments}
-                  totalVotesForCandidate={total}
-                  percentageOfWin={total / votesToWin * 100}
-                  candidate={candidate}
-                  colorMap={colorMap || {}}
-                  winner={candidate.id === results.winner}
-                  loser={thisRound.previousLosers.includes(candidate.id)}
+          <div className={classes.chart}>
+            <Paper className={classes.candidateList}>
+              <Typography
+                variant="caption"
+                style={{ height: '5vh', background: 'transparent' }}
+              />
+              {sortedCandidates.map(candidate => (
+                <div className={classes.candidateName}>
+                  <Typography
+                    noWrap
+                    variant="subheading"
+                    style={{
+                      padding: '2vh 0.7vw 0 0.7vw'
+                    }}
+                  >
+                    {candidate.name}
+                  </Typography>
+                  <Typography
+                    noWrap
+                    variant="caption"
+                    style={{ marginRight: '0.3vw' }}
+                  >{`${Math.round(
+                    thisRound.totals[candidate.id] / totalVotes * 100
+                  )}% (${thisRound.totals[candidate.id]} votes)`}</Typography>
+                </div>
+              ))}
+            </Paper>
+            <div className={classes.bars}>
+              <Paper className={classes.chartHeader}>
+                <Chip
+                  className={classes.chartLabel}
+                  label="50%"
+                  style={{ marginLeft: `${5 * scalar}%` }}
                 />
-              );
-            })}
-          </Paper>
+              </Paper>
+              <Paper
+                style={{
+                  width: '100%',
+                  // prettier-ignore
+                  backgroundImage: graphRulesGradient + ', ' + checkeredGradient,
+                  // prettier-ignore
+                  backgroundPosition: `left, ${5 * scalar + 0.5}% 0, ${5 * scalar + 1}%, ${5 * scalar + 1.5}%`,
+                  // prettier-ignore
+                  backgroundRepeat: 'no-repeat, no-repeat, no-repeat, no-repeat',
+                  backgroundSize: 'contain, 0.5% 100%, 0.5% 100%, 0.5% 100%',
+                  paddingBottom: '3vh'
+                }}
+                elevation={8}
+              >
+                {sortedCandidates.map(candidate => {
+                  const segments = thisRound.segments[candidate.id];
+                  const total = thisRound.totals[candidate.id];
+                  return (
+                    <Candidate
+                      key={candidate.id}
+                      winningCount={winningCount}
+                      voteSegments={segments}
+                      totalVotesForCandidate={total}
+                      percentageOfWin={total / votesToWin * 100}
+                      candidate={candidate}
+                      colorMap={colorMap || {}}
+                      winner={candidate.id === results.winner}
+                      loser={thisRound.previousLosers.includes(candidate.id)}
+                    />
+                  );
+                })}
+              </Paper>
+            </div>
+          </div>
+          <Typography>Dropped Votes: {lostVotes}</Typography>
         </div>
         <Tooltip title="Next Round">
           <Button

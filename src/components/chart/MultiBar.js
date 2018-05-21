@@ -18,6 +18,7 @@ const MultiBar = props => {
     const style = {
       width: `${segment[1]}%`,
       height: '5vh',
+      marginTop: '3vh',
       backgroundColor: segment[0],
       transition: 'width 3s ease-in-out'
     };

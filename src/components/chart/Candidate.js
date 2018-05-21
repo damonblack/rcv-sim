@@ -31,8 +31,7 @@ const Candidate = (props: Props) => {
     totalVotesForCandidate,
     percentageOfWin,
     candidate: { id, name },
-    colorMap,
-    loser
+    colorMap
   } = props;
 
   const segments = [];
@@ -50,9 +49,6 @@ const Candidate = (props: Props) => {
 
   return (
     <div className={classes.barWrapper} key={id}>
-      <Typography className={loser ? classes.loser : ''} variant="subheading">
-        {name} : {totalVotesForCandidate}
-      </Typography>
       <MultiBar width={width} segments={segments} />
     </div>
   );
