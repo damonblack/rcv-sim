@@ -154,10 +154,13 @@ class Monitor extends Component<Props, State> {
           </div>
           <Paper
             style={{
-              background: `repeating-linear-gradient(to right, #ddd, #ddd 1px, #fff 1px, #fff 20%)`
+              background: `repeating-linear-gradient(to right, #ddd, #ddd 1px, #fff 1px, #fff 25%)`
             }}
             elevation={8}
           >
+            <div style={{ margin: `auto`, width: `10%`, textAlign: `center` }}>
+              50%
+            </div>
             {sortedCandidates.map(candidate => {
               const segments = thisRound.segments[candidate.id];
               const total = thisRound.totals[candidate.id];
