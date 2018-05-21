@@ -7,33 +7,40 @@ import MultiBar from './MultiBar';
 import type { VoteSegments } from '../../lib/voteTypes';
 
 const styles = {
-  loser: { textDecoration: 'line-through' }
+  loser: { textDecoration: 'line-through' },
+  barWrapper: { transition: 'width 2s ease-in-out' }
 };
 
 type Props = {
   classes: Object,
+  winningCount: number,
   voteSegments: VoteSegments,
   totalVotesForCandidate: number,
   percentageOfWin: number,
   candidate: { id: string, name: string },
-  colorMap: Object
+  colorMap: Object,
+  winner?: boolean,
+  loser?: boolean
 };
 
 const Candidate = (props: Props) => {
   const {
     classes,
+    winningCount,
     voteSegments,
     totalVotesForCandidate,
     percentageOfWin,
     candidate: { id, name },
-    colorMap
+    colorMap,
+    loser
   } = props;
 
   const segments = [];
   let width;
   if (voteSegments) {
     voteSegments.forEach((value, key) => {
-      const percent = value / totalVotesForCandidate * 100;
+      const percent =
+        totalVotesForCandidate > 0 ? value / winningCount * 100 : 0;
       segments.push([colorMap[key], percent]);
     });
     width = percentageOfWin;
@@ -42,11 +49,8 @@ const Candidate = (props: Props) => {
   }
 
   return (
-    <div key={id}>
-      <Typography
-        className={totalVotesForCandidate === 0 ? classes.loser : ''}
-        variant="subheading"
-      >
+    <div className={classes.barWrapper} key={id}>
+      <Typography className={loser ? classes.loser : ''} variant="subheading">
         {name} : {totalVotesForCandidate}
       </Typography>
       <MultiBar width={width} segments={segments} />

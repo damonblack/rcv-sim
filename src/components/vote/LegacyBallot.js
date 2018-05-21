@@ -22,7 +22,8 @@ const styles = {
   },
   cell: { padding: '0', textAlign: 'left' },
   nameCell: { paddingLeft: '1vw' },
-  headerCell: { paddingLeft: '1.37vw', textAlign: 'left' }
+  headerCell: { paddingLeft: '1.37vw', textAlign: 'left' },
+  actionRow: { display: 'flex', justifyContent: 'center', margin: '2em' }
 };
 
 type Props = {
@@ -38,6 +39,11 @@ const LegacyBallot = (props: Props) => {
 
   return (
     <div className={classes.voting}>
+      <div className={classes.actionRow}>
+        <Button variant="raised" color="secondary" onClick={submitVote}>
+          Submit Vote
+        </Button>
+      </div>
       <Paper>
         <Table>
           <TableHead>
@@ -72,9 +78,6 @@ const LegacyBallot = (props: Props) => {
           </TableBody>
         </Table>
       </Paper>
-      <Button variant="raised" color="secondary" onClick={submitVote}>
-        Submit Vote
-      </Button>
     </div>
   );
 };

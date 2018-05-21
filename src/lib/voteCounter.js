@@ -6,13 +6,16 @@ export const getResults = (
   candidates: Array<CandidateId>
 ): Results => {
   const losers: Array<CandidateId> = [];
-  const results: Results = [];
+  const results: Results = { rounds: [], winner: '' };
   do {
     const round = countRound(candidates, votes, losers);
     const loser = round.loser;
-    results.push(round);
+    round.previousLosers = losers.slice();
+    results.rounds.push(round);
     if (loser) losers.push(loser);
-  } while (!results.slice(-1)[0].winner);
+  } while (!results.rounds.slice(-1)[0].winner);
+
+  results.winner = results.rounds.slice(-1)[0].winner;
 
   return results;
 };
@@ -42,6 +45,7 @@ const countRound = (
   }, emptyRound(candidates, losers));
   round.winner = winner(round, candidates);
   round.loser = loser(round.totals, remainder);
+  round.previousLosers = losers;
   return round;
 };
 
@@ -54,7 +58,8 @@ const emptyRound = (
     totals: {},
     validVoteCount: 0,
     loser: null,
-    winner: null
+    winner: null,
+    previousLosers: []
   };
   const loserVotes = losers.map(loser => [loser, 0]);
   const remaining = remainingCandidates(candidates, losers).map(c => [c, 0]);

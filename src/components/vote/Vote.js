@@ -22,8 +22,6 @@ import LegacyBallot from './LegacyBallot';
 const styles = {
   wrapper: {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     height: '80vh'
   },
   navButton: {
