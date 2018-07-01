@@ -102,10 +102,11 @@ const loser = (totals: Totals, candidates: Array<CandidateId>): CandidateId => {
   let min: number;
   candidates.forEach((candidate: CandidateId) => {
     const count = totals[candidate];
-    if (!min || count < min) {
+    if (min === undefined || count < min) {
       loser = candidate;
       min = count;
     }
   });
+  console.log('loser is ', loser);
   return loser;
 };
