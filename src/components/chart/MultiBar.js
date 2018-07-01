@@ -6,23 +6,19 @@ import { Paper } from '@material-ui/core';
 const styles = {
   multiBar: {
     display: 'flex',
+    width: '100%',
     justifyContent: 'left'
   }
 };
 
 const MultiBar = props => {
-  const { classes, segments, width } = props;
-
-  const segmentWidth = segment => {
-    if (width === 0) return 0;
-    return segment[1] / 100 * width;
-  };
+  const { classes, segments } = props;
 
   const getSegmentStyle = segment => {
-    const segWidth = segmentWidth(segment);
     const style = {
-      width: `${segWidth}%`,
+      width: `${segment[1]}%`,
       height: '5vh',
+      marginTop: '3vh',
       backgroundColor: segment[0],
       transition: 'width 3s ease-in-out'
     };

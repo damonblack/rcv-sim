@@ -43,7 +43,7 @@ const styles = theme => {
     results: { minWidth: '60vw' },
     splitWrapper: { display: 'flex', justifyContent: 'space-between' },
     deleteIcon: { paddingLeft: '1em', paddingRight: '1em' },
-    chartIcon: { fontSize: '2.5em', transform: 'rotate(90deg)' }
+    chartIcon: { fontSize: '2.5em' }
   };
 };
 

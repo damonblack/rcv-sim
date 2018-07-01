@@ -22,8 +22,6 @@ import LegacyBallot from './LegacyBallot';
 const styles = {
   wrapper: {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     height: '80vh'
   },
   navButton: {
@@ -31,8 +29,7 @@ const styles = {
     justifyContent: 'center',
     width: '10vw',
     maxWidth: '80px'
-  },
-  chartIcon: { transform: 'rotate(90deg)' }
+  }
 };
 
 type Props = {

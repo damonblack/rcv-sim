@@ -14,10 +14,14 @@ export type Round = {
   totals: Totals,
   validVoteCount: number,
   winner: ?CandidateId,
-  loser: ?CandidateId
+  loser: ?CandidateId,
+  previousLosers: Array<CandidateId>
 };
 
-export type Results = Array<Round>;
+export type Results = {
+  rounds: Array<Round>,
+  winner: ?CandidateId
+};
 
 export type Election = {
   key: string,
