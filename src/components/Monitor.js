@@ -188,7 +188,13 @@ class Monitor extends Component<Props, State> {
                 style={{ height: '5vh', background: 'transparent' }}
               />
               {sortedCandidates.map(candidate => (
-                <div className={classes.candidateName}>
+                <div
+                  className={classes.candidateName}
+                  style={{
+                    paddingLeft: '3px',
+                    borderLeft: `5px solid ${colorMap[candidate.id]}`
+                  }}
+                >
                   <Typography
                     noWrap
                     variant="subheading"
