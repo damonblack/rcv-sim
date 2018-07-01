@@ -209,7 +209,7 @@ class Monitor extends Component<Props, State> {
                     variant="caption"
                     style={{ marginRight: '0.3vw' }}
                   >
-                    {thisRound.totals[candidate.id] === 0
+                    {thisRound.previousLosers.includes(candidate.id)
                       ? 'Eliminated'
                       : `${Math.round(
                           thisRound.totals[candidate.id] / totalVotes * 100
