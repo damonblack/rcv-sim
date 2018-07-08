@@ -8,7 +8,11 @@ import {
   Paper,
   Button,
   Tooltip,
-  Chip
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar
 } from '@material-ui/core';
 import {
   ArrowBack,
@@ -23,7 +27,7 @@ import Candidate from './chart/Candidate';
 import type { Results } from '../lib/voteTypes';
 
 const checkeredGradient =
-  'repeating-linear-gradient(to top, #fff, #fff 3%, #666 3%, #666 10%)';
+  'repeating-linear-gradient(to top, #fff, #fff 3%, #76911d 3%, #76911d 10%)';
 
 const styles = theme => {
   return {
@@ -48,7 +52,13 @@ const styles = theme => {
     },
     candidateName: {
       textAlign: 'right',
-      height: '8vh'
+      height: '10vh'
+    },
+    diamond: {
+      height: '3.5vh',
+      width: '3.5vh',
+      transform: 'rotate(45deg)',
+      backgroundColor: 'blue'
     }
   };
 };
@@ -189,36 +199,33 @@ class Monitor extends Component<Props, State> {
                 variant="caption"
                 style={{ height: '5vh', background: 'transparent' }}
               />
-              {sortedCandidates.map(candidate => (
-                <div
-                  className={classes.candidateName}
-                  style={{
-                    paddingLeft: '3px',
-                    borderLeft: `5px solid ${colorMap[candidate.id]}`
-                  }}
-                >
-                  <Typography
-                    noWrap
-                    variant="subheading"
-                    style={{
-                      padding: '2vh 0.7vw 0 0.7vw'
-                    }}
-                  >
-                    {candidate.name}
-                  </Typography>
-                  <Typography
-                    noWrap
-                    variant="caption"
-                    style={{ marginRight: '0.3vw' }}
-                  >
-                    {thisRound.previousLosers.includes(candidate.id)
-                      ? 'Eliminated'
-                      : `${Math.round(
-                          (thisRound.totals[candidate.id] / totalVotes) * 100
-                        )}% (${thisRound.totals[candidate.id]} votes)`}
-                  </Typography>
-                </div>
-              ))}
+              <List>
+                {sortedCandidates.map(candidate => (
+                  <ListItem className={classes.candidateName}>
+                    <ListItemAvatar>
+                      <div
+                        className={classes.diamond}
+                        style={{
+                          backgroundColor: colorMap[candidate.id]
+                        }}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={candidate.name}
+                      primaryTypographyProps={{ noWrap: true }}
+                      secondary={
+                        thisRound.previousLosers.includes(candidate.id)
+                          ? 'Eliminated'
+                          : `${Math.round(
+                              (thisRound.totals[candidate.id] / totalVotes) *
+                                100
+                            )}% (${thisRound.totals[candidate.id]} votes)`
+                      }
+                      secondaryTypographyProps={{ noWrap: true }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
             </Paper>
             <div className={classes.bars}>
               <Paper className={classes.chartHeader}>
