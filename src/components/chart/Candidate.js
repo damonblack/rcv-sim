@@ -12,7 +12,7 @@ const styles = {
 
 type Props = {
   classes: Object,
-  winningCount: number,
+  graphWidthInVotes: number,
   voteSegments: VoteSegments,
   totalVotesForCandidate: number,
   percentageOfWin: number,
@@ -25,7 +25,7 @@ type Props = {
 const Candidate = (props: Props) => {
   const {
     classes,
-    winningCount,
+    graphWidthInVotes,
     voteSegments,
     totalVotesForCandidate,
     percentageOfWin,
@@ -36,9 +36,9 @@ const Candidate = (props: Props) => {
   const segments = [];
   let width;
   if (voteSegments) {
-    voteSegments.forEach((value, key) => {
+    voteSegments.forEach((votes, key) => {
       const percent =
-        totalVotesForCandidate > 0 ? value / winningCount * 100 : 0;
+        totalVotesForCandidate > 0 ? (votes / graphWidthInVotes) * 100 : 0;
       segments.push([colorMap[key], percent]);
     });
     width = percentageOfWin;

@@ -107,6 +107,5 @@ const loser = (totals: Totals, candidates: Array<CandidateId>): CandidateId => {
       min = count;
     }
   });
-  console.log('loser is ', loser);
   return loser;
 };
