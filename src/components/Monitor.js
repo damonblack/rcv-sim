@@ -23,9 +23,7 @@ import Candidate from './chart/Candidate';
 import type { Results } from '../lib/voteTypes';
 
 const checkeredGradient =
-  'repeating-linear-gradient(to top, #fff, #fff 3%, #000 3%, #000 6%), ' +
-  'repeating-linear-gradient(to top, #000, #000 3%, #fff 3%, #fff 6%), ' +
-  'repeating-linear-gradient(to top, #fff, #fff 3%, #000 3%, #000 6%)';
+  'repeating-linear-gradient(to top, #fff, #fff 3%, #666 3%, #666 10%)';
 
 const styles = theme => {
   return {
@@ -143,8 +141,12 @@ class Monitor extends Component<Props, State> {
     const finalRound = results.rounds.slice(-1)[0];
     const lostVotes = votes.length - totalVotes;
     // prettier-ignore
-    const winningCount = finalRound.winner ? finalRound.totals[finalRound.winner] : 0;
-    const scalar = 10 * totalVotes / winningCount;
+    const finishLineMin = totalVotes / 2 + 1;
+    const winningVoteTotal = finalRound.winner
+      ? finalRound.totals[finalRound.winner]
+      : 0;
+    const graphWidthInVotes = Math.max(finishLineMin, winningVoteTotal);
+    const scalar = (10 * totalVotes) / graphWidthInVotes;
     // prettier-ignore
     const graphRulesGradient = `repeating-linear-gradient(to right, #BBB, #BBB 1px, transparent 1px, transparent ${scalar}%)`;
     const colorMap = {};
@@ -212,7 +214,7 @@ class Monitor extends Component<Props, State> {
                     {thisRound.previousLosers.includes(candidate.id)
                       ? 'Eliminated'
                       : `${Math.round(
-                          thisRound.totals[candidate.id] / totalVotes * 100
+                          (thisRound.totals[candidate.id] / totalVotes) * 100
                         )}% (${thisRound.totals[candidate.id]} votes)`}
                   </Typography>
                 </div>
@@ -232,10 +234,10 @@ class Monitor extends Component<Props, State> {
                   // prettier-ignore
                   backgroundImage: graphRulesGradient + ', ' + checkeredGradient,
                   // prettier-ignore
-                  backgroundPosition: `left, ${5 * scalar + 0.5}% 0, ${5 * scalar + 1}%, ${5 * scalar + 1.5}%`,
+                  backgroundPosition: `left, ${5 * scalar + 0.5}%`,
                   // prettier-ignore
-                  backgroundRepeat: 'no-repeat, no-repeat, no-repeat, no-repeat',
-                  backgroundSize: 'contain, 0.5% 100%, 0.5% 100%, 0.5% 100%',
+                  backgroundRepeat: 'no-repeat, no-repeat',
+                  backgroundSize: 'contain, 0.5% 100%',
                   paddingBottom: '3vh'
                 }}
                 elevation={8}
@@ -246,10 +248,10 @@ class Monitor extends Component<Props, State> {
                   return (
                     <Candidate
                       key={candidate.id}
-                      winningCount={winningCount}
+                      graphWidthInVotes={graphWidthInVotes}
                       voteSegments={segments}
                       totalVotesForCandidate={total}
-                      percentageOfWin={total / votesToWin * 100}
+                      percentageOfWin={(total / votesToWin) * 100}
                       candidate={candidate}
                       colorMap={colorMap || {}}
                       winner={candidate.id === results.winner}
