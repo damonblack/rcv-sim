@@ -1,7 +1,7 @@
 //@flow
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Paper } from '@material-ui/core';
+import { Paper, Tooltip } from '@material-ui/core';
 
 const styles = {
   multiBar: {
@@ -16,11 +16,11 @@ const MultiBar = props => {
 
   const getSegmentStyle = segment => {
     const style = {
-      width: `${segment[1]}%`,
+      width: `${segment.percent}%`,
       height: '5vh',
       marginTop: '3vh',
       marginBottom: '2vh',
-      backgroundColor: segment[0],
+      backgroundColor: segment.color,
       transition: 'width 3s ease-in-out'
     };
     return style;
@@ -35,7 +35,14 @@ const MultiBar = props => {
         square
       />
       {segments.map((segment, i) => (
-        <Paper key={i} elevation={0} style={getSegmentStyle(segment)} square />
+        <Tooltip title={`${segment.votes} votes`} placement="top-end">
+          <Paper
+            key={i}
+            elevation={0}
+            style={getSegmentStyle(segment)}
+            square
+          />
+        </Tooltip>
       ))}
     </div>
   );

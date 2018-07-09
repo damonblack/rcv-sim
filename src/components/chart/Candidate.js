@@ -39,7 +39,7 @@ const Candidate = (props: Props) => {
     voteSegments.forEach((votes, key) => {
       const percent =
         totalVotesForCandidate > 0 ? (votes / graphWidthInVotes) * 100 : 0;
-      segments.push([colorMap[key], percent]);
+      segments.push({ color: colorMap[key], percent: percent, votes });
     });
     width = percentageOfWin;
   } else {
