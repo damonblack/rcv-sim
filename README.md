@@ -33,7 +33,7 @@ These tasks are kept in the scripts section of package.json.
 
 ### Material-UI
 
-This project leverage the [Material-UI(next)](https://material-ui-next.com/) component library. These are self-supporting react components designed according to Google's [Material Design](https://en.wikipedia.org/wiki/Material_Design) spec. 
+This project leverages the [Material-UI(next)](https://material-ui-next.com/) component library. These are self-supporting react components designed according to Google's [Material Design](https://en.wikipedia.org/wiki/Material_Design) spec. 
 
 
 
