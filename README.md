@@ -33,7 +33,7 @@ These tasks are kept in the scripts section of package.json.
 
 ### Material-UI
 
-This project leverage the [Material-UI(next)](https://material-ui-next.com/) component library. These are self-supporting react components designed according to Google's [Material Design](https://en.wikipedia.org/wiki/Material_Design) spec. 
+This project leverages the [Material-UI(next)](https://material-ui-next.com/) component library. These are self-supporting react components designed according to Google's [Material Design](https://en.wikipedia.org/wiki/Material_Design) spec. 
 
 
 
@@ -42,7 +42,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Below you will find some information on how to perform common tasks.<br>
 You can find the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
+
 ## Table of Contents
+The following was generarted by create-react-app and covers general usage.
 
 - [Updating to New Releases](#updating-to-new-releases)
 - [Sending Feedback](#sending-feedback)
