@@ -23,35 +23,35 @@ const balanced = [
 const candidates = ['A', 'B', 'C', 'D', 'E'];
 
 it('should run only round 0 and return results', () => {
-  const results = getResults(earlyWin, candidates);
+  const { rounds } = getResults(earlyWin, candidates);
 
-  expect(results.length).toEqual(1);
-  expect(results[0].winner).toEqual('D');
-  expect(results).toMatchSnapshot('early win');
+  expect(rounds.length).toEqual(1);
+  expect(rounds[0].winner).toEqual('D');
+  expect(rounds).toMatchSnapshot('early win');
 });
 
 it('should run multiple rounds with the winner on the last only', () => {
-  const results = getResults(balanced, candidates);
-  const firstRound = results[0];
-  const secondRound = results[1];
-  const lastRound = results[results.length - 1];
+  const { rounds } = getResults(balanced, candidates);
+  const firstRound = rounds[0];
+  const secondRound = rounds[1];
+  const lastRound = rounds[rounds.length - 1];
 
-  expect(results.length).toEqual(3);
+  expect(rounds.length).toEqual(3);
   expect(firstRound.winner).toBeUndefined();
   expect(secondRound.winner).toBeUndefined();
   expect(lastRound.winner).toEqual('D');
-  expect(results).toMatchSnapshot('balanced win');
+  expect(rounds).toMatchSnapshot('balanced win');
 });
 
 it('should provide full segment lists for each candidate', () => {
-  const results = getResults(balanced, candidates);
-  const firstRound = results[0];
-  const secondRound = results[1];
-  const lastRound = results[results.length - 1];
+  const { rounds } = getResults(balanced, candidates);
+  const firstRound = rounds[0];
+  const secondRound = rounds[1];
+  const lastRound = rounds[rounds.length - 1];
 
-  expect(results.length).toEqual(3);
+  expect(rounds.length).toEqual(3);
   expect(firstRound.winner).toBeUndefined();
   expect(secondRound.winner).toBeUndefined();
   expect(lastRound.winner).toEqual('D');
-  expect(results).toMatchSnapshot('balanced win');
+  expect(rounds).toMatchSnapshot('balanced win');
 });
