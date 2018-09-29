@@ -158,7 +158,7 @@ class ElectionForm extends Component<Props, State> {
           <Divider />
           <Divider />
           <Divider />
-          <TextField
+          {/* <TextField
             key={1}
             className={classes.textField}
             defaultValue={1}
@@ -172,7 +172,7 @@ class ElectionForm extends Component<Props, State> {
             inputProps={{ min: 0, max: 20 }}
             variant="filled"
             error={error}
-          />
+          /> */}
           {candidates.map((candidate, i) => (
             <div key={i + 1} className={classes.candidateEntry}>
               <TextField
