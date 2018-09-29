@@ -4,18 +4,29 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   Paper,
   TextField,
-  Divider,
   Button,
-  ButtonBase
+  ButtonBase,
+  Divider,
+  InputAdornment
 } from '@material-ui/core';
-import { Delete as DeleteIcon } from '@material-ui/icons';
+import {
+  Delete as DeleteIcon,
+  DeleteSweep as DeleteSweepIcon
+} from '@material-ui/icons';
 
 import { electionsRef, candidatesForElectionRef } from '../services';
 
-const styles = {
-  results: { width: '400px', minWidth: '30%' },
-  candidateEntry: { display: 'flex', justifyContent: 'space-between' }
-};
+const styles = theme => ({
+  results: {
+    minWidth: '30%',
+    padding: 2 * theme.spacing.unit
+  },
+  // candidateEntry: { display: 'flex', justifyContent: 'space-between' },
+  buttonTray: {
+    display: 'flex',
+    justifyContent: 'space-around'
+  }
+});
 
 type Props = {
   classes: { results: Object, candidateEntry: Object },
@@ -26,6 +37,7 @@ type Props = {
 type State = {
   creating: boolean,
   electionTitle: string,
+  numberOfWinners: number,
   candidates: Array<string>,
   errors: {
     electionTitle: string,
@@ -37,6 +49,7 @@ class ElectionForm extends Component<Props, State> {
   defaultState = {
     creating: false,
     electionTitle: '',
+    numberOfWinners: 1,
     candidates: ['', '', ''],
     errors: { electionTitle: '', candidateNames: ['', '', ''] }
   };
@@ -49,6 +62,25 @@ class ElectionForm extends Component<Props, State> {
   handleChange = field => e => {
     const value = e.target.value;
     this.setState({ [field]: value });
+  };
+
+  updateNumberOfWinners = e => {
+    const numberOfWinners = Math.trunc(e.target.value) || '';
+    if (isNaN(numberOfWinners) || numberOfWinners < 1 || numberOfWinners > 20) {
+      this.setState({ numberOfWinners, error: 'Must be between 1 and 20' });
+    } else {
+      this.setState(prevState => {
+        const candidates = prevState.candidates.slice();
+        while (candidates.length < numberOfWinners + 1) {
+          candidates.push('');
+        }
+        return {
+          candidates,
+          numberOfWinners,
+          error: null
+        };
+      });
+    }
   };
 
   handleChangeCandidate = index => e => {
@@ -71,15 +103,25 @@ class ElectionForm extends Component<Props, State> {
 
   handleSubmit = e => {
     e.preventDefault();
-    const title = this.state.electionTitle.trim();
+    const { electionTitle, numberOfWinners, candidates } = this.state;
+    if (candidates.length < 1 + numberOfWinners) {
+      this.setState({ error: 'Must have more candidates than winners' });
+      return;
+    }
+    const title = electionTitle.trim();
     const cleanTitle = title.replace(/[^\w\s]/gi, '');
     const key = cleanTitle.replace(/\s+/g, '-').toLowerCase();
     electionsRef()
       .child(key)
-      .set({ title: title, owner: this.props.user.uid, created: Date.now() })
+      .set({
+        title: title,
+        numberOfWinners,
+        owner: this.props.user.uid,
+        created: Date.now()
+      })
       .then(result => {
         const candidateDB = candidatesForElectionRef(key);
-        this.state.candidates.forEach(candidate => {
+        candidates.forEach(candidate => {
           const candidateEntry = {
             name: candidate.trim(),
             owner: this.props.user.uid
@@ -95,48 +137,90 @@ class ElectionForm extends Component<Props, State> {
   };
 
   render() {
-    const { candidates, electionTitle } = this.state;
+    const { candidates, electionTitle, numberOfWinners, error } = this.state;
     const { classes, onCancel } = this.props;
+    const disableRemove = candidates.length < 2 + numberOfWinners;
     return (
-      <div className={classes.results}>
+      <Paper className={classes.results} elevation={5}>
         <form onSubmit={this.handleSubmit}>
-          <Paper elevation={5}>
-            <TextField
-              key={1}
-              required
-              placeholder="My Election Name"
-              label="Name your election"
-              value={electionTitle}
-              onChange={this.handleChange('electionTitle')}
-              fullWidth
-            />
-            <Divider />
-            <Divider />
-            {candidates.map((candidate, i) => (
-              <div key={i + 1} className={classes.candidateEntry}>
-                <TextField
-                  label={`Candidate ${i + 1}`}
-                  required
-                  value={candidate}
-                  onChange={this.handleChangeCandidate(i)}
-                  fullWidth
-                />
-                <ButtonBase onClick={() => this.removeCandidate(i)}>
-                  <DeleteIcon />
-                </ButtonBase>
-                <Divider />
-              </div>
-            ))}
-            <Button type="button" onClick={this.addCandidate}>
-              Add
-            </Button>
-            <Button type="submit">Submit</Button>
-            <Button type="button" onClick={onCancel}>
+          <TextField
+            key={1}
+            className={classes.textField}
+            required
+            placeholder="My Election Name"
+            label="Name your election"
+            value={electionTitle}
+            onChange={this.handleChange('electionTitle')}
+            variant="filled"
+            fullWidth
+          />
+          <Divider />
+          <Divider />
+          <Divider />
+          <Divider />
+          <TextField
+            key={1}
+            className={classes.textField}
+            defaultValue={1}
+            required
+            placeholder="Number of Winners"
+            label={error || 'Number of Winners'}
+            value={numberOfWinners}
+            onChange={this.updateNumberOfWinners}
+            fullWidth
+            type="number"
+            inputProps={{ min: 0, max: 20 }}
+            variant="filled"
+            error={error}
+          />
+          {candidates.map((candidate, i) => (
+            <div key={i + 1} className={classes.candidateEntry}>
+              <TextField
+                label={`Candidate ${i + 1}`}
+                required
+                className={classes.textField}
+                value={candidate}
+                onChange={this.handleChangeCandidate(i)}
+                variant="filled"
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      <ButtonBase
+                        disabled={disableRemove}
+                        onClick={() => this.removeCandidate(i)}
+                      >
+                        <DeleteIcon />
+                      </ButtonBase>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </div>
+          ))}
+          <Button fullWidth type="button" onClick={this.addCandidate}>
+            Add Another Candidate
+          </Button>
+          <div className={classes.buttonTray}>
+            <Button
+              variant="contained"
+              color="primary"
+              type="button"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
-          </Paper>
+            <Button
+              variant="contained"
+              color="secondary"
+              disabled={error}
+              type="submit"
+            >
+              Create
+            </Button>
+          </div>
         </form>
-      </div>
+      </Paper>
     );
   }
 }

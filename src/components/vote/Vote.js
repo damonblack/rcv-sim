@@ -12,8 +12,10 @@ import {
 import {
   Home as HomeIcon,
   InsertChart as ChartIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Print as PrintIcon
 } from '@material-ui/icons';
+import ReactToPrint from 'react-to-print';
 
 import { auth, electionRef, candidatesRef, votesRef } from '../../services';
 import type { Election } from '../../lib/voteTypes';
@@ -218,6 +220,7 @@ class Vote extends Component<Props, State> {
                 updateVote={this.updateVote}
                 submitVote={this.submitVote}
                 closeNotifier={this.closeNotifier}
+                ref={el => (this.ballotRef = el)}
               />
               <div className={classes.navButton}>
                 <Tooltip title="Results">
@@ -227,6 +230,16 @@ class Vote extends Component<Props, State> {
                   >
                     <ChartIcon className={classes.chartIcon} color="primary" />
                   </Avatar>
+                </Tooltip>
+                <Tooltip title="Printable Ballot">
+                  <ReactToPrint
+                    trigger={() => (
+                      <Avatar>
+                        <PrintIcon color="action" />
+                      </Avatar>
+                    )}
+                    content={() => this.ballotRef}
+                  />
                 </Tooltip>
               </div>
               <Snackbar
