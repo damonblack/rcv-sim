@@ -28,14 +28,11 @@ const MultiBar = props => {
 
   return (
     <div className={classes.multiBar}>
-      <Paper
-        key={-1}
-        elevation={0}
-        style={{ width: '1px', height: '5vh', backgroundColor: '#fff' }}
-        square
-      />
       {segments.map((segment, i) => (
-        <Tooltip title={`${segment.votes} votes`} placement="top-end">
+        <Tooltip
+          title={`${+segment.votes.toFixed(2)} votes`}
+          placement="top-end"
+        >
           <Paper
             key={i}
             elevation={0}

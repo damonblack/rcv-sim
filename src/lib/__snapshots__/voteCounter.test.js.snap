@@ -3,8 +3,70 @@
 exports[`balanced win 1`] = `
 Array [
   Object {
+    "assignedVotes": Object {
+      "A": Array [
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+      ],
+      "B": Array [
+        Object {
+          "1": "B",
+          "2": "D",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+      ],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "A",
+          "3": "C",
+          "4": "D",
+          "5": "B",
+        },
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
     "loser": "A",
     "previousLosers": Array [],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 1,
@@ -50,13 +112,74 @@ Array [
       "E": 2,
     },
     "validVoteCount": 7,
-    "winner": undefined,
+    "winners": Array [],
   },
   Object {
+    "assignedVotes": Object {
+      "A": Array [],
+      "B": Array [
+        Object {
+          "1": "B",
+          "2": "D",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+      ],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "A",
+          "3": "C",
+          "4": "D",
+          "5": "B",
+        },
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
     "loser": "B",
     "previousLosers": Array [
       "A",
     ],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 0,
@@ -102,14 +225,74 @@ Array [
       "E": 2,
     },
     "validVoteCount": 7,
-    "winner": undefined,
+    "winners": Array [],
   },
   Object {
-    "loser": "C",
+    "assignedVotes": Object {
+      "A": Array [],
+      "B": Array [],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "B",
+          "2": "D",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "A",
+          "3": "C",
+          "4": "D",
+          "5": "B",
+        },
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
+    "loser": null,
     "previousLosers": Array [
       "A",
       "B",
     ],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 0,
@@ -155,7 +338,9 @@ Array [
       "E": 2,
     },
     "validVoteCount": 7,
-    "winner": "D",
+    "winners": Array [
+      "D",
+    ],
   },
 ]
 `;
@@ -163,8 +348,70 @@ Array [
 exports[`balanced win 2`] = `
 Array [
   Object {
+    "assignedVotes": Object {
+      "A": Array [
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+      ],
+      "B": Array [
+        Object {
+          "1": "B",
+          "2": "D",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+      ],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "A",
+          "3": "C",
+          "4": "D",
+          "5": "B",
+        },
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
     "loser": "A",
     "previousLosers": Array [],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 1,
@@ -210,13 +457,74 @@ Array [
       "E": 2,
     },
     "validVoteCount": 7,
-    "winner": undefined,
+    "winners": Array [],
   },
   Object {
+    "assignedVotes": Object {
+      "A": Array [],
+      "B": Array [
+        Object {
+          "1": "B",
+          "2": "D",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+      ],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "A",
+          "3": "C",
+          "4": "D",
+          "5": "B",
+        },
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
     "loser": "B",
     "previousLosers": Array [
       "A",
     ],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 0,
@@ -262,14 +570,74 @@ Array [
       "E": 2,
     },
     "validVoteCount": 7,
-    "winner": undefined,
+    "winners": Array [],
   },
   Object {
-    "loser": "C",
+    "assignedVotes": Object {
+      "A": Array [],
+      "B": Array [],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "B",
+          "2": "D",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "A",
+          "3": "C",
+          "4": "D",
+          "5": "B",
+        },
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
+    "loser": null,
     "previousLosers": Array [
       "A",
       "B",
     ],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 0,
@@ -315,7 +683,9 @@ Array [
       "E": 2,
     },
     "validVoteCount": 7,
-    "winner": "D",
+    "winners": Array [
+      "D",
+    ],
   },
 ]
 `;
@@ -323,8 +693,69 @@ Array [
 exports[`early win 1`] = `
 Array [
   Object {
-    "loser": "B",
+    "assignedVotes": Object {
+      "A": Array [
+        Object {
+          "1": "A",
+          "2": "D",
+          "3": "C",
+          "4": "B",
+          "5": "E",
+        },
+      ],
+      "B": Array [],
+      "C": Array [
+        Object {
+          "1": "C",
+          "2": "B",
+          "3": "A",
+          "4": "D",
+          "5": "E",
+        },
+      ],
+      "D": Array [
+        Object {
+          "1": "D",
+          "2": "B",
+          "3": "C",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "C",
+          "3": "B",
+          "4": "A",
+          "5": "E",
+        },
+        Object {
+          "1": "D",
+          "2": "E",
+          "3": "C",
+          "4": "A",
+          "5": "B",
+        },
+        Object {
+          "1": "D",
+          "2": "A",
+          "3": "C",
+          "4": "E",
+          "5": "B",
+        },
+      ],
+      "E": Array [
+        Object {
+          "1": "E",
+          "2": "B",
+          "3": "C",
+          "4": "D",
+          "5": "A",
+        },
+      ],
+    },
+    "loser": null,
     "previousLosers": Array [],
+    "previousWinners": Array [],
     "segments": Object {
       "A": Map {
         "A" => 1,
@@ -370,7 +801,9 @@ Array [
       "E": 1,
     },
     "validVoteCount": 7,
-    "winner": "D",
+    "winners": Array [
+      "D",
+    ],
   },
 ]
 `;

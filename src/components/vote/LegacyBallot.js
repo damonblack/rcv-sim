@@ -18,7 +18,9 @@ import {
 
 const styles = {
   voting: {
-    width: '100vw'
+    width: '100vw',
+    margin: '30px',
+    paddingRight: '30px'
   },
   cell: { padding: '0', textAlign: 'left' },
   nameCell: { paddingLeft: '1vw' },

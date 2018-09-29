@@ -26,7 +26,7 @@ import { getResults } from '../lib/voteCounter';
 import Candidate from './chart/Candidate';
 import type { Results } from '../lib/voteTypes';
 
-const checkeredGradient =
+const finishLIne =
   'repeating-linear-gradient(to top, #fff, #fff 3%, #76911d 3%, #76911d 10%)';
 
 const styles = theme => {
@@ -98,30 +98,37 @@ class Monitor extends Component<Props, State> {
 
   componentDidMount() {
     const { key } = this.props.match.params;
-    database.ref(`elections/${key}`).on('value', snapshot => {
+    database.ref(`elections/${key}`).once('value', snapshot => {
       const election = snapshot.val();
       election.id = key;
+
       this.setState({ election });
-    });
-    database.ref(`candidates/${key}`).once('value', snapshot => {
-      const candidatesData = snapshot.val();
-      const candidateIds = Object.keys(candidatesData);
-      const candidatesArray = candidateIds.map((key, index) => ({
-        id: key,
-        name: candidatesData[key].name
-      }));
 
-      this.setState({
-        candidates: candidatesArray
-      });
+      database.ref(`candidates/${key}`).once('value', snapshot => {
+        const candidatesData = snapshot.val();
+        const candidateIds = Object.keys(candidatesData);
+        const candidatesArray = candidateIds.map((key, index) => ({
+          id: key,
+          name: candidatesData[key].name
+        }));
 
-      //Re-runs the election on every vote. Throttle this ?
-      database.ref(`votes/${key}`).on('value', snapshot => {
-        if (snapshot.val()) {
-          const votes = Object.values(snapshot.val());
-          const results = getResults(votes, candidatesArray.map(c => c.id));
-          this.setState({ votes, results });
-        }
+        this.setState({
+          candidates: candidatesArray
+        });
+
+        //Re-runs the election on every vote. Throttle this ?
+        database.ref(`votes/${key}`).on('value', snapshot => {
+          if (snapshot.val()) {
+            const votes = Object.values(snapshot.val());
+            const results = getResults(
+              votes,
+              candidatesArray.map(c => c.id),
+              election.numberOfWinners
+            );
+            console.log('setting state votes', votes, results);
+            this.setState({ votes, results });
+          }
+        });
       });
     });
   }
@@ -142,20 +149,21 @@ class Monitor extends Component<Props, State> {
         params: { key, round }
       }
     } = this.props;
+    const numberOfWinners = election.numberOfWinners || 1;
     const roundInt = parseInt(round, 10);
+    const graphWidthInVotes = results.rounds.reduce((max, round) => {
+      console.log('round.totals', round.totals);
+      Object.values(round.totals).forEach(value => {
+        if (value > max) max = value;
+      });
+      return max;
+    }, 0);
     const thisRound = results.rounds[roundInt - 1];
     const totalVotes = thisRound.validVoteCount;
-    const votesToWin = totalVotes / 2;
+    const votesToWin = totalVotes / (numberOfWinners + 1);
     const nextRound = roundInt + 1;
-    const lastRound = roundInt < 2 ? 1 : roundInt - 1;
-    const finalRound = results.rounds.slice(-1)[0];
     const lostVotes = votes.length - totalVotes;
     // prettier-ignore
-    const finishLineMin = totalVotes / 2 + 1;
-    const winningVoteTotal = finalRound.winner
-      ? finalRound.totals[finalRound.winner]
-      : 0;
-    const graphWidthInVotes = Math.max(finishLineMin, winningVoteTotal);
     const scalar = (10 * totalVotes) / graphWidthInVotes;
     // prettier-ignore
     const graphRulesGradient = `repeating-linear-gradient(to right, #BBB, #BBB 1px, transparent 1px, transparent ${scalar}%)`;
@@ -165,6 +173,19 @@ class Monitor extends Component<Props, State> {
       (candidate, i) => (colorMap[candidate.id] = this.candidateColors[i])
     );
 
+    const allWinners = thisRound.winners.concat(thisRound.previousWinners);
+    const isWinner = candidate => allWinners.includes(candidate.id);
+
+    const getSecondaryText = candidate => {
+      if (isWinner(candidate)) return 'Winner';
+      if (thisRound.previousLosers.includes(candidate.id)) return 'Eliminated';
+      return `${Math.round(
+        (thisRound.totals[candidate.id] / totalVotes) * 100
+      )}% (${+thisRound.totals[candidate.id].toFixed(2)} votes)`;
+    };
+
+    const victoryPercentage = 1 / (numberOfWinners + 1);
+
     return (
       <div className={classes.wrapper}>
         <Tooltip title="Previous Round">
@@ -172,7 +193,7 @@ class Monitor extends Component<Props, State> {
             disabled={roundInt === 1}
             variant="raised"
             component={Link}
-            to={`/monitor/${key}/round/${lastRound}`}
+            to={`/monitor/${key}/round/1`}
           >
             <ArrowBack className={classes.chartIcon} color="primary" />
           </Button>
@@ -213,14 +234,7 @@ class Monitor extends Component<Props, State> {
                     <ListItemText
                       primary={candidate.name}
                       primaryTypographyProps={{ noWrap: true }}
-                      secondary={
-                        thisRound.previousLosers.includes(candidate.id)
-                          ? 'Eliminated'
-                          : `${Math.round(
-                              (thisRound.totals[candidate.id] / totalVotes) *
-                                100
-                            )}% (${thisRound.totals[candidate.id]} votes)`
-                      }
+                      secondary={getSecondaryText(candidate)}
                       secondaryTypographyProps={{ noWrap: true }}
                     />
                   </ListItem>
@@ -231,17 +245,19 @@ class Monitor extends Component<Props, State> {
               <Paper className={classes.chartHeader}>
                 <Chip
                   className={classes.chartLabel}
-                  label="50%"
-                  style={{ marginLeft: `${5 * scalar}%` }}
+                  label={`${Math.round(
+                    victoryPercentage * 100
+                  )}% (${votesToWin} votes)`}
+                  style={{ marginLeft: `${victoryPercentage * 10 * scalar}%` }}
                 />
               </Paper>
               <Paper
                 style={{
                   width: '100%',
                   // prettier-ignore
-                  backgroundImage: graphRulesGradient + ', ' + checkeredGradient,
+                  backgroundImage: graphRulesGradient + ', ' + finishLIne,
                   // prettier-ignore
-                  backgroundPosition: `left, ${5 * scalar + 0.5}%`,
+                  backgroundPosition: `left, ${victoryPercentage * 10 * scalar + 0.5}%`,
                   // prettier-ignore
                   backgroundRepeat: 'no-repeat, no-repeat',
                   backgroundSize: 'contain, 0.5% 100%',
@@ -261,7 +277,7 @@ class Monitor extends Component<Props, State> {
                       percentageOfWin={(total / votesToWin) * 100}
                       candidate={candidate}
                       colorMap={colorMap || {}}
-                      winner={candidate.id === results.winner}
+                      winner={results.winners.includes(candidate.id)}
                       loser={thisRound.previousLosers.includes(candidate.id)}
                     />
                   );
@@ -275,7 +291,7 @@ class Monitor extends Component<Props, State> {
         </div>
         <Tooltip title="Next Round">
           <Button
-            disabled={!!thisRound.winner}
+            disabled={allWinners.length >= numberOfWinners}
             variant="raised"
             component={Link}
             to={`/monitor/${key}/round/${nextRound}`}
