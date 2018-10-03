@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`balanced win 1`] = `
+exports[`should provide full segment lists for each candidate: balanced win 1`] = `
 Array [
   Object {
     "assignedVotes": Object {
@@ -345,7 +345,7 @@ Array [
 ]
 `;
 
-exports[`balanced win 2`] = `
+exports[`should run multiple rounds with the winner on the last only: balanced win 1`] = `
 Array [
   Object {
     "assignedVotes": Object {
@@ -690,7 +690,7 @@ Array [
 ]
 `;
 
-exports[`early win 1`] = `
+exports[`should run only round 0 and return results: early win 1`] = `
 Array [
   Object {
     "assignedVotes": Object {
