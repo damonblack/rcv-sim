@@ -53,11 +53,6 @@ type State = {
 
 class Vote extends Component<Props, State> {
   defaultState = {
-    election: {
-      key: '',
-      title: '',
-      owner: ''
-    },
     candidates: [],
     votes: {},
     lastAction: '',
@@ -99,8 +94,9 @@ class Vote extends Component<Props, State> {
     )} choice${replacing}.`;
   }
 
-  updateUser = user =>
+  updateUser = user => {
     user ? this.setState({ user }) : this.setState(this.defaultState);
+  };
 
   updateElection = electionKey => snapshot => {
     const election = snapshot.val();
@@ -169,12 +165,15 @@ class Vote extends Component<Props, State> {
 
   closeNotifier = () => this.setState({ notifierOpen: false });
 
-  userIsElectionOwner = () =>
-    this.state.user &&
-    this.state.election &&
-    this.state.user === this.state.election.owner;
+  userIsElectionOwner = () => {
+    return (
+      this.state.user &&
+      this.state.election &&
+      this.state.user.uid === this.state.election.owner
+    );
+  };
 
-  ready = () => this.state.election && this.state.candidates;
+  loaded = () => this.state.election && this.state.candidates;
 
   render() {
     const {
@@ -191,11 +190,8 @@ class Vote extends Component<Props, State> {
       }
     } = this.props;
 
-    if (election && candidates) {
-      if (
-        !localStorage.getItem('RCV' + key) ||
-        (this.state.user && !this.userIsElectionOwner())
-      ) {
+    if (this.loaded()) {
+      if (!localStorage.getItem('RCV' + key) || this.userIsElectionOwner()) {
         return (
           <div>
             <div>
