@@ -21,6 +21,7 @@
     "eject": "react-scripts eject",
     "functions": "yarn --cwd ./functions",
     "deploy": "react-scripts build && yarn functions && firebase deploy",
+    "deploy-prod": "react-scripts build && yarn functions && firebase deploy -P production",
     "fire": "react-scripts build && firebase deploy && yarn start",
     "precommit": "pretty-quick --staged"
   },

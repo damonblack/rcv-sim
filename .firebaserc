@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "rcv-sim"
+    "default": "rcv-sim",
+    "production": "rcv-tally-app"
   }
 }

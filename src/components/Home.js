@@ -128,7 +128,9 @@ class Home extends Component<Props, State> {
 
   login = async () => {
     try {
+      console.log('before signin');
       const result = await auth.signInWithPopup(googleAuth);
+      console.log('signin results', result);
       this.setState({ user: result.user });
       this.watchMyElections(result.user.uid);
     } catch (e) {
@@ -168,7 +170,7 @@ class Home extends Component<Props, State> {
                 />
               </Tooltip>
             ) : (
-              <Button onClick={this.login}>Log In</Button>
+              <Button onClick={this.login}>Sign In</Button>
             )}
           </div>
           {user &&
