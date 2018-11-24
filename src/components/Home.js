@@ -43,7 +43,17 @@ const styles = theme => {
     results: { minWidth: '60vw' },
     splitWrapper: { display: 'flex', justifyContent: 'space-between' },
     deleteIcon: { paddingLeft: '1em', paddingRight: '1em' },
-    chartIcon: { fontSize: '2.5em' }
+    chartIcon: { fontSize: '2.5em' },
+    bold: {
+      fontWeight: 600
+    },
+    greyFont: {
+      color: '#757575'
+    },
+    subtitle: {
+      flex: 1,
+      textAlign: 'center'
+    }
   };
 };
 
@@ -170,77 +180,83 @@ class Home extends Component<Props, State> {
                 />
               </Tooltip>
             ) : (
-              <Button onClick={this.login}>Sign In</Button>
-            )}
-          </div>
-          {user &&
-            !creating && (
               <div>
-                <Tooltip title="Create an Election">
-                  <Button
-                    variant="raised"
-                    color="secondary"
-                    onClick={() => this.setState({ creating: true })}
-                  >
-                    Create an Election
-                  </Button>
-                </Tooltip>
+                {/*<Button onClick={this.login}>Sign In</Button>*/}
+                <Typography
+                  variant="h5"
+                  className={[classes.bold, classes.greyFont, classes.subtitle]}
+                >
+                  Ranked Choice Voting: A voting method that allows voters to
+                  rank candidates in order of preference.
+                </Typography>
               </div>
             )}
+          </div>
+          {user && !creating && (
+            <div>
+              <Tooltip title="Create an Election">
+                <Button
+                  variant="raised"
+                  color="secondary"
+                  onClick={() => this.setState({ creating: true })}
+                >
+                  Create an Election
+                </Button>
+              </Tooltip>
+            </div>
+          )}
         </div>
         <div className={classes.wrapper}>
-          {user &&
-            creating && (
-              <ElectionForm
-                user={user}
-                onCancel={() => this.setState({ creating: false })}
-              />
-            )}
+          {user && creating && (
+            <ElectionForm
+              user={user}
+              onCancel={() => this.setState({ creating: false })}
+            />
+          )}
         </div>
 
         <div className={classes.wrapper}>
-          {user &&
-            !creating && (
-              <div className={classes.results}>
-                <Paper>
-                  <Typography variant="title" align="center">
-                    Elections
-                  </Typography>
-                  <List component="nav">
-                    {elections.map((election, i) => (
-                      <ListItem key={i} divider>
-                        <Tooltip title="View Results">
-                          <ButtonBase
-                            component={Link}
-                            to={`/monitor/${election.id}/round/1`}
-                          >
-                            <ChartIcon
-                              className={classes.chartIcon}
-                              color="primary"
-                            />
-                          </ButtonBase>
-                        </Tooltip>
-                        <ListItemText primary={election.title} />
-                        <Tooltip title="Vote">
-                          <Avatar component={Link} to={`/vote/${election.id}`}>
-                            <VoteIcon color="action" />
-                          </Avatar>
-                        </Tooltip>
-                        <Tooltip title="Delete Election Completely">
-                          <ButtonBase
-                            onClick={() =>
-                              this.confirmElectionDelete(election.id)
-                            }
-                          >
-                            <DeleteIcon className={classes.deleteIcon} />
-                          </ButtonBase>
-                        </Tooltip>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Paper>
-              </div>
-            )}
+          {user && !creating && (
+            <div className={classes.results}>
+              <Paper>
+                <Typography variant="title" align="center">
+                  Elections
+                </Typography>
+                <List component="nav">
+                  {elections.map((election, i) => (
+                    <ListItem key={i} divider>
+                      <Tooltip title="View Results">
+                        <ButtonBase
+                          component={Link}
+                          to={`/monitor/${election.id}/round/1`}
+                        >
+                          <ChartIcon
+                            className={classes.chartIcon}
+                            color="primary"
+                          />
+                        </ButtonBase>
+                      </Tooltip>
+                      <ListItemText primary={election.title} />
+                      <Tooltip title="Vote">
+                        <Avatar component={Link} to={`/vote/${election.id}`}>
+                          <VoteIcon color="action" />
+                        </Avatar>
+                      </Tooltip>
+                      <Tooltip title="Delete Election Completely">
+                        <ButtonBase
+                          onClick={() =>
+                            this.confirmElectionDelete(election.id)
+                          }
+                        >
+                          <DeleteIcon className={classes.deleteIcon} />
+                        </ButtonBase>
+                      </Tooltip>
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </div>
+          )}
         </div>
         <ConfirmationDialog
           open={confirmDeleteIsOpen}

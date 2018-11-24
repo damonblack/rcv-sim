@@ -12,9 +12,18 @@ import Drawer from '@material-ui/core/Drawer';
 
 import { Route } from 'react-router-dom';
 
-import Home from './components/Home';
+import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
 import Monitor from './components/Monitor';
+
+import {
+  auth,
+  googleAuth,
+  myElectionsRef,
+  votesRef,
+  candidatesRef,
+  electionRef
+} from './services';
 
 const styles = theme => ({
   root: {
@@ -46,6 +55,14 @@ const styles = theme => ({
   }
 });
 
+const defaultState = {
+  user: null,
+  elections: [],
+  creating: false,
+  confirmDeleteIsOpen: false,
+  confirmDeleteElectionKey: null
+};
+
 class ButtonAppBar extends Component {
   constructor() {
     super();
@@ -54,12 +71,48 @@ class ButtonAppBar extends Component {
     };
   }
 
+  componentDidMount() {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        this.setState({ user });
+        this.watchMyElections(user.uid);
+      } else {
+        this.setState(this.defaultState);
+      }
+    });
+  }
+
   handleDrawer = () => {
     this.setState({ open: !this.state.open });
   };
 
+  login = async () => {
+    try {
+      console.log('before signin');
+      const result = await auth.signInWithPopup(googleAuth);
+      console.log('signin results', result);
+      this.setState({ user: result.user });
+      this.watchMyElections(result.user.uid);
+    } catch (e) {
+      console.log('LOGIN FAILED: ', e.stack);
+      alert('login failed');
+    }
+  };
+
+  logout = async () => {
+    try {
+      await auth.signOut();
+      this.setState(this.defaultState);
+    } catch (e) {
+      console.log('LOGOUT FAILED: ', e);
+      alert('logout failed');
+    }
+  };
+
   render() {
     const { classes } = this.props;
+
+    const { user } = this.state;
 
     return (
       <div className={classes.root}>
@@ -76,8 +129,22 @@ class ButtonAppBar extends Component {
             <Typography variant="h2" className={classes.title}>
               <span className={classes.boldLogo}>RCV</span>Tally
             </Typography>
+            {user ? (
+              <Button color="inherit" onClick={this.logout}>
+                Sign Out
+              </Button>
+            ) : (
+              <Button color="inherit" onClick={this.login}>
+                Sign In
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
+        <Route
+          exact
+          path={'/'}
+          render={props => <NewHome user={this.state.user} />}
+        />
         <Route path={'/vote/:key'} component={Vote} />
         <Route path={'/monitor/:key/round/:round'} component={Monitor} />
 
@@ -89,7 +156,7 @@ class ButtonAppBar extends Component {
             paper: classes.drawerPaper
           }}
         >
-          <Route exact path={'/'} component={Home} />
+          <p>test</p>
         </Drawer>
       </div>
     );
