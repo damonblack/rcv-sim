@@ -12,7 +12,8 @@
     "react-dom": "^16.5.1",
     "react-router-dom": "^4.2.2",
     "react-scripts": "^2.0.4",
-    "react-to-print": "^2.0.0-alpha-3"
+    "react-to-print": "^2.0.0-alpha-3",
+    "typeface-montserrat": "0.0.54"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,10 +1,11 @@
 import { createMuiTheme } from '@material-ui/core/styles';
+require('typeface-montserrat');
 
 export default createMuiTheme({
   palette: {
     primary: {
       light: '#855DB5',
-      main: '#553285',
+      main: '#151515',
       dark: '#260857',
       contrastText: '#FFFFFF'
     },
@@ -14,5 +15,8 @@ export default createMuiTheme({
       dark: '#00829B',
       contrastText: '#FFFFFF'
     }
+  },
+  typography: {
+    fontFamily: 'Montserrat'
   }
 });
