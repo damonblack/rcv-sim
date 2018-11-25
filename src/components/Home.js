@@ -51,8 +51,7 @@ const styles = theme => {
       color: '#757575'
     },
     subtitle: {
-      flex: 1,
-      textAlign: 'center'
+      flex: 1
     }
   };
 };

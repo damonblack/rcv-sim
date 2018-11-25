@@ -15,6 +15,7 @@ import { Route } from 'react-router-dom';
 import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
 import Monitor from './components/Monitor';
+import CreatePoll from './components/CreatePoll';
 
 import {
   auth,
@@ -28,7 +29,8 @@ import {
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    margin: 0
+    margin: 0,
+    backgroundColor: 'rgba(241,203,33, 0.2)'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1
@@ -55,6 +57,18 @@ const styles = theme => ({
   }
 });
 
+type Props = {
+  classes: Object
+};
+
+type State = {
+  user: ?{ uid: string, displayName: string, photoURL: string, email: string },
+  elections: Array<Object>,
+  creating: boolean,
+  confirmDeleteIsOpen: boolean,
+  confirmDeleteElectionKey: ?string
+};
+
 const defaultState = {
   user: null,
   elections: [],
@@ -67,9 +81,23 @@ class ButtonAppBar extends Component {
   constructor() {
     super();
     this.state = {
-      open: false
+      open: false,
+      elections: []
     };
   }
+
+  watchMyElections = uid => {
+    myElectionsRef(uid).on('value', snapshot => {
+      const electionsVal = snapshot.val();
+      let elections = [];
+      if (electionsVal && this.state.user) {
+        elections = Object.keys(electionsVal).map(key => {
+          return { id: key, title: electionsVal[key].title };
+        });
+      }
+      this.setState({ elections });
+    });
+  };
 
   componentDidMount() {
     auth.onAuthStateChanged(user => {
@@ -88,13 +116,10 @@ class ButtonAppBar extends Component {
 
   login = async () => {
     try {
-      console.log('before signin');
       const result = await auth.signInWithPopup(googleAuth);
-      console.log('signin results', result);
       this.setState({ user: result.user });
       this.watchMyElections(result.user.uid);
     } catch (e) {
-      console.log('LOGIN FAILED: ', e.stack);
       alert('login failed');
     }
   };
@@ -104,7 +129,6 @@ class ButtonAppBar extends Component {
       await auth.signOut();
       this.setState(this.defaultState);
     } catch (e) {
-      console.log('LOGOUT FAILED: ', e);
       alert('logout failed');
     }
   };
@@ -112,7 +136,7 @@ class ButtonAppBar extends Component {
   render() {
     const { classes } = this.props;
 
-    const { user } = this.state;
+    const { user, elections } = this.state;
 
     return (
       <div className={classes.root}>
@@ -130,11 +154,11 @@ class ButtonAppBar extends Component {
               <span className={classes.boldLogo}>RCV</span>Tally
             </Typography>
             {user ? (
-              <Button color="inherit" onClick={this.logout}>
+              <Button color="inherit" onClick={() => this.logout()}>
                 Sign Out
               </Button>
             ) : (
-              <Button color="inherit" onClick={this.login}>
+              <Button color="inherit" onClick={() => this.login()}>
                 Sign In
               </Button>
             )}
@@ -143,8 +167,11 @@ class ButtonAppBar extends Component {
         <Route
           exact
           path={'/'}
-          render={props => <NewHome user={this.state.user} />}
+          render={props => (
+            <NewHome user={user} login={this.login} elections={elections} />
+          )}
         />
+        <Route path={'/create'} component={CreatePoll} />
         <Route path={'/vote/:key'} component={Vote} />
         <Route path={'/monitor/:key/round/:round'} component={Monitor} />
 
