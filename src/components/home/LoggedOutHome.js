@@ -55,7 +55,16 @@ const styles = theme => ({
     marginRight: 'auto'
   },
   subSectionContainer: {
-    paddingBottom: 25
+    paddingBottom: 25,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  imageContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 30
   },
   button: {
     fontWeight: 800,
@@ -106,7 +115,9 @@ class LoggedOutHome extends Component {
               className={classes.subSectionContainer}
               style={{ 'padding-top': '40px' }}
             >
-              <Grid item xs={2} />
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/Pencil.png')} />
+              </Grid>
               <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   Create a Ballot in Minutes
@@ -118,7 +129,9 @@ class LoggedOutHome extends Component {
               </Grid>
             </Grid>
             <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} />
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/Envelope.png')} />
+              </Grid>
               <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   Share a Link to Your Ballot
@@ -129,7 +142,9 @@ class LoggedOutHome extends Component {
               </Grid>
             </Grid>
             <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} />
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/glasses.png')} />
+              </Grid>
               <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   See each round of results
@@ -162,7 +177,9 @@ class LoggedOutHome extends Component {
               className={classes.subSectionContainer}
               style={{ 'padding-top': '40px' }}
             >
-              <Grid item xs={2} />
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/DollarSign.png')} />
+              </Grid>
               <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   RCV Saves Money
@@ -174,7 +191,9 @@ class LoggedOutHome extends Component {
               </Grid>
             </Grid>
             <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} />
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/Mug.png')} />
+              </Grid>
               <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   More Positive Campaigns
@@ -186,7 +205,9 @@ class LoggedOutHome extends Component {
               </Grid>
             </Grid>
             <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} />
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/Mic.png')} />
+              </Grid>
               <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   More Diverse Voices
@@ -207,7 +228,10 @@ class LoggedOutHome extends Component {
               className={classes.subSectionContainer}
               style={{ 'padding-top': '40px' }}
             >
-              <Grid item xs={12} className={classes.subSectionContainer}>
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/One.png')} />
+              </Grid>
+              <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   Step One
                 </Typography>
@@ -216,7 +240,12 @@ class LoggedOutHome extends Component {
                   than 50% of those votes wins.
                 </Typography>
               </Grid>
-              <Grid item xs={12} className={classes.subSectionContainer}>
+            </Grid>
+            <Grid container className={classes.subSectionContainer}>
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/Two.png')} />
+              </Grid>
+              <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   Step Two
                 </Typography>
@@ -226,7 +255,12 @@ class LoggedOutHome extends Component {
                   those voters second choices.
                 </Typography>
               </Grid>
-              <Grid item xs={12} className={classes.subSectionContainer}>
+            </Grid>
+            <Grid container className={classes.subSectionContainer}>
+              <Grid item xs={2} className={classes.imageContainer}>
+                <img src={require('../../assets/Three.png')} />
+              </Grid>
+              <Grid item xs={10}>
                 <Typography variant="h5" className={classes.sectionTitle}>
                   Step Three
                 </Typography>
