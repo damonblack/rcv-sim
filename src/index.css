@@ -1,4 +1,7 @@
-section-title {
-  color: #272361;
-  font-weight: 800;
+body {
+  background-color: transparent !important;
+}
+
+html {
+  background-color: rgba(241, 203, 33, 0.2);
 }

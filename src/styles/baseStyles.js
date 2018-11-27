@@ -1,7 +1,8 @@
 const styles = {
   buttonTray: {
     display: 'flex',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    paddingTop: 40
   },
   formTitle: {
     marginBottom: '0.2em',
@@ -20,6 +21,9 @@ const styles = {
     fontSize: 23,
     padding: 15,
     textTransform: 'capitalize'
+  },
+  buttonNarrow: {
+    width: '50%'
   }
 };
 

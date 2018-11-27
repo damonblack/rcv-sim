@@ -30,7 +30,7 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
     margin: 0,
-    backgroundColor: 'rgba(241,203,33, 0.2)'
+    backgroundColor: 'transparent'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1
@@ -171,7 +171,11 @@ class ButtonAppBar extends Component {
             <NewHome user={user} login={this.login} elections={elections} />
           )}
         />
-        <Route path={'/create'} component={CreatePoll} />
+        <Route
+          exact
+          path={'/create'}
+          render={props => <CreatePoll user={user} />}
+        />
         <Route path={'/vote/:key'} component={Vote} />
         <Route path={'/monitor/:key/round/:round'} component={Monitor} />
 
