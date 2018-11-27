@@ -96,15 +96,7 @@ class LoggedInHome extends Component {
       return (
         <List component="nav">
           {elections.map((election, i) => (
-            <ListItem key={i} divider>
-              <Tooltip title="View Results">
-                <ButtonBase
-                  component={Link}
-                  to={`/monitor/${election.id}/round/1`}
-                >
-                  <ChartIcon className={classes.chartIcon} color="primary" />
-                </ButtonBase>
-              </Tooltip>
+            <ListItem key={i}>
               <ListItemText primary={election.title} />
               <Tooltip title="Vote">
                 <Avatar component={Link} to={`/vote/${election.id}`}>
@@ -118,6 +110,33 @@ class LoggedInHome extends Component {
                   <DeleteIcon className={classes.deleteIcon} />
                 </ButtonBase>
               </Tooltip>
+              <Button
+                variant="outlined"
+                size="large"
+                color="primary"
+                component={Link}
+                to={`/monitor/${election.id}/round/1`}
+              >
+                View Ballot
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                color="primary"
+                component={Link}
+                to={`/monitor/${election.id}/round/1`}
+              >
+                Enter Votes
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                color="primary"
+                component={Link}
+                to={`/monitor/${election.id}/round/1`}
+              >
+                See Results
+              </Button>
             </ListItem>
           ))}
         </List>
@@ -125,7 +144,8 @@ class LoggedInHome extends Component {
     } else {
       return (
         <Typography variant="h4" align="center">
-          You haven't made any elections yet.
+          You haven't created any elections yet. <br />
+          Get started by Creating a New Ballot or Adding a Sample Ballot.
         </Typography>
       );
     }
@@ -135,14 +155,30 @@ class LoggedInHome extends Component {
     const { classes, elections } = this.props;
 
     return (
-      <div className={classes.results}>
-        <Paper>
-          <Typography variant="title" align="center">
+      <Grid container>
+        <Grid item xs={0} sm={2} />
+        <Grid item xs={12} sm={8}>
+          <Typography variant="h3" className={classes.title}>
             Elections
           </Typography>
+          <Typography variant="h4" className={classes.title}>
+            Create New Ballot
+          </Typography>
+          <Typography variant="h4" className={classes.title}>
+            My Elections
+          </Typography>
           {this.renderElectionsOptions(classes, elections)}
-        </Paper>
-      </div>
+          <Typography variant="h4" className={classes.title}>
+            Sample Elections
+          </Typography>
+          <Typography variant="h6" className={classes.sectionText}>
+            Sample Elections have been created so that you can easily
+            demonstrate Ranked Choice Voting. Sample results will show how votes
+            are allocated in multiple rounds. To hold an election using a Sample
+            ballot, select <b>Add to My Elections</b>.
+          </Typography>
+        </Grid>
+      </Grid>
     );
   }
 }

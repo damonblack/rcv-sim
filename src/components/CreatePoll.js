@@ -192,6 +192,7 @@ import {
 } from '@material-ui/icons';
 
 import { electionsRef, candidatesForElectionRef } from '../services';
+import { withRouter } from 'react-router-dom';
 
 import styles from '../styles/baseStyles';
 
@@ -229,7 +230,7 @@ const moviePlaceholders = [
   'Wonder Woman'
 ];
 
-class ElectionForm extends Component<Props, State> {
+class CreatePoll extends Component {
   defaultState = {
     creating: false,
     electionTitle: '',
@@ -320,6 +321,7 @@ class ElectionForm extends Component<Props, State> {
     // redirect to /
     // this is where we'll go after the election is created
     // only if the election is successfully created
+    this.props.history.push('/');
 
     // this.props.onCancel();
   };
@@ -438,4 +440,4 @@ class ElectionForm extends Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(ElectionForm);
+export default withRouter(withStyles(styles)(CreatePoll));

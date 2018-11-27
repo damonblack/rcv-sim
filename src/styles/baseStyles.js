@@ -24,6 +24,11 @@ const styles = {
   },
   buttonNarrow: {
     width: '50%'
+  },
+  title: {
+    flexGrow: 1,
+    color: '#272361',
+    fontWeight: 800
   }
 };
 

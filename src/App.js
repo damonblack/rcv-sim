@@ -10,7 +10,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 
-import { Route } from 'react-router-dom';
+import { Route, BrowserRouter, Switch } from 'react-router-dom';
 
 import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
@@ -139,57 +139,59 @@ class ButtonAppBar extends Component {
     const { user, elections } = this.state;
 
     return (
-      <div className={classes.root}>
-        <CssBaseline />
-        <AppBar position="static" className={classes.appBar}>
-          <Toolbar>
-            <IconButton
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="Menu"
-            >
-              <MenuIcon onClick={this.handleDrawer} />
-            </IconButton>
-            <Typography variant="h2" className={classes.title}>
-              <span className={classes.boldLogo}>RCV</span>Tally
-            </Typography>
-            {user ? (
-              <Button color="inherit" onClick={() => this.logout()}>
-                Sign Out
-              </Button>
-            ) : (
-              <Button color="inherit" onClick={() => this.login()}>
-                Sign In
-              </Button>
+      <BrowserRouter>
+        <div className={classes.root}>
+          <CssBaseline />
+          <AppBar position="static" className={classes.appBar}>
+            <Toolbar>
+              <IconButton
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="Menu"
+              >
+                <MenuIcon onClick={this.handleDrawer} />
+              </IconButton>
+              <Typography variant="h2" className={classes.title}>
+                <span className={classes.boldLogo}>RCV</span>Tally
+              </Typography>
+              {user ? (
+                <Button color="inherit" onClick={() => this.logout()}>
+                  Sign Out
+                </Button>
+              ) : (
+                <Button color="inherit" onClick={() => this.login()}>
+                  Sign In
+                </Button>
+              )}
+            </Toolbar>
+          </AppBar>
+          <Route
+            exact
+            path={'/'}
+            render={props => (
+              <NewHome user={user} login={this.login} elections={elections} />
             )}
-          </Toolbar>
-        </AppBar>
-        <Route
-          exact
-          path={'/'}
-          render={props => (
-            <NewHome user={user} login={this.login} elections={elections} />
-          )}
-        />
-        <Route
-          exact
-          path={'/create'}
-          render={props => <CreatePoll user={user} />}
-        />
-        <Route path={'/vote/:key'} component={Vote} />
-        <Route path={'/monitor/:key/round/:round'} component={Monitor} />
+          />
+          <Route
+            exact
+            path={'/create'}
+            render={props => <CreatePoll user={user} />}
+          />
+          <Route path={'/vote/:key'} component={Vote} />
+          <Route path={'/monitor/:key/round/:round'} component={Monitor} />
 
-        <Drawer
-          className={styles.drawer}
-          open={this.state.open}
-          onClose={this.handleDrawer}
-          classes={{
-            paper: classes.drawerPaper
-          }}
-        >
-          <p>test</p>
-        </Drawer>
-      </div>
+          <Drawer
+            className={styles.drawer}
+            open={this.state.open}
+            onClose={this.handleDrawer}
+            classes={{
+              paper: classes.drawerPaper
+            }}
+          >
+            <p>test</p>
+          </Drawer>
+        </div>
+      </BrowserRouter>
     );
   }
 }
