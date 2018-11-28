@@ -80,6 +80,20 @@ const styles = theme => ({
     fontSize: 23,
     padding: 15,
     textTransform: 'capitalize'
+  },
+  thickerButton: {
+    border: '4px solid',
+    borderRadius: 18,
+    fontWeight: 700,
+    fontSize: 18,
+    padding: '14px 20px'
+  },
+  cssRoot: {
+    color: 'green',
+    backgroundColor: 'green',
+    '&:hover': {
+      backgroundColor: 'green'
+    }
   }
 });
 
@@ -97,46 +111,66 @@ class LoggedInHome extends Component {
         <List component="nav">
           {elections.map((election, i) => (
             <ListItem key={i}>
-              <ListItemText primary={election.title} />
-              <Tooltip title="Vote">
-                <Avatar component={Link} to={`/vote/${election.id}`}>
-                  <VoteIcon color="action" />
-                </Avatar>
-              </Tooltip>
-              <Tooltip title="Delete Election Completely">
-                <ButtonBase
-                  onClick={() => this.confirmElectionDelete(election.id)}
+              <Grid container alignItems="center">
+                <Grid item xs={4}>
+                  <Typography variant="h6">{election.title}</Typography>
+                  {/*<Tooltip title="Delete Election Completely">
+                    <ButtonBase
+                      onClick={() => this.confirmElectionDelete(election.id)}
+                    >
+                      <DeleteIcon className={classes.deleteIcon} />
+                    </ButtonBase>
+                  </Tooltip>*/}
+                </Grid>
+                <Grid
+                  item
+                  xs={8}
+                  direction="row"
+                  justify="space-around"
+                  alignItems="center"
+                  container
                 >
-                  <DeleteIcon className={classes.deleteIcon} />
-                </ButtonBase>
-              </Tooltip>
-              <Button
-                variant="outlined"
-                size="large"
-                color="primary"
-                component={Link}
-                to={`/monitor/${election.id}/round/1`}
-              >
-                View Ballot
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                color="primary"
-                component={Link}
-                to={`/monitor/${election.id}/round/1`}
-              >
-                Enter Votes
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                color="primary"
-                component={Link}
-                to={`/monitor/${election.id}/round/1`}
-              >
-                See Results
-              </Button>
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      color="primary"
+                      component={Link}
+                      to={`/monitor/${election.id}/round/1`}
+                      className={classes.thickerButton}
+                    >
+                      View Ballot
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      color="primary"
+                      component={Link}
+                      to={`/vote/${election.id}`}
+                      className={classes.thickerButton}
+                    >
+                      Enter Votes
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      color="primary"
+                      component={Link}
+                      to={`/monitor/${election.id}/round/1`}
+                      className={classes.thickerButton}
+                    >
+                      See Results
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button>Clear Results</Button>
+                  </Grid>
+                </Grid>
+              </Grid>
             </ListItem>
           ))}
         </List>
@@ -156,8 +190,8 @@ class LoggedInHome extends Component {
 
     return (
       <Grid container>
-        <Grid item xs={0} sm={2} />
-        <Grid item xs={12} sm={8}>
+        <Grid item xs={0} sm={1} />
+        <Grid item xs={12} sm={10}>
           <Typography variant="h3" className={classes.title}>
             Elections
           </Typography>
@@ -171,7 +205,11 @@ class LoggedInHome extends Component {
           <Typography variant="h4" className={classes.title}>
             Sample Elections
           </Typography>
-          <Typography variant="h6" className={classes.sectionText}>
+          <Typography
+            variant="h6"
+            className={classes.sectionText}
+            style={{ width: '85%' }}
+          >
             Sample Elections have been created so that you can easily
             demonstrate Ranked Choice Voting. Sample results will show how votes
             are allocated in multiple rounds. To hold an election using a Sample
