@@ -195,26 +195,53 @@ class LoggedInHome extends Component {
           <Typography variant="h3" className={classes.title}>
             Elections
           </Typography>
-          <Typography variant="h4" className={classes.title}>
-            Create New Ballot
-          </Typography>
-          <Typography variant="h4" className={classes.title}>
-            My Elections
-          </Typography>
-          {this.renderElectionsOptions(classes, elections)}
-          <Typography variant="h4" className={classes.title}>
-            Sample Elections
-          </Typography>
-          <Typography
-            variant="h6"
-            className={classes.sectionText}
-            style={{ width: '85%' }}
+          <Grid
+            item
+            xs={8}
+            direction="row"
+            alignItems="center"
+            container
+            style={{ 'padding-top': '30px' }}
           >
-            Sample Elections have been created so that you can easily
-            demonstrate Ranked Choice Voting. Sample results will show how votes
-            are allocated in multiple rounds. To hold an election using a Sample
-            ballot, select <b>Add to My Elections</b>.
-          </Typography>
+            <Grid item>
+              <Typography variant="h4" className={classes.title}>
+                Create New Ballot
+              </Typography>
+            </Grid>
+            <Grid item style={{ 'padding-left': '40px' }}>
+              <Button
+                variant="outlined"
+                size="large"
+                color="primary"
+                component={Link}
+                to={'/create'}
+                className={classes.thickerButton}
+              >
+                Create Ballot
+              </Button>
+            </Grid>
+          </Grid>
+          <div style={{ 'padding-top': '30px' }}>
+            <Typography variant="h4" className={classes.title}>
+              My Elections
+            </Typography>
+            {this.renderElectionsOptions(classes, elections)}
+          </div>
+          <div style={{ 'padding-top': '30px' }}>
+            <Typography variant="h4" className={classes.title}>
+              Sample Elections
+            </Typography>
+            <Typography
+              variant="h6"
+              className={classes.sectionText}
+              style={{ width: '85%' }}
+            >
+              Sample Elections have been created so that you can easily
+              demonstrate Ranked Choice Voting. Sample results will show how
+              votes are allocated in multiple rounds. To hold an election using
+              a Sample ballot, select <b>Add to My Elections</b>.
+            </Typography>
+          </div>
         </Grid>
       </Grid>
     );
