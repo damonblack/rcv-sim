@@ -10,7 +10,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 
-import { Route, BrowserRouter, Switch } from 'react-router-dom';
+import { Route, BrowserRouter, Switch, Link } from 'react-router-dom';
 
 import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
@@ -153,8 +153,11 @@ class ButtonAppBar extends Component {
               >
                 <MenuIcon onClick={this.handleDrawer} />
               </IconButton>
+
               <Typography variant="h2" className={classes.title}>
-                <span className={classes.boldLogo}>RCV</span>Tally
+                <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
+                  <span className={classes.boldLogo}>RCV</span>Tally
+                </Link>
               </Typography>
               {user ? (
                 <Button color="inherit" onClick={() => this.logout()}>
