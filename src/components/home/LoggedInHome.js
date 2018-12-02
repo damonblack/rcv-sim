@@ -86,7 +86,10 @@ const styles = theme => ({
     borderRadius: 18,
     fontWeight: 700,
     fontSize: 18,
-    padding: '14px 20px'
+    padding: '14px 20px',
+    '&:hover': {
+      border: '4px solid'
+    }
   },
   cssRoot: {
     color: 'green',
@@ -136,7 +139,7 @@ class LoggedInHome extends Component {
                       size="large"
                       color="primary"
                       component={Link}
-                      to={`/monitor/${election.id}/round/1`}
+                      to={'/preview/' + election.id}
                       className={classes.thickerButton}
                     >
                       View Ballot
@@ -192,7 +195,11 @@ class LoggedInHome extends Component {
       <Grid container>
         <Grid item xs={0} sm={1} />
         <Grid item xs={12} sm={10}>
-          <Typography variant="h3" className={classes.title}>
+          <Typography
+            variant="h3"
+            className={classes.title}
+            style={{ 'padding-top': '30px' }}
+          >
             Elections
           </Typography>
           <Grid

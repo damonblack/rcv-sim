@@ -16,6 +16,8 @@ import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
 import Monitor from './components/Monitor';
 import CreatePoll from './components/CreatePoll';
+import BallotPreview from './components/BallotPreview';
+import BallotPrint from './components/BallotPrint';
 
 import {
   auth,
@@ -178,6 +180,8 @@ class ButtonAppBar extends Component {
             render={props => <CreatePoll user={user} />}
           />
           <Route path={'/vote/:key'} component={Vote} />
+          <Route path={'/preview/:key'} component={BallotPreview} />
+          <Route path={'/print/:key'} component={BallotPrint} />
           <Route path={'/monitor/:key/round/:round'} component={Monitor} />
 
           <Drawer

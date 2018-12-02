@@ -7,7 +7,9 @@ import {
   IconButton,
   Snackbar,
   Tooltip,
-  Typography
+  Typography,
+  Grid,
+  Button
 } from '@material-ui/core';
 import {
   Home as HomeIcon,
@@ -15,17 +17,17 @@ import {
   Close as CloseIcon,
   Print as PrintIcon
 } from '@material-ui/icons';
-import ReactToPrint from 'react-to-print';
 
-import { auth, electionRef, candidatesRef, votesRef } from '../../services';
-import type { Election } from '../../lib/voteTypes';
-import LegacyBallot from './LegacyBallot';
+import { auth, electionRef, candidatesRef, votesRef } from '../services';
+import type { Election } from '../lib/voteTypes';
+import LegacyBallot from './vote/LegacyBallot';
 
 const styles = {
   container: {
     width: '80%',
     margin: '0 auto',
-    marginBottom: 80
+    marginBottom: 80,
+    marginTop: 80
   },
   wrapper: {
     display: 'flex'
@@ -39,7 +41,7 @@ const styles = {
   ballotContainer: {
     backgroundColor: '#fff',
     border: '3px solid #000',
-    marginTop: 80
+    marginTop: 20
   },
   title: {
     flexGrow: 1,
@@ -50,6 +52,19 @@ const styles = {
     borderBottom: '1px solid #000',
     paddingTop: 40,
     paddingBottom: 40
+  },
+  sectionTitle: {
+    color: '#272361',
+    fontWeight: 800
+  },
+  button: {
+    fontWeight: 800,
+    fontSize: 23,
+    padding: 15,
+    textTransform: 'capitalize'
+  },
+  buttonNarrow: {
+    width: '25%'
   }
 };
 
@@ -76,12 +91,54 @@ class Vote extends Component<Props, State> {
     votes: {},
     lastAction: '',
     notifierOpen: false,
-    user: auth.currentUser
+    user: auth.currentUser,
+    copyErrMsg: '',
+    copyStatus: ''
   };
 
   constructor(props: Props) {
     super(props);
     this.state = this.defaultState;
+  }
+
+  copyToClipboard() {
+    try {
+      const el = document.createElement('textarea');
+      el.value = window.location.href;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      const selected =
+        document.getSelection().rangeCount > 0
+          ? document.getSelection().getRangeAt(0)
+          : false;
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+      }
+      this.setState({ copyErrMsg: 'Copied!', copyStatus: true });
+      setTimeout(
+        function() {
+          this.setState({ copyStatus: '', copyErrMsg: '' });
+        }.bind(this),
+        3000
+      );
+    } catch (e) {
+      this.setState({
+        copyErrMsg: 'There was an error copying your ballot URL.',
+        copyStatus: false
+      });
+      setTimeout(
+        function() {
+          this.setState({ copyStatus: '', copyErrMsg: '' });
+        }.bind(this),
+        3000
+      );
+    }
   }
 
   static rankName(number: number) {
@@ -200,7 +257,8 @@ class Vote extends Component<Props, State> {
       candidates,
       notifierOpen,
       lastAction,
-      votes
+      votes,
+      printing
     } = this.state;
     const {
       classes,
@@ -213,53 +271,99 @@ class Vote extends Component<Props, State> {
       if (!localStorage.getItem('RCV' + key) || this.userIsElectionOwner()) {
         return (
           <div className={classes.container}>
+            <Typography variant="h3" className={classes.sectionTitle}>
+              RCV Ballot Preview
+            </Typography>
             <div className={classes.ballotContainer}>
-              <div className={classes.titleContainer}>
-                <Typography
-                  variant="h3"
-                  align="center"
-                  className={classes.title}
+              <div ref={el => (this.ballotRef = el)}>
+                <div className={classes.titleContainer}>
+                  <Typography
+                    variant="h3"
+                    align="center"
+                    className={classes.title}
+                  >
+                    {election.title}
+                  </Typography>
+                </div>
+                <div className={classes.wrapper}>
+                  <LegacyBallot
+                    preview
+                    election={election}
+                    candidates={candidates}
+                    votes={votes}
+                    lastAction={lastAction}
+                    notifierOpen={notifierOpen}
+                    updateVote={this.updateVote}
+                    submitVote={this.submitVote}
+                    closeNotifier={this.closeNotifier}
+                  />
+                </div>
+              </div>
+            </div>
+            <Grid
+              direction="row"
+              justify="flex-end"
+              alignItems="center"
+              container
+            >
+              <Grid item>
+                <Grid
+                  direction="row"
+                  justify="flex-end"
+                  alignItems="center"
+                  container
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    this.props.history.push(
+                      '/print/' + this.props.match.params.key
+                    )
+                  }
                 >
-                  {election.title}
-                </Typography>
-              </div>
-              <div className={classes.wrapper}>
-                <LegacyBallot
-                  election={election}
-                  candidates={candidates}
-                  votes={votes}
-                  lastAction={lastAction}
-                  notifierOpen={notifierOpen}
-                  updateVote={this.updateVote}
-                  submitVote={this.submitVote}
-                  closeNotifier={this.closeNotifier}
-                  ref={el => (this.ballotRef = el)}
-                />
-                <Snackbar
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center'
-                  }}
-                  open={notifierOpen}
-                  autoHideDuration={4000}
-                  onClose={this.closeNotifier}
-                  SnackbarContentProps={{
-                    'aria-describedby': 'message-id'
-                  }}
-                  message={<span id="message-id">{lastAction}</span>}
-                  action={[
-                    <IconButton
-                      key="close"
-                      aria-label="Close"
-                      color="inherit"
-                      className={classes.close}
-                      onClick={this.closeNotifier}
+                  <Grid item>
+                    <PrintIcon color="action" style={{ fontSize: '34px' }} />
+                  </Grid>
+                  <Grid item>
+                    <Typography
+                      style={{
+                        display: 'inline-block',
+                        fontSize: '20px',
+                        'padding-left': '8px'
+                      }}
                     >
-                      <CloseIcon />
-                    </IconButton>
-                  ]}
-                />
-              </div>
+                      Print Ballot
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Typography variant="h5" className={classes.sectionTitle}>
+              Invite others to vote in your election
+            </Typography>
+            <Typography variant="h6">
+              To hold your election, share a link to your ballot. Anyone with
+              this link will be able to vote.
+            </Typography>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                'margin-top': '20px',
+                flexDirection: 'column'
+              }}
+            >
+              <Button
+                variant="raised"
+                color="secondary"
+                className={[classes.button, classes.buttonNarrow]}
+                style={{ cursor: 'copy' }}
+                fullWidth
+                onClick={() => this.copyToClipboard()}
+              >
+                Get Link to Ballot
+              </Button>
+              <Typography style={{ marginTop: 10 }}>
+                {this.state.copyErrMsg}
+              </Typography>
             </div>
           </div>
         );

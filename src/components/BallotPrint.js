@@ -7,7 +7,9 @@ import {
   IconButton,
   Snackbar,
   Tooltip,
-  Typography
+  Typography,
+  Grid,
+  Button
 } from '@material-ui/core';
 import {
   Home as HomeIcon,
@@ -17,15 +19,16 @@ import {
 } from '@material-ui/icons';
 import ReactToPrint from 'react-to-print';
 
-import { auth, electionRef, candidatesRef, votesRef } from '../../services';
-import type { Election } from '../../lib/voteTypes';
-import LegacyBallot from './LegacyBallot';
+import { auth, electionRef, candidatesRef, votesRef } from '../services';
+import type { Election } from '../lib/voteTypes';
+import LegacyBallot from './vote/LegacyBallot';
 
 const styles = {
   container: {
     width: '80%',
     margin: '0 auto',
-    marginBottom: 80
+    marginBottom: 80,
+    marginTop: 80
   },
   wrapper: {
     display: 'flex'
@@ -39,7 +42,7 @@ const styles = {
   ballotContainer: {
     backgroundColor: '#fff',
     border: '3px solid #000',
-    marginTop: 80
+    marginTop: 20
   },
   title: {
     flexGrow: 1,
@@ -50,6 +53,29 @@ const styles = {
     borderBottom: '1px solid #000',
     paddingTop: 40,
     paddingBottom: 40
+  },
+  instructionsContainer: {
+    borderBottom: '1px solid #000',
+    paddingTop: 15,
+    paddingBottom: 15,
+    paddingLeft: 25
+  },
+  sectionTitle: {
+    color: '#272361',
+    fontWeight: 800
+  },
+  button: {
+    fontWeight: 800,
+    fontSize: 23,
+    padding: 15,
+    textTransform: 'capitalize'
+  },
+  buttonNarrow: {
+    width: '25%'
+  },
+  printContainer: {
+    paddingLeft: 40,
+    paddingRight: 40
   }
 };
 
@@ -70,13 +96,16 @@ type State = {
   user: ?Object
 };
 
-class Vote extends Component<Props, State> {
+class BallotPrint extends Component<Props, State> {
   defaultState = {
     candidates: [],
     votes: {},
     lastAction: '',
     notifierOpen: false,
-    user: auth.currentUser
+    user: auth.currentUser,
+    copyErrMsg: '',
+    copyStatus: '',
+    printing: false
   };
 
   constructor(props: Props) {
@@ -89,28 +118,6 @@ class Vote extends Component<Props, State> {
     if (number === 2) return 'second';
     if (number === 3) return 'third';
     return number + 'th';
-  }
-
-  static actionText(
-    candidateName: string,
-    displacedName: string,
-    position: number,
-    previousPosition: number
-  ): string {
-    const replacing =
-      displacedName === '' ? '' : `, replacing ${displacedName}`;
-    const goFirstPlace = position === 1 ? ` Go ${candidateName}!` : '';
-
-    if (!previousPosition)
-      return `You've chosen ${candidateName} as your ${Vote.rankName(
-        position
-      )} choice${replacing}.${goFirstPlace}`;
-
-    const verb = previousPosition > position ? 'promoting' : 'demoting';
-
-    return `You've changed your vote for ${candidateName}, ${verb} them to your ${Vote.rankName(
-      position
-    )} choice${replacing}.`;
   }
 
   updateUser = user => {
@@ -165,14 +172,7 @@ class Vote extends Component<Props, State> {
     });
     votes[position] = candidateId;
 
-    const lastAction = Vote.actionText(
-      candidateName,
-      displacedName,
-      position,
-      previousPosition
-    );
-
-    this.setState({ votes, lastAction, notifierOpen: true });
+    this.setState({ votes, notifierOpen: true });
   };
 
   submitVote = () => {
@@ -200,7 +200,8 @@ class Vote extends Component<Props, State> {
       candidates,
       notifierOpen,
       lastAction,
-      votes
+      votes,
+      printing
     } = this.state;
     const {
       classes,
@@ -213,53 +214,76 @@ class Vote extends Component<Props, State> {
       if (!localStorage.getItem('RCV' + key) || this.userIsElectionOwner()) {
         return (
           <div className={classes.container}>
-            <div className={classes.ballotContainer}>
-              <div className={classes.titleContainer}>
-                <Typography
-                  variant="h3"
-                  align="center"
-                  className={classes.title}
-                >
-                  {election.title}
-                </Typography>
+            <div
+              className={classes.ballotContainer}
+              ref={el => (this.ballotRef = el)}
+            >
+              <div>
+                <div className={classes.titleContainer}>
+                  <Typography
+                    variant="h3"
+                    align="center"
+                    className={classes.title}
+                  >
+                    {election.title}
+                  </Typography>
+                </div>
+                <div className={classes.instructionsContainer}>
+                  <Typography variant="h5" className={classes.title}>
+                    How to Vote
+                  </Typography>
+                  <Typography variant="title">
+                    A. To vote, fill in the oval to the right of the candidate
+                    of your choice completely.
+                  </Typography>
+                  <Typography variant="title">
+                    B. If you wrongly mark, tear or spoil the ballot, return the
+                    damaged ballot and get a replacement.
+                  </Typography>
+                  <Typography variant="title">
+                    C. Mark no more than one oval per candidate / choice.
+                  </Typography>
+                  <Typography variant="title">
+                    D. Mark no more than one oval per column.
+                  </Typography>
+                </div>
+                <div className={classes.wrapper}>
+                  <LegacyBallot
+                    preview
+                    election={election}
+                    candidates={candidates}
+                    votes={votes}
+                    lastAction={lastAction}
+                    notifierOpen={notifierOpen}
+                    updateVote={this.updateVote}
+                    submitVote={this.submitVote}
+                    closeNotifier={this.closeNotifier}
+                  />
+                </div>
               </div>
-              <div className={classes.wrapper}>
-                <LegacyBallot
-                  election={election}
-                  candidates={candidates}
-                  votes={votes}
-                  lastAction={lastAction}
-                  notifierOpen={notifierOpen}
-                  updateVote={this.updateVote}
-                  submitVote={this.submitVote}
-                  closeNotifier={this.closeNotifier}
-                  ref={el => (this.ballotRef = el)}
-                />
-                <Snackbar
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center'
-                  }}
-                  open={notifierOpen}
-                  autoHideDuration={4000}
-                  onClose={this.closeNotifier}
-                  SnackbarContentProps={{
-                    'aria-describedby': 'message-id'
-                  }}
-                  message={<span id="message-id">{lastAction}</span>}
-                  action={[
-                    <IconButton
-                      key="close"
-                      aria-label="Close"
-                      color="inherit"
-                      className={classes.close}
-                      onClick={this.closeNotifier}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  ]}
-                />
-              </div>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                'margin-top': '20px',
+                flexDirection: 'column'
+              }}
+            >
+              <ReactToPrint
+                trigger={() => (
+                  <Button
+                    variant="raised"
+                    color="secondary"
+                    className={[classes.button, classes.buttonNarrow]}
+                    fullWidth
+                  >
+                    Print Ballot
+                  </Button>
+                )}
+                content={() => this.ballotRef}
+                bodyClass={classes.printContainer}
+              />
             </div>
           </div>
         );
@@ -272,4 +296,4 @@ class Vote extends Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(Vote);
+export default withStyles(styles)(BallotPrint);
