@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import {
+  electionsRef,
+  candidatesForElectionRef,
+  votesRef
+} from '../../services';
 
 import {
   Avatar,
@@ -14,14 +19,21 @@ import {
   ListItemText,
   Paper,
   Tooltip,
-  Typography
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Slide
 } from '@material-ui/core';
 
 import {
   InsertChart as ChartIcon,
   Done as VoteIcon,
   Cancel as LogoutIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Add as AddIcon
 } from '@material-ui/icons';
 
 const styles = theme => ({
@@ -100,12 +112,35 @@ const styles = theme => ({
   }
 });
 
+function Transition(props) {
+  return <Slide direction="up" {...props} />;
+}
+
+const actionMovieSampleElection = {
+  electionTitle: 'Which of these is the best action movie?',
+  numberOfWinners: 1,
+  candidates: [
+    'Die Hard',
+    'Raiders of the Lost Ark',
+    'The Terminator',
+    'The Dark Knight',
+    'The Matrix',
+    'The Bourne Identity'
+  ]
+};
+
 class LoggedInHome extends Component {
   constructor() {
     super();
     this.state = {
-      open: false
+      open: false,
+      election: ''
     };
+  }
+
+  clearVotes(electionKey) {
+    votesRef(electionKey).set([]);
+    this.handleClose();
   }
 
   renderElectionsOptions(classes, elections) {
@@ -170,7 +205,13 @@ class LoggedInHome extends Component {
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button>Clear Results</Button>
+                    <Button
+                      onClick={() =>
+                        this.setState({ election: election, open: true })
+                      }
+                    >
+                      Clear Results
+                    </Button>
                   </Grid>
                 </Grid>
               </Grid>
@@ -186,6 +227,41 @@ class LoggedInHome extends Component {
         </Typography>
       );
     }
+  }
+
+  handleClickOpen = () => {
+    this.setState({ open: true });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
+  addSampleElection({ electionTitle, numberOfWinners, candidates }) {
+    const title = electionTitle.trim();
+    const cleanTitle = title.replace(/[^\w\s]/gi, '');
+    const key = cleanTitle.replace(/\s+/g, '-').toLowerCase();
+    electionsRef()
+      .child(key)
+      .set({
+        title: title,
+        numberOfWinners,
+        owner: this.props.user.uid,
+        created: Date.now()
+      })
+      .then(result => {
+        const candidateDB = candidatesForElectionRef(key);
+        candidates.forEach(candidate => {
+          const candidateEntry = {
+            name: candidate.trim(),
+            owner: this.props.user.uid
+          };
+          candidateDB.push(candidateEntry);
+        });
+      })
+      .catch(error =>
+        alert('Unable to create election. Try a different name.')
+      );
   }
 
   render() {
@@ -234,7 +310,7 @@ class LoggedInHome extends Component {
             </Typography>
             {this.renderElectionsOptions(classes, elections)}
           </div>
-          <div style={{ 'padding-top': '30px' }}>
+          <div style={{ paddingTop: '30px', paddingBottom: '40px' }}>
             <Typography variant="h4" className={classes.title}>
               Sample Elections
             </Typography>
@@ -248,8 +324,77 @@ class LoggedInHome extends Component {
               votes are allocated in multiple rounds. To hold an election using
               a Sample ballot, select <b>Add to My Elections</b>.
             </Typography>
+            <List>
+              <ListItem>
+                <Grid container alignItems="center">
+                  <Grid item xs={4}>
+                    <Typography variant="h6">Action Movie Election</Typography>
+                    {/*<Tooltip title="Delete Election Completely">
+                      <ButtonBase
+                        onClick={() => this.confirmElectionDelete(election.id)}
+                      >
+                        <DeleteIcon className={classes.deleteIcon} />
+                      </ButtonBase>
+                    </Tooltip>*/}
+                  </Grid>
+                  <Grid
+                    item
+                    xs={8}
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="center"
+                    container
+                  >
+                    <Grid item>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        color="primary"
+                        className={classes.thickerButton}
+                        onClick={() =>
+                          this.addSampleElection(actionMovieSampleElection)
+                        }
+                      >
+                        <AddIcon />
+                        Add to My Elections
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </ListItem>
+            </List>
           </div>
         </Grid>
+        <Dialog
+          open={this.state.open}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            Are you sure you want to delete your results for "
+            {this.state.election.title}"?
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              This can't be undone. If you're ready to throw out your previous
+              results and start again then feel free to continue.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => this.clearVotes(this.state.election.id)}
+              style={{ color: 'red' }}
+            >
+              Clear Results
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
     );
   }
