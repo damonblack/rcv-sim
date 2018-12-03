@@ -12,7 +12,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemAvatar
+  ListItemAvatar,
+  Grid
 } from '@material-ui/core';
 import {
   ArrowBack,
@@ -26,39 +27,79 @@ import { getResults } from '../lib/voteCounter';
 import Candidate from './chart/Candidate';
 import type { Results } from '../lib/voteTypes';
 
+const Green = require('../assets/Green.png');
+const Gray = require('../assets/Gray.png');
+const Purple = require('../assets/Purple.png');
+const Yellow = require('../assets/Yellow.png');
+const Orange = require('../assets/Orange.png');
+const Blue = require('../assets/Blue.png');
+
 const finishLIne =
-  'repeating-linear-gradient(to top, #fff, #fff 3%, #76911d 3%, #76911d 10%)';
+  'repeating-linear-gradient(to top, transparent, transparent 3%, #76911d 3%, #76911d 10%)';
 
 const styles = theme => {
   return {
     wrapper: {
-      display: 'flex',
-      alignItems: 'top',
-      justifyContent: 'center',
-      height: '80vh'
+      padding: 40
     },
     splitWrapper: { display: 'flex', justifyContent: 'space-between' },
     results: { width: '100%' },
     chartHeader: {
       background: 'transparent',
-      height: '5vh'
+      height: 30
     },
-    chartLabel: { transform: 'translate(-50%, 0)' },
+    chartLabel: {
+      transform: 'translate(-100%, 0)'
+    },
     chart: {
       display: 'flex'
     },
     bars: {
-      width: '100%'
+      width: '75%',
+      textAlign: 'right'
     },
     candidateName: {
       textAlign: 'right',
-      height: '10vh'
+      height: 85
+    },
+    candidateList: {
+      marginTop: 30
     },
     diamond: {
       height: '3.5vh',
       width: '3.5vh',
       transform: 'rotate(45deg)',
       backgroundColor: 'blue'
+    },
+    electionNotices: {
+      paddingTop: 30,
+      paddingLeft: 20,
+      paddingRight: 20,
+      textAlign: 'left',
+      minHeight: 130
+    },
+    buttonGroup: {
+      display: 'flex',
+      justifyContent: 'space-around',
+      marginTop: 20
+    },
+    button: {
+      fontWeight: 800,
+      fontSize: 23,
+      padding: 15,
+      textTransform: 'capitalize'
+    },
+    buttonNarrow: {
+      width: '25%'
+    },
+    sectionTitle: {
+      color: '#272361',
+      fontWeight: 800
+    },
+    candidateColorRec: {
+      height: 15,
+      width: 40,
+      display: 'inline-block'
     }
   };
 };
@@ -83,18 +124,7 @@ type State = {
 class Monitor extends Component<Props, State> {
   state = {};
 
-  candidateColors = [
-    '#F1CB21',
-    '#FF6600',
-    '#EC2127',
-    '#272361',
-    'purple',
-    'cyan',
-    'magenta',
-    'darkGrey',
-    'brown',
-    'pink'
-  ];
+  candidateColors = ['Green', 'Purple', 'Yellow', 'Orange', 'Blue', 'Gray'];
 
   componentDidMount() {
     const { key } = this.props.match.params;
@@ -188,70 +218,82 @@ class Monitor extends Component<Props, State> {
 
     return (
       <div className={classes.wrapper}>
-        <Tooltip title="Previous Round">
-          <Button
-            disabled={roundInt === 1}
-            variant="raised"
-            component={Link}
-            to={`/monitor/${key}/round/1`}
-          >
-            <ArrowBack className={classes.chartIcon} color="primary" />
-          </Button>
-        </Tooltip>
         <div className={classes.results}>
-          <Typography variant="title" align="center" gutterBottom>
-            {election.title} - Round {round}
+          <Typography variant="h5" className={classes.sectionTitle}>
+            {election.title}
           </Typography>
-          <div className={classes.splitWrapper}>
-            <Tooltip title="Dashboard">
-              <Avatar component={Link} to={`/`}>
-                <HomeIcon className={classes.chartIcon} color="primary" />
-              </Avatar>
-            </Tooltip>
-            <Tooltip title="Vote">
-              <Avatar component={Link} to={`/vote/${election.id}`}>
-                <VoteIcon color="primary" />
-              </Avatar>
-            </Tooltip>
-          </div>
-          <div className={classes.chart}>
-            <Paper className={classes.candidateList}>
-              <Typography
-                variant="caption"
-                style={{ height: '5vh', background: 'transparent' }}
-              />
-              <List>
-                {sortedCandidates.map(candidate => (
+          <Typography
+            variant="h4"
+            gutterBottom
+            className={classes.sectionTitle}
+          >
+            Round {round}
+          </Typography>
+          <Grid container>
+            <Grid item className={classes.candidateList}>
+              <List disablePadding={true}>
+                {sortedCandidates.map((candidate, i) => (
                   <ListItem className={classes.candidateName}>
-                    <ListItemAvatar>
-                      <div
-                        className={classes.diamond}
-                        style={{
-                          backgroundColor: colorMap[candidate.id]
-                        }}
-                      />
-                    </ListItemAvatar>
                     <ListItemText
                       primary={candidate.name}
                       primaryTypographyProps={{ noWrap: true }}
-                      secondary={getSecondaryText(candidate)}
-                      secondaryTypographyProps={{ noWrap: true }}
+                      secondary={
+                        <React.Fragment>
+                          {getSecondaryText(candidate)}
+                          <br />
+                          {getSecondaryText(candidate) === 'Eliminated' ? (
+                            <div
+                              className={classes.candidateColorRec}
+                              style={{
+                                backgroundImage:
+                                  'url(' + eval(this.candidateColors[i]) + ')'
+                              }}
+                            />
+                          ) : null}
+                        </React.Fragment>
+                      }
                     />
                   </ListItem>
                 ))}
+                {lostVotes ? (
+                  <ListItem className={classes.candidateName}>
+                    <ListItemText
+                      primary="Inactive Ballots"
+                      primaryTypographyProps={{ noWrap: true }}
+                      secondary={
+                        <React.Fragment>
+                          <Typography component="span">
+                            No candidate choices left
+                          </Typography>
+                          {lostVotes + ' votes'}
+                        </React.Fragment>
+                      }
+                    />
+                  </ListItem>
+                ) : null}
               </List>
-            </Paper>
-            <div className={classes.bars}>
-              <Paper className={classes.chartHeader}>
-                <Chip
+            </Grid>
+            <Grid item className={classes.bars}>
+              <div className={classes.chartHeader}>
+                {/*<Chip
                   className={classes.chartLabel}
                   label={`${Math.round(
                     victoryPercentage * 100
                   )}% (${votesToWin} votes)`}
                   style={{ marginLeft: `${victoryPercentage * 10 * scalar}%` }}
-                />
-              </Paper>
-              <Paper
+                />*/}
+
+                <Typography
+                  variant="span"
+                  className={classes.chartLabel}
+                  style={{ display: 'inline-block' }}
+                >
+                  {`${Math.round(
+                    victoryPercentage * 100
+                  )}% (${votesToWin} votes)`}
+                </Typography>
+              </div>
+              <div
                 style={{
                   width: '100%',
                   // prettier-ignore
@@ -261,9 +303,9 @@ class Monitor extends Component<Props, State> {
                   // prettier-ignore
                   backgroundRepeat: 'no-repeat, no-repeat',
                   backgroundSize: 'contain, 0.5% 100%',
-                  paddingBottom: '3vh'
+                  border: '2px solid #000'
                 }}
-                elevation={8}
+                // elevation={8}
               >
                 {sortedCandidates.map(candidate => {
                   const segments = thisRound.segments[candidate.id];
@@ -282,23 +324,46 @@ class Monitor extends Component<Props, State> {
                     />
                   );
                 })}
-              </Paper>
-            </div>
-          </div>
-          <Typography>Inactive Ballots</Typography>
-          <Typography variant="caption">(no candidate choices left)</Typography>
-          <Typography>{lostVotes} votes</Typography>
+              </div>
+              <div className={classes.belowGraph}>
+                <div className={classes.electionNotices}>
+                  {allWinners.length >= numberOfWinners && roundInt > 1 ? (
+                    <Typography variant={'h6'}>
+                      No candidate won a majority of votes. The candidate
+                      currently in last place is eliminated. Votes cast for the
+                      last place candidate will be distributed to those voters
+                      next choices in the following round.
+                    </Typography>
+                  ) : null}
+                </div>
+                <div className={classes.buttonGroup}>
+                  <Button
+                    disabled={roundInt === 1}
+                    variant="raised"
+                    color="secondary"
+                    component={Link}
+                    to={`/monitor/${key}/round/1`}
+                    className={[classes.button, classes.buttonNarrow]}
+                    fullWidth
+                  >
+                    Last Round
+                  </Button>
+                  <Button
+                    disabled={allWinners.length >= numberOfWinners}
+                    variant="raised"
+                    color="secondary"
+                    component={Link}
+                    to={`/monitor/${key}/round/${nextRound}`}
+                    className={[classes.button, classes.buttonNarrow]}
+                    fullWidth
+                  >
+                    Next Round
+                  </Button>
+                </div>
+              </div>
+            </Grid>
+          </Grid>
         </div>
-        <Tooltip title="Next Round">
-          <Button
-            disabled={allWinners.length >= numberOfWinners}
-            variant="raised"
-            component={Link}
-            to={`/monitor/${key}/round/${nextRound}`}
-          >
-            <ArrowForward className={classes.chartIcon} color="primary" />
-          </Button>
-        </Tooltip>
       </div>
     );
   }
