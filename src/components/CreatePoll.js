@@ -112,7 +112,7 @@ class CreatePoll extends Component {
     }
     const title = electionTitle.trim();
     const cleanTitle = title.replace(/[^\w\s]/gi, '');
-    const key = cleanTitle.replace(/\s+/g, '-').toLowerCase();
+    const key = Math.floor(Math.random() * 90000) + 10000;
     electionsRef()
       .child(key)
       .set({
