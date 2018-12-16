@@ -20,7 +20,6 @@ const styles = {
 
 const MultiBar = props => {
   const { classes, segments } = props;
-  console.log(segments);
 
   const getSegmentStyle = segment => {
     const style = {

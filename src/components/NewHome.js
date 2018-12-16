@@ -24,12 +24,7 @@ import LoggedInHome from './home/LoggedInHome';
 
 import { Route } from 'react-router-dom';
 
-const styles = theme => ({
-  homeBody: {
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  }
-});
+import styles from '../styles/baseStyles';
 
 const defaultState = {
   user: null,

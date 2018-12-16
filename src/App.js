@@ -19,6 +19,8 @@ import CreatePoll from './components/CreatePoll';
 import BallotPreview from './components/BallotPreview';
 import BallotPrint from './components/BallotPrint';
 
+import './index.css';
+
 import {
   auth,
   googleAuth,
@@ -28,36 +30,7 @@ import {
   electionRef
 } from './services';
 
-const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    margin: 0,
-    backgroundColor: 'transparent'
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1
-  },
-  title: {
-    flexGrow: 1,
-    color: '#FFFFFF',
-    letterSpacing: 1.8,
-    padding: 15
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  },
-  boldLogo: {
-    fontWeight: 800
-  },
-  drawer: {
-    width: 250,
-    flexShrink: 0
-  },
-  drawerPaper: {
-    width: 250
-  }
-});
+const styles = theme => ({});
 
 type Props = {
   classes: Object
@@ -141,64 +114,62 @@ class ButtonAppBar extends Component {
     const { user, elections } = this.state;
 
     return (
-      <BrowserRouter>
-        <div className={classes.root}>
-          <CssBaseline />
-          <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
-              <IconButton
-                className={classes.menuButton}
-                color="inherit"
-                aria-label="Menu"
-              >
-                <MenuIcon onClick={this.handleDrawer} />
-              </IconButton>
+      <div>
+        <CssBaseline />
+        <AppBar position="static" className={'appBar'}>
+          <Toolbar>
+            <IconButton
+              className={'menuButton'}
+              color="inherit"
+              aria-label="Menu"
+            >
+              <MenuIcon onClick={this.handleDrawer} />
+            </IconButton>
 
-              <Typography variant="h2" className={classes.title}>
-                <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
-                  <span className={classes.boldLogo}>RCV</span>Tally
-                </Link>
-              </Typography>
-              {user ? (
-                <Button color="inherit" onClick={() => this.logout()}>
-                  Sign Out
-                </Button>
-              ) : (
-                <Button color="inherit" onClick={() => this.login()}>
-                  Sign In
-                </Button>
-              )}
-            </Toolbar>
-          </AppBar>
-          <Route
-            exact
-            path={'/'}
-            render={props => (
-              <NewHome user={user} login={this.login} elections={elections} />
+            <Typography variant="h2" className={'headerTitle'}>
+              <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
+                <span className={'boldLogo'}>RCV</span>Tally
+              </Link>
+            </Typography>
+            {user ? (
+              <Button color="inherit" onClick={() => this.logout()}>
+                Sign Out
+              </Button>
+            ) : (
+              <Button color="inherit" onClick={() => this.login()}>
+                Sign In
+              </Button>
             )}
-          />
-          <Route
-            exact
-            path={'/create'}
-            render={props => <CreatePoll user={user} />}
-          />
-          <Route path={'/vote/:key'} component={Vote} />
-          <Route path={'/preview/:key'} component={BallotPreview} />
-          <Route path={'/print/:key'} component={BallotPrint} />
-          <Route path={'/monitor/:key/round/:round'} component={Monitor} />
+          </Toolbar>
+        </AppBar>
+        <Route
+          exact
+          path={'/'}
+          render={props => (
+            <NewHome user={user} login={this.login} elections={elections} />
+          )}
+        />
+        <Route
+          exact
+          path={'/create'}
+          render={props => <CreatePoll user={user} />}
+        />
+        <Route path={'/vote/:key'} component={Vote} />
+        <Route path={'/preview/:key'} component={BallotPreview} />
+        <Route path={'/print/:key'} component={BallotPrint} />
+        <Route path={'/monitor/:key/round/:round'} component={Monitor} />
 
-          <Drawer
-            className={styles.drawer}
-            open={this.state.open}
-            onClose={this.handleDrawer}
-            classes={{
-              paper: classes.drawerPaper
-            }}
-          >
-            <p>test</p>
-          </Drawer>
-        </div>
-      </BrowserRouter>
+        <Drawer
+          className={'drawer'}
+          open={this.state.open}
+          onClose={this.handleDrawer}
+          classes={{
+            paper: 'drawerPaper'
+          }}
+        >
+          <p>test</p>
+        </Drawer>
+      </div>
     );
   }
 }

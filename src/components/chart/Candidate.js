@@ -6,7 +6,9 @@ import MultiBar from './MultiBar';
 import type { VoteSegments } from '../../lib/voteTypes';
 
 const styles = {
-  loser: { textDecoration: 'line-through' },
+  loser: {
+    textDecoration: 'line-through'
+  },
   barWrapper: {
     transition: 'width 2s ease-in-out'
   }
