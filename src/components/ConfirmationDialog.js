@@ -37,12 +37,10 @@ const ConfirmationDialog = (props: Props) => {
         <Typography>{text}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="primary">
-          {cancelButtonText}
-        </Button>
-        <Button onClick={onConfirm} color="primary">
+        <Button onClick={onConfirm} style={{ color: 'red' }}>
           {confirmButtonText}
         </Button>
+        <Button onClick={onCancel}>{cancelButtonText}</Button>
       </DialogActions>
     </Dialog>
   );

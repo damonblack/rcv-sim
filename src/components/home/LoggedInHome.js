@@ -5,8 +5,11 @@ import { Link } from 'react-router-dom';
 import {
   electionsRef,
   candidatesForElectionRef,
-  votesRef
+  votesRef,
+  candidatesRef,
+  electionRef
 } from '../../services';
+import ConfirmationDialog from '../ConfirmationDialog';
 
 import {
   Avatar,
@@ -134,7 +137,9 @@ class LoggedInHome extends Component {
     super();
     this.state = {
       open: false,
-      election: ''
+      election: '',
+      confirmDeleteIsOpen: false,
+      confirmDeleteElectionKey: null
     };
   }
 
@@ -162,13 +167,6 @@ class LoggedInHome extends Component {
                   <Typography variant="h6">
                     {this.truncateElectionTitle(election.title)}
                   </Typography>
-                  {/*<Tooltip title="Delete Election Completely">
-                    <ButtonBase
-                      onClick={() => this.confirmElectionDelete(election.id)}
-                    >
-                      <DeleteIcon className={classes.deleteIcon} />
-                    </ButtonBase>
-                  </Tooltip>*/}
                 </Grid>
                 <Grid
                   item
@@ -223,6 +221,13 @@ class LoggedInHome extends Component {
                       Clear Results
                     </Button>
                   </Grid>
+                  <Tooltip title="Delete Election Completely">
+                    <ButtonBase
+                      onClick={() => this.confirmElectionDelete(election.id)}
+                    >
+                      <DeleteIcon className={classes.deleteIcon} />
+                    </ButtonBase>
+                  </Tooltip>
                 </Grid>
               </Grid>
             </ListItem>
@@ -238,6 +243,35 @@ class LoggedInHome extends Component {
       );
     }
   }
+
+  handleConfirmDeleteYes = () => {
+    const key = this.state.confirmDeleteElectionKey;
+    key && this.deleteMyElection(key);
+    this.setState({
+      confirmDeleteIsOpen: false,
+      confirmDeleteElectionKey: null
+    });
+  };
+
+  handleConfirmDeleteNo = () => {
+    this.setState({
+      confirmDeleteIsOpen: false,
+      confirmDeleteElectionKey: null
+    });
+  };
+
+  confirmElectionDelete = electionKey => {
+    this.setState({
+      confirmDeleteIsOpen: true,
+      confirmDeleteElectionKey: electionKey
+    });
+  };
+
+  deleteMyElection = electionKey => {
+    votesRef(electionKey).remove();
+    candidatesRef(electionKey).remove();
+    electionRef(electionKey).remove();
+  };
 
   handleClickOpen = () => {
     this.setState({ open: true });
@@ -339,13 +373,6 @@ class LoggedInHome extends Component {
                 <Grid container alignItems="center">
                   <Grid item xs={4}>
                     <Typography variant="h6">Action Movie Election</Typography>
-                    {/*<Tooltip title="Delete Election Completely">
-                      <ButtonBase
-                        onClick={() => this.confirmElectionDelete(election.id)}
-                      >
-                        <DeleteIcon className={classes.deleteIcon} />
-                      </ButtonBase>
-                    </Tooltip>*/}
                   </Grid>
                   <Grid
                     item
@@ -405,6 +432,14 @@ class LoggedInHome extends Component {
             </Button>
           </DialogActions>
         </Dialog>
+        <ConfirmationDialog
+          open={this.state.confirmDeleteIsOpen}
+          title="Delete Election Completely?"
+          text="You're about to delete this election completely, including all results. This can't be undone. Continue?"
+          confirmButtonText="Delete"
+          onConfirm={this.handleConfirmDeleteYes}
+          onCancel={this.handleConfirmDeleteNo}
+        />
       </Grid>
     );
   }
