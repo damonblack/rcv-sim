@@ -5,3 +5,194 @@ body {
 html {
   background-color: rgba(241, 203, 33, 0.2);
 }
+
+.appBar {
+  z-index: 99;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.boldLogo {
+  font-weight: 800;
+}
+
+.button {
+  font-weight: 800;
+  font-size: 17px;
+  padding: 15px;
+  text-transform: capitalize;
+}
+
+.buttonNarrow {
+  width: 50%;
+}
+
+.buttonTray {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 40px;
+}
+
+.drawer {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.drawerPaper {
+  width: 250px;
+}
+
+.formTitle {
+  margin-bottom: 0.2em;
+  margin-top: 0.2em;
+}
+
+.greyFont {
+  color: #616161;
+}
+
+.headerTitle {
+  flex-grow: 1;
+  color: #ffffff;
+  letter-spacing: 1.8;
+  padding: 15px;
+  font-size: 35px;
+}
+
+.homeBody {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.imageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  padding-right: 5px;
+}
+
+.imageContainer img {
+  width: 100%;
+}
+
+.leftSide {
+  padding-top: 45px;
+}
+
+.menuButton {
+  margin-left: -12px;
+  margin-right: 20px;
+}
+
+.rightSide {
+}
+
+.sectionText {
+  line-height: 1.2;
+  font-size: 18px;
+}
+
+.sectionTitle {
+  color: #272361;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.subSectionContainer {
+  padding-bottom: 25px;
+}
+
+.subtitle {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  padding-top: 10px;
+  font-size: 14px;
+}
+
+.textField {
+  background-color: #fff;
+  padding: 11px;
+}
+
+.thickerButton {
+  border: 4px solid;
+  border-radius: 18px;
+  font-weight: 700;
+  font-size: 18px;
+  padding: 14px 20px;
+}
+
+.thickerButton:hover {
+  border: 4px solid;
+}
+
+.title {
+  flex-grow: 1;
+  color: #272361;
+  font-weight: 800;
+  font-size: 23px;
+}
+
+.title-tagline {
+  font-size: 18px;
+}
+
+.pageContainer {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 768px) {
+  .button {
+    font-size: 23px;
+  }
+
+  .headerTitle {
+    font-size: 4vw;
+  }
+
+  .imageContainer {
+    padding-right: 16px;
+  }
+
+  .leftSide {
+    padding-right: 55px;
+  }
+
+  .rightSide {
+    padding-top: 45px;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .sectionText {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 22px;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+
+  .title-tagline {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1200px) {
+}

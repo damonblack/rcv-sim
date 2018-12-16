@@ -6,73 +6,9 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
-const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    margin: 0
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1
-  },
-  title: {
-    flexGrow: 1,
-    color: '#272361',
-    fontWeight: 800
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  },
-  bold: {
-    fontWeight: 600
-  },
-  greyFont: {
-    color: '#616161'
-  },
-  subtitle: {
-    flex: 1,
-    textAlign: 'center',
-    fontWeight: 700,
-    paddingTop: 10,
-    fontSize: 25
-  },
-  sectionTitle: {
-    color: '#272361',
-    fontWeight: 800
-  },
-  sectionText: {
-    lineHeight: 1.2
-  },
-  rightSide: {
-    paddingTop: 45
-  },
-  leftSide: {
-    paddingRight: 55,
-    paddingTop: 45
-  },
-  pageContainer: {
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  },
-  subSectionContainer: {
-    paddingBottom: 25,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  imageContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: 30
-  },
-  button: {
-    fontWeight: 800,
-    fontSize: 23,
-    padding: 15,
-    textTransform: 'capitalize'
-  }
-});
+import baseStyles from '../../styles/baseStyles';
+
+const styles = theme => baseStyles;
 
 class LoggedOutHome extends Component {
   constructor() {
@@ -91,65 +27,58 @@ class LoggedOutHome extends Component {
 
     return (
       <div>
-        <Typography
-          variant="h4"
-          className={[classes.bold, classes.greyFont, classes.subtitle]}
-        >
+        <Typography variant="h4" className={'bold greyFont subtitle'}>
           Ranked Choice Voting: A voting method that allows voters to rank
           candidates in order of preference.
         </Typography>
-        <Grid
-          container
-          className={[classes.pageContainer]}
-          style={{ width: '90%' }}
-        >
-          <Grid item xs={12} sm={6} className={classes.leftSide}>
-            <Typography variant="h3" className={classes.title}>
+        <Grid container className={'pageContainer'} style={{ width: '90%' }}>
+          <Grid item xs={12} md={6} className={'leftSide'}>
+            <Typography variant="h3" className={'title'}>
               Create an RCV election
             </Typography>
-            <Typography variant="h5">
+            <Typography variant="h5" className={'title-tagline'}>
               Choose a movie for a group or pick a restaurant.
             </Typography>
             <Grid
               container
-              className={classes.subSectionContainer}
+              className={'subSectionContainer'}
               style={{ 'padding-top': '40px' }}
             >
-              <Grid item xs={2} className={classes.imageContainer}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/Pencil.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   Create a Ballot in Minutes
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   Choose a movie for a group or decide on a restaurant. It’s up
                   to you.
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} className={classes.imageContainer}>
+            <Grid container className={'subSectionContainer'}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/Envelope.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   Share a Link to Your Ballot
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   Anyone with the Link can Vote!
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} className={classes.imageContainer}>
+            <Grid container className={'subSectionContainer'}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/glasses.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   See each round of results
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   Watch Ranked Choice Voting in action and cheer for the final
                   winner.
                 </Typography>
@@ -158,113 +87,113 @@ class LoggedOutHome extends Component {
             <Button
               variant="contained"
               color="secondary"
-              className={classes.button}
+              className={'button'}
               fullWidth={true}
               onClick={() => this.signup()}
             >
               Sign Up & Create an Election
             </Button>
           </Grid>
-          <Grid item xs={12} sm={6} className={classes.rightSide}>
+          <Grid item xs={12} md={6} className={'rightSide'}>
             Waiting for the video...
           </Grid>
-          <Grid item xs={12} sm={6} className={classes.leftSide}>
-            <Typography variant="h4" className={classes.title}>
-              Why Ranked Choice Voting?
+          <Grid item xs={12} md={6} className={'leftSide'}>
+            <Typography variant="h4" className={'title'}>
+              Why RCV?
             </Typography>
             <Grid
               container
-              className={classes.subSectionContainer}
+              className={'subSectionContainer'}
               style={{ 'padding-top': '40px' }}
             >
-              <Grid item xs={2} className={classes.imageContainer}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/DollarSign.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   RCV Saves Money
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   Runoffs are avoided since voters have already selected a
                   second choice.
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} className={classes.imageContainer}>
+            <Grid container className={'subSectionContainer'}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/Mug.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   More Positive Campaigns
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   Candidates appeal to people who might consider them a second
                   choice.
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} className={classes.imageContainer}>
+            <Grid container className={'subSectionContainer'}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/Mic.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   More Diverse Voices
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   Voters can select their first choice without worriyng about a
                   spoiler.
                 </Typography>
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} className={classes.rightSide}>
-            <Typography variant="h4" className={classes.title}>
+          <Grid item xs={12} md={6} className={'rightSide'}>
+            <Typography variant="h4" className={'title'}>
               How RCV Works
             </Typography>
             <Grid
               container
-              className={classes.subSectionContainer}
+              className={'subSectionContainer'}
               style={{ 'padding-top': '40px' }}
             >
-              <Grid item xs={2} className={classes.imageContainer}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/One.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   Step One
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   First choice votes are counted and any candidate winning more
                   than 50% of those votes wins.
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} className={classes.imageContainer}>
+            <Grid container className={'subSectionContainer'}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/Two.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   Step Two
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   If no candidate wins a majority of first choice votes, the
                   candidate in last place is eliminated and her votes go to
                   those voters second choices.
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.subSectionContainer}>
-              <Grid item xs={2} className={classes.imageContainer}>
+            <Grid container className={'subSectionContainer'}>
+              <Grid item xs={2} className={'imageContainer'}>
                 <img src={require('../../assets/Three.png')} />
               </Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" className={classes.sectionTitle}>
+                <Typography variant="h5" className={'sectionTitle'}>
                   Step Three
                 </Typography>
-                <Typography variant="h6" className={classes.sectionText}>
+                <Typography variant="h6" className={'sectionText'}>
                   If no candidate has a majority after the second round, the
                   process repeats until one candidate earns over 50% of the
                   votes.

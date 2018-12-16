@@ -138,6 +138,14 @@ class LoggedInHome extends Component {
     };
   }
 
+  truncateElectionTitle(title) {
+    let shortenedTitle = title.substring(0, 19);
+    if (title.length > 19) {
+      shortenedTitle += '...';
+    }
+    return shortenedTitle;
+  }
+
   clearVotes(electionKey) {
     votesRef(electionKey).set([]);
     this.handleClose();
@@ -150,8 +158,10 @@ class LoggedInHome extends Component {
           {elections.map((election, i) => (
             <ListItem key={i}>
               <Grid container alignItems="center">
-                <Grid item xs={4}>
-                  <Typography variant="h6">{election.title}</Typography>
+                <Grid item xs={3}>
+                  <Typography variant="h6">
+                    {this.truncateElectionTitle(election.title)}
+                  </Typography>
                   {/*<Tooltip title="Delete Election Completely">
                     <ButtonBase
                       onClick={() => this.confirmElectionDelete(election.id)}
@@ -240,7 +250,7 @@ class LoggedInHome extends Component {
   addSampleElection({ electionTitle, numberOfWinners, candidates }) {
     const title = electionTitle.trim();
     const cleanTitle = title.replace(/[^\w\s]/gi, '');
-    const key = cleanTitle.replace(/\s+/g, '-').toLowerCase();
+    const key = Math.floor(Math.random() * 90000) + 10000;
     electionsRef()
       .child(key)
       .set({
