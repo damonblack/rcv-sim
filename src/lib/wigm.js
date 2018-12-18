@@ -35,11 +35,13 @@ export const getResults = (rawVotes, candidateIds, numberOfWinners) => {
       weight: 1
     };
     const favId = vote.rankings[1];
-    const candidate = results.candidateMap[favId];
-    candidate.votes.push(vote);
-    const segment = candidate.segmentMap[favId];
-    candidate.segmentMap[favId] = segment + vote.weight;
-    candidate.total += vote.weight;
+    if (favId) {
+      const candidate = results.candidateMap[favId];
+      candidate.votes.push(vote);
+      const segment = candidate.segmentMap[favId];
+      candidate.segmentMap[favId] = segment + vote.weight;
+      candidate.total += vote.weight;
+    }
   });
 
   recordRound(results, rawVotes.length);
