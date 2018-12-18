@@ -147,7 +147,7 @@ class CreatePoll extends Component {
     const { candidates, electionTitle, numberOfWinners, error } = this.state;
     const { classes, onCancel } = this.props;
     const disableRemove = candidates.length < 3 + numberOfWinners;
-    const disabbleAdd = candidates.length == 6;
+    const disabbleAdd = candidates.length == 8;
     return (
       <Grid container>
         <Grid item xs={0} sm={3} />
