@@ -300,7 +300,7 @@ class Vote extends Component<Props, State> {
                 </div>
               </div>
             </div>
-            <Grid
+            {/*<Grid
               direction="row"
               justify="flex-end"
               alignItems="center"
@@ -335,7 +335,7 @@ class Vote extends Component<Props, State> {
                   </Grid>
                 </Grid>
               </Grid>
-            </Grid>
+            </Grid>*/}
             <Typography variant="h5" className={classes.sectionTitle}>
               Invite others to vote in your election
             </Typography>

@@ -68,8 +68,8 @@ class CreatePoll extends Component {
 
   updateNumberOfWinners = e => {
     const numberOfWinners = Math.trunc(e.target.value) || '';
-    if (isNaN(numberOfWinners) || numberOfWinners < 1 || numberOfWinners > 20) {
-      this.setState({ numberOfWinners, error: 'Must be between 1 and 20' });
+    if (isNaN(numberOfWinners) || numberOfWinners < 1 || numberOfWinners > 5) {
+      this.setState({ numberOfWinners, error: 'Must be between 1 and 5' });
     } else {
       this.setState(prevState => {
         const candidates = prevState.candidates.slice();
@@ -160,6 +160,27 @@ class CreatePoll extends Component {
             >
               Create a Poll with Ranked Choice Voting
             </Typography>
+            <Typography
+              variant="h5"
+              className={[classes.sectionTitle, classes.formTitle]}
+            >
+              Number of Winners
+            </Typography>
+            <TextField
+              required
+              id="numberOfWinners"
+              onChange={this.updateNumberOfWinners}
+              value={numberOfWinners}
+              placeholder="1"
+              margin="dense"
+              variant="outlined"
+              type="number"
+              InputProps={{
+                classes: {
+                  input: classes.textField
+                }
+              }}
+            />
             <Typography
               variant="h5"
               className={[classes.sectionTitle, classes.formTitle]}
