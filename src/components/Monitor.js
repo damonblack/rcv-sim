@@ -24,6 +24,7 @@ import {
 
 import { database } from '../services';
 import { getResults } from '../lib/voteCounter';
+import { getResults as getMWResults } from '../lib/wigm';
 import Candidate from './chart/Candidate';
 import type { Results } from '../lib/voteTypes';
 
@@ -149,13 +150,18 @@ class Monitor extends Component<Props, State> {
         //Re-runs the election on every vote. Throttle this ?
         database.ref(`votes/${key}`).on('value', snapshot => {
           if (snapshot.val()) {
+            const { numberOfWinners } = this.state.election;
+            let results;
             const votes = Object.values(snapshot.val());
-            const results = getResults(
-              votes,
-              candidatesArray.map(c => c.id),
-              election.numberOfWinners
-            );
-            console.log('setting state votes', votes, results);
+            if (numberOfWinners > 1) {
+              results = getMWResults(
+                votes,
+                candidatesArray.map(c => c.id),
+                numberOfWinners
+              );
+            } else {
+              results = getResults(votes, candidatesArray.map(c => c.id));
+            }
             this.setState({ votes, results });
           }
         });
@@ -182,7 +188,6 @@ class Monitor extends Component<Props, State> {
     const numberOfWinners = election.numberOfWinners || 1;
     const roundInt = parseInt(round, 10);
     const graphWidthInVotes = results.rounds.reduce((max, round) => {
-      console.log('round.totals', round.totals);
       Object.values(round.totals).forEach(value => {
         if (value > max) max = value;
       });
@@ -342,7 +347,7 @@ class Monitor extends Component<Props, State> {
                     variant="raised"
                     color="secondary"
                     component={Link}
-                    to={`/monitor/${key}/round/1`}
+                    to={`/monitor/${key}/round/${roundInt - 1} `}
                     className={[classes.button, classes.buttonNarrow]}
                     fullWidth
                   >
