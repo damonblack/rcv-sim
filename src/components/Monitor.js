@@ -208,7 +208,7 @@ class Monitor extends Component<Props, State> {
       (candidate, i) => (colorMap[candidate.id] = this.candidateColors[i])
     );
 
-    const allWinners = thisRound.winners.concat(thisRound.previousWinners);
+    const allWinners = thisRound.winners;
     const isWinner = candidate => allWinners.includes(candidate.id);
 
     const getSecondaryText = candidate => {
