@@ -304,7 +304,7 @@ class Monitor extends Component<Props, State> {
                 >
                   {`${Math.round(
                     victoryPercentage * 100
-                  )}% (${votesToWin} votes)`}
+                  )}% (${votesToWin.toFixed(2)} votes)`}
                 </Typography>
               </div>
               <div
@@ -340,7 +340,7 @@ class Monitor extends Component<Props, State> {
                 })}
               </div>
               <div className={classes.belowGraph}>
-                <div className={classes.electionNotices}>
+                {/*<div className={classes.electionNotices}>
                   {allWinners.length >= numberOfWinners && roundInt > 1 ? (
                     <Typography variant={'h6'}>
                       No candidate won a majority of votes. The candidate
@@ -349,7 +349,7 @@ class Monitor extends Component<Props, State> {
                       next choices in the following round.
                     </Typography>
                   ) : null}
-                </div>
+                </div>*/}
                 <div className={classes.buttonGroup}>
                   <Button
                     disabled={roundInt === 1}
