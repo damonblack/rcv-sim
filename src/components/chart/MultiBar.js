@@ -9,6 +9,7 @@ const Purple = require('../../assets/Purple.png');
 const Yellow = require('../../assets/Yellow.png');
 const Orange = require('../../assets/Orange.png');
 const Blue = require('../../assets/Blue.png');
+const Pink = require('../../assets/Pink.png');
 
 const styles = {
   multiBar: {

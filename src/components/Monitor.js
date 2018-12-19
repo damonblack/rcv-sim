@@ -34,6 +34,7 @@ const Purple = require('../assets/Purple.png');
 const Yellow = require('../assets/Yellow.png');
 const Orange = require('../assets/Orange.png');
 const Blue = require('../assets/Blue.png');
+const Pink = require('../assets/Pink.png');
 
 const finishLIne =
   'repeating-linear-gradient(to top, transparent, transparent 3%, #76911d 3%, #76911d 10%)';
@@ -125,7 +126,15 @@ type State = {
 class Monitor extends Component<Props, State> {
   state = {};
 
-  candidateColors = ['Green', 'Purple', 'Yellow', 'Orange', 'Blue', 'Gray'];
+  candidateColors = [
+    'Green',
+    'Purple',
+    'Yellow',
+    'Orange',
+    'Blue',
+    'Gray',
+    'Pink'
+  ];
 
   componentDidMount() {
     const { key } = this.props.match.params;
