@@ -94,7 +94,13 @@ class Login extends Component {
                 }
               }}
             />
-            <Button fullWidth type="button">
+            <Button
+              fullWidth
+              type="button"
+              onClick={(username, password) =>
+                this.props.emailPassword({ username, password })
+              }
+            >
               Create an Account
             </Button>
           </Grid>

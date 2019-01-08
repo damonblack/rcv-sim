@@ -103,9 +103,14 @@ class ButtonAppBar extends Component {
       this.watchMyElections(result.user.uid);
       this.props.history.push('/');
     } catch (e) {
-      console.log(e);
       alert('login failed');
     }
+  };
+
+  emailAndPasswordSignup = async creds => {
+    try {
+      //add the email and password signup
+    } catch (e) {}
   };
 
   login() {
@@ -170,7 +175,12 @@ class ButtonAppBar extends Component {
         <Route
           exact
           path={'/login'}
-          render={props => <Login login={() => this.googleLogin(props)} />}
+          render={props => (
+            <Login
+              login={() => this.googleLogin(props)}
+              emailPassword={() => this.emailAndPasswordSignup(props)}
+            />
+          )}
         />
         <Route path={'/vote/:key'} component={Vote} />
         <Route path={'/preview/:key'} component={BallotPreview} />
