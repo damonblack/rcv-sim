@@ -10,7 +10,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 
-import { Route, BrowserRouter, Switch, Link } from 'react-router-dom';
+import {
+  Route,
+  BrowserRouter,
+  Switch,
+  Link,
+  withRouter
+} from 'react-router-dom';
 
 import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
@@ -18,6 +24,7 @@ import Monitor from './components/Monitor';
 import CreatePoll from './components/CreatePoll';
 import BallotPreview from './components/BallotPreview';
 import BallotPrint from './components/BallotPrint';
+import Login from './components/Login';
 
 import './index.css';
 
@@ -89,15 +96,21 @@ class ButtonAppBar extends Component {
     this.setState({ open: !this.state.open });
   };
 
-  login = async () => {
+  googleLogin = async props => {
     try {
       const result = await auth.signInWithPopup(googleAuth);
       this.setState({ user: result.user });
       this.watchMyElections(result.user.uid);
+      this.props.history.push('/');
     } catch (e) {
+      console.log(e);
       alert('login failed');
     }
   };
+
+  login() {
+    this.props.history.push('/login');
+  }
 
   logout = async () => {
     try {
@@ -154,6 +167,11 @@ class ButtonAppBar extends Component {
           path={'/create'}
           render={props => <CreatePoll user={user} />}
         />
+        <Route
+          exact
+          path={'/login'}
+          render={props => <Login login={() => this.googleLogin(props)} />}
+        />
         <Route path={'/vote/:key'} component={Vote} />
         <Route path={'/preview/:key'} component={BallotPreview} />
         <Route path={'/print/:key'} component={BallotPrint} />
@@ -178,4 +196,4 @@ ButtonAppBar.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ButtonAppBar);
+export default withRouter(withStyles(styles)(ButtonAppBar));

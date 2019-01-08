@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import { Link } from 'react-router-dom';
 
 import baseStyles from '../../styles/baseStyles';
 
@@ -89,7 +90,8 @@ class LoggedOutHome extends Component {
               color="secondary"
               className={'button'}
               fullWidth={true}
-              onClick={() => this.signup()}
+              component={Link}
+              to={'/login'}
             >
               Sign Up & Create an Election
             </Button>

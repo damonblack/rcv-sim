@@ -137,9 +137,7 @@ class Home extends Component<Props, State> {
 
   login = async () => {
     try {
-      console.log('before signin');
       const result = await auth.signInWithPopup(googleAuth);
-      console.log('signin results', result);
       this.setState({ user: result.user });
       this.watchMyElections(result.user.uid);
     } catch (e) {
@@ -153,7 +151,6 @@ class Home extends Component<Props, State> {
       await auth.signOut();
       this.setState(this.defaultState);
     } catch (e) {
-      console.log('LOGOUT FAILED: ', e);
       alert('logout failed');
     }
   };
