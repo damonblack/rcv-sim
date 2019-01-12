@@ -178,9 +178,45 @@ class Monitor extends Component<Props, State> {
     });
   }
 
+  renderElectionNotice(
+    allWinners,
+    numberOfWinners,
+    roundInt,
+    totalRounds,
+    candidates
+  ) {
+    if (allWinners.length >= numberOfWinners && roundInt === totalRounds) {
+      let candidateWinners = '';
+      for (let i = 0; i < candidates.length; i++) {
+        if (allWinners.includes(candidates[i].id)) {
+          candidateWinners += candidates[i].name + ', ';
+        }
+      }
+
+      let haveVsHas = 'have';
+      if (numberOfWinners === 1) {
+        let haveVsHas = 'has';
+      }
+
+      return (
+        <Typography variant={'h6'}>
+          With a majority a votes,{' '}
+          {candidateWinners.substr(0, candidateWinners.length - 2)} {haveVsHas}{' '}
+          won!
+        </Typography>
+      );
+    } else {
+      return null;
+    }
+  }
+
   render() {
     const { election, votes, candidates, results } = this.state;
     const elecKey = this.props.match.params.key;
+    let totalRounds = 0;
+    if (results) {
+      totalRounds = results.rounds.length;
+    }
     if (!(election && candidates && votes && results)) {
       return (
         <div class="no-votes-msg">
@@ -350,16 +386,15 @@ class Monitor extends Component<Props, State> {
                 })}
               </div>
               <div className={classes.belowGraph}>
-                {/*<div className={classes.electionNotices}>
-                  {allWinners.length >= numberOfWinners && roundInt > 1 ? (
-                    <Typography variant={'h6'}>
-                      No candidate won a majority of votes. The candidate
-                      currently in last place is eliminated. Votes cast for the
-                      last place candidate will be distributed to those voters
-                      next choices in the following round.
-                    </Typography>
-                  ) : null}
-                </div>*/}
+                <div className={classes.electionNotices}>
+                  {this.renderElectionNotice(
+                    allWinners,
+                    numberOfWinners,
+                    roundInt,
+                    totalRounds,
+                    candidates
+                  )}
+                </div>
                 <div className={classes.buttonGroup}>
                   <Button
                     disabled={roundInt === 1}
