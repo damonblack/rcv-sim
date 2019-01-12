@@ -18,6 +18,8 @@ import {
   Print as PrintIcon
 } from '@material-ui/icons';
 
+import pdf from '../assets/candyElection_fake_doc.pdf';
+
 import { auth, electionRef, candidatesRef, votesRef } from '../services';
 import type { Election } from '../lib/voteTypes';
 import LegacyBallot from './vote/LegacyBallot';
@@ -249,6 +251,45 @@ class Vote extends Component<Props, State> {
     );
   };
 
+  downloadBallot() {
+    const { election } = this.state;
+    if (election.title === 'Which of these candies is the best?') {
+      return (
+        <Grid direction="row" justify="flex-end" alignItems="center" container>
+          <Grid item>
+            <Grid
+              direction="row"
+              justify="flex-end"
+              alignItems="center"
+              container
+              style={{ cursor: 'pointer' }}
+            >
+              <Grid item>
+                <PrintIcon color="action" style={{ fontSize: '34px' }} />
+              </Grid>
+              <Grid item>
+                <a
+                  style={{
+                    display: 'inline-block',
+                    fontSize: '20px',
+                    paddingLeft: '8px',
+                    textDecoration: 'none',
+                    color: 'rgba(0, 0, 0, 0.54)',
+                    fontFamily: 'Montserrat'
+                  }}
+                  href={pdf}
+                  target="_blank"
+                >
+                  Print Ballot
+                </a>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      );
+    }
+  }
+
   loaded = () => this.state.election && this.state.candidates;
 
   render() {
@@ -300,42 +341,7 @@ class Vote extends Component<Props, State> {
                 </div>
               </div>
             </div>
-            {/*<Grid
-              direction="row"
-              justify="flex-end"
-              alignItems="center"
-              container
-            >
-              <Grid item>
-                <Grid
-                  direction="row"
-                  justify="flex-end"
-                  alignItems="center"
-                  container
-                  style={{ cursor: 'pointer' }}
-                  onClick={() =>
-                    this.props.history.push(
-                      '/print/' + this.props.match.params.key
-                    )
-                  }
-                >
-                  <Grid item>
-                    <PrintIcon color="action" style={{ fontSize: '34px' }} />
-                  </Grid>
-                  <Grid item>
-                    <Typography
-                      style={{
-                        display: 'inline-block',
-                        fontSize: '20px',
-                        'padding-left': '8px'
-                      }}
-                    >
-                      Print Ballot
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>*/}
+            {this.downloadBallot()}
             <Typography variant="h5" className={classes.sectionTitle}>
               Invite others to vote in your election
             </Typography>
