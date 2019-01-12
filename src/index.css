@@ -44,6 +44,23 @@ html {
   width: 250px;
 }
 
+.faq-question-container {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.footerBody {
+  background-color: #151515;
+  padding: 20px;
+  color: #fff;
+  font-family: Montserrat;
+  text-align: center;
+}
+
+.footerBody a {
+  color: #fff;
+}
+
 .formTitle {
   margin-bottom: 0.2em;
   margin-top: 0.2em;
@@ -85,6 +102,12 @@ html {
 .menuButton {
   margin-left: -12px;
   margin-right: 20px;
+}
+
+.no-votes-msg {
+  padding-top: 18em;
+  padding-bottom: 18em;
+  text-align: center;
 }
 
 .rightSide {
@@ -144,18 +167,6 @@ html {
 .pageContainer {
   margin-left: auto;
   margin-right: auto;
-}
-
-.footerBody {
-  background-color: #151515;
-  padding: 20px;
-  color: #fff;
-  font-family: Montserrat;
-  text-align: center;
-}
-
-.footerBody a {
-  color: #fff;
 }
 
 @media (min-width: 576px) {

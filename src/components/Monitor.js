@@ -180,9 +180,19 @@ class Monitor extends Component<Props, State> {
 
   render() {
     const { election, votes, candidates, results } = this.state;
-
-    if (!(election && candidates && votes && results))
-      return <Typography>Loading...</Typography>;
+    const elecKey = this.props.match.params.key;
+    if (!(election && candidates && votes && results)) {
+      return (
+        <div class="no-votes-msg">
+          <Typography variant="h4">
+            It looks like we don't have any votes yet cast for this election.
+          </Typography>
+          <Typography variant="h6">
+            Cast some votes <a href={`/vote/${elecKey}`}>here</a>.
+          </Typography>
+        </div>
+      );
+    }
 
     const firstTotals = results.rounds[0].totals;
     const sortedCandidates = candidates
