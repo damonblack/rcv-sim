@@ -183,9 +183,93 @@ class Monitor extends Component<Props, State> {
     numberOfWinners,
     roundInt,
     totalRounds,
-    candidates
+    candidates,
+    results
   ) {
-    if (allWinners.length >= numberOfWinners && roundInt === totalRounds) {
+    // intro text
+    if (roundInt === 1) {
+      const totalVotesObj = results.rounds[0].totals;
+      let winner = 0;
+      let winnerID = '';
+      let winnerName = '';
+
+      for (const key of Object.keys(totalVotesObj)) {
+        if (totalVotesObj[key] > winner) {
+          winner = totalVotesObj[key];
+          winnerID = key;
+        }
+      }
+
+      for (let i = 0; i < candidates.length; i++) {
+        if (candidates[i].id == winnerID) {
+          winnerName = candidates[i].name;
+        }
+      }
+
+      if (numberOfWinners === 1) {
+        return (
+          <Typography variant={'h6'}>
+            All the votes are in and at first glance this is what our results
+            look like. In our current system, {winnerName} would have won.
+          </Typography>
+        );
+      } else {
+        return (
+          <Typography variant={'h6'}>
+            All the votes are in and at first glance this is what our results
+            look like.
+          </Typography>
+        );
+      }
+      // checking for the most recent loser
+    } else if (
+      results.rounds[roundInt - 1].previousLosers.length >
+        results.rounds[roundInt - 2].previousLosers.length &&
+      !(allWinners.length >= numberOfWinners && roundInt === totalRounds)
+    ) {
+      const previousLosersArr = results.rounds[roundInt - 1].previousLosers;
+      const recentLoser = previousLosersArr[previousLosersArr.length - 1];
+      let recentLoserName = '';
+
+      for (let i = 0; i < candidates.length; i++) {
+        if (candidates[i].id == recentLoser) {
+          recentLoserName = candidates[i].name;
+        }
+      }
+
+      return (
+        <Typography variant={'h6'}>
+          {recentLoserName} is knocked out because they are in last place this
+          round. Their votes are then redistributed to remaining candidates.
+        </Typography>
+      );
+    } else if (
+      results.rounds[roundInt - 1].winners.length >
+        results.rounds[roundInt - 2].winners.length &&
+      !(allWinners.length >= numberOfWinners && roundInt === totalRounds)
+    ) {
+      const winnersArr = results.rounds[roundInt - 1].winners;
+      const recentWinner = winnersArr[winnersArr.length - 1];
+      let recentWinnerName = '';
+
+      for (let i = 0; i < candidates.length; i++) {
+        if (candidates[i].id == recentWinner) {
+          recentWinnerName = candidates[i].name;
+        }
+      }
+
+      return (
+        <Typography variant={'h6'}>
+          {recentWinnerName} has just crossed the threshold and is now a winner.
+          Any of their extra votes will now be proportionally redistributed.
+        </Typography>
+      );
+
+      // rendering a list of the winners at the end
+    } else if (
+      allWinners.length >= numberOfWinners &&
+      roundInt === totalRounds
+    ) {
       let candidateWinners = '';
       for (let i = 0; i < candidates.length; i++) {
         if (allWinners.includes(candidates[i].id)) {
@@ -212,6 +296,7 @@ class Monitor extends Component<Props, State> {
 
   render() {
     const { election, votes, candidates, results } = this.state;
+    console.log(results);
     const elecKey = this.props.match.params.key;
     let totalRounds = 0;
     if (results) {
@@ -392,7 +477,8 @@ class Monitor extends Component<Props, State> {
                     numberOfWinners,
                     roundInt,
                     totalRounds,
-                    candidates
+                    candidates,
+                    results
                   )}
                 </div>
                 <div className={classes.buttonGroup}>
