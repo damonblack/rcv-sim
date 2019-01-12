@@ -146,6 +146,18 @@ html {
   margin-right: auto;
 }
 
+.footerBody {
+  background-color: #151515;
+  padding: 20px;
+  color: #fff;
+  font-family: Montserrat;
+  text-align: center;
+}
+
+.footerBody a {
+  color: #fff;
+}
+
 @media (min-width: 576px) {
 }
 

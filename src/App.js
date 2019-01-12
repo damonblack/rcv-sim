@@ -18,6 +18,7 @@ import Monitor from './components/Monitor';
 import CreatePoll from './components/CreatePoll';
 import BallotPreview from './components/BallotPreview';
 import BallotPrint from './components/BallotPrint';
+import Footer from './components/Footer';
 
 import './index.css';
 
@@ -169,6 +170,7 @@ class ButtonAppBar extends Component {
         >
           <p>test</p>
         </Drawer>
+        <Footer />
       </div>
     );
   }
