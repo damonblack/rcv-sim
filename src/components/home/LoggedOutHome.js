@@ -95,7 +95,16 @@ class LoggedOutHome extends Component {
             </Button>
           </Grid>
           <Grid item xs={12} md={6} className={'rightSide'}>
-            Waiting for the video...
+            <div class="video-container">
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/GlZ3LPVLoV0"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              />
+            </div>
           </Grid>
           <Grid item xs={12} md={6} className={'leftSide'}>
             <Typography variant="h4" className={'title'}>

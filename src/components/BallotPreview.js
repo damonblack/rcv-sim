@@ -18,7 +18,7 @@ import {
   Print as PrintIcon
 } from '@material-ui/icons';
 
-import pdf from '../assets/candyElection_fake_doc.pdf';
+import pdf from '../assets/candy_election_ballot.pdf';
 
 import { auth, electionRef, candidatesRef, votesRef } from '../services';
 import type { Election } from '../lib/voteTypes';
