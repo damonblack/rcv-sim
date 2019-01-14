@@ -44,6 +44,12 @@ html {
   width: 250px;
 }
 
+.faq-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .faq-question-container {
   padding-top: 15px;
   padding-bottom: 15px;
