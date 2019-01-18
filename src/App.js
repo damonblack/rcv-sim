@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  CssBaseline,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
 
 import { Route, BrowserRouter, Switch, Link } from 'react-router-dom';
 
@@ -18,6 +23,8 @@ import Monitor from './components/Monitor';
 import CreatePoll from './components/CreatePoll';
 import BallotPreview from './components/BallotPreview';
 import BallotPrint from './components/BallotPrint';
+import Faq from './components/Faq';
+import Footer from './components/Footer';
 
 import './index.css';
 
@@ -158,6 +165,7 @@ class ButtonAppBar extends Component {
         <Route path={'/preview/:key'} component={BallotPreview} />
         <Route path={'/print/:key'} component={BallotPrint} />
         <Route path={'/monitor/:key/round/:round'} component={Monitor} />
+        <Route path={'/faq'} component={Faq} />
 
         <Drawer
           className={'drawer'}
@@ -167,8 +175,24 @@ class ButtonAppBar extends Component {
             paper: 'drawerPaper'
           }}
         >
-          <p>test</p>
+          <List>
+            <ListItem component="a" href="/" key={'faq'}>
+              <ListItemText primary={'Home'} />
+            </ListItem>
+            <ListItem component="a" href="/faq" key={'faq'}>
+              <ListItemText primary={'FAQ'} />
+            </ListItem>
+            <ListItem
+              component="a"
+              target="_blank"
+              href="https://goo.gl/forms/KHiHVaNh302TUZIG2"
+              key={'faq'}
+            >
+              <ListItemText primary={'Provide Feedback'} />
+            </ListItem>
+          </List>
         </Drawer>
+        <Footer />
       </div>
     );
   }

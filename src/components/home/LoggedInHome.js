@@ -132,6 +132,18 @@ const actionMovieSampleElection = {
   ]
 };
 
+const candySampleElection = {
+  electionTitle: 'Which of these candies is the best?',
+  numberOfWinners: 1,
+  candidates: [
+    'Whoppers',
+    "M & M's",
+    "Peanut M & M's",
+    'Skittles',
+    "Reese's Pieces"
+  ]
+};
+
 class LoggedInHome extends Component {
   constructor() {
     super();
@@ -390,6 +402,36 @@ class LoggedInHome extends Component {
                         className={classes.thickerButton}
                         onClick={() =>
                           this.addSampleElection(actionMovieSampleElection)
+                        }
+                      >
+                        <AddIcon />
+                        Add to My Elections
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </ListItem>
+              <ListItem>
+                <Grid container alignItems="center">
+                  <Grid item xs={4}>
+                    <Typography variant="h6">Candy Election</Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={8}
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="center"
+                    container
+                  >
+                    <Grid item>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        color="primary"
+                        className={classes.thickerButton}
+                        onClick={() =>
+                          this.addSampleElection(candySampleElection)
                         }
                       >
                         <AddIcon />
