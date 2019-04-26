@@ -9,13 +9,45 @@ This vote runner is intended to demonstrate the process and features of Ranked C
 - https://en.wikipedia.org/wiki/Ranked_voting
 - http://www.fairvote.org/rcv
 
+### Getting started
+
+#### Run with Docker
+
+- Make sure you have [Docker](https://docs.docker.com/install/) installed. The current setup was created with Docker engine 18.09
+
+- cd to the root of the project if you're not there already
+
+- Build the image locally:
+
+  - `docker build -t rcv-app-image .`
+
+- Run the container:
+
+  - `docker run --rm -p 3000:3000 --name rcv-local --mount type=bind,source="$(pwd)",target=/app rcv-app-image`
+  - This runs the container with a bind mount to your local directory so you can make changes without needing to rebuild the image.
+
+- View local app in a browser: http://localhost:3000/
+
+##### General Use
+
+Running the app from a docker container with a locally mounted workspace enables you to run the same commands as usual, just prepended with `docker exec rcv-local <command>`,
+for example:
+
+- `docker exec rcv-local yarn build`
+
+#### Run with local installation
+
 To set up and run locally:
 
 - If you haven't already, install node - https://nodejs.org
-- Install yarn(?)
+- Install yarn
 - Install firebase cli
 
-Common tasks
+##### Setup
+
+- run `yarn install` to pull down dependencies
+
+### Common tasks
 
 - `yarn start` - Compile code and run development server locally. This defaults to 'hot reload' mode, so that any changes saved to project files will trigger a rebuild and changes will be pushed to the browser'. I do not know how this works.
 
@@ -748,7 +780,7 @@ If you put a file into the `public` folder, it will **not** be processed by Webp
 Inside `index.html`, you can use it like this:
 
 ```html
-<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
 ```
 
 Only files inside the `public` folder will be accessible by `%PUBLIC_URL%` prefix. If you need to use a file from `src` or `node_modules`, you’ll have to copy it there to explicitly specify your intention to make this file a part of the build.
@@ -924,9 +956,7 @@ When you load the app in the browser and inspect the `<input>`, you will see its
 ```html
 <div>
   <small>You are running this application in <b>development</b> mode.</small>
-  <form>
-    <input type="hidden" value="abcdef" />
-  </form>
+  <form><input type="hidden" value="abcdef" /></form>
 </div>
 ```
 
@@ -1272,11 +1302,13 @@ Note that the server will use a self-signed certificate, so your web browser wil
 Since Create React App doesn’t support server rendering, you might be wondering how to make `<meta>` tags dynamic and reflect the current URL. To solve this, we recommend to add placeholders into the HTML, like this:
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta property="og:title" content="__OG_TITLE__">
-    <meta property="og:description" content="__OG_DESCRIPTION__">
+    <meta property="og:title" content="__OG_TITLE__" />
+    <meta property="og:description" content="__OG_DESCRIPTION__" />
+  </head>
+</html>
 ```
 
 Then, on the server, regardless of the backend you use, you can read `index.html` into memory and replace `__OG_TITLE__`, `__OG_DESCRIPTION__`, and any other placeholders with values depending on the current URL. Just make sure to sanitize and escape the interpolated values so that they are safe to embed into HTML!
