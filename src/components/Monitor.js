@@ -1,108 +1,89 @@
-//@flow
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+// @flow
+import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
+import {withStyles} from '@material-ui/core/styles';
 import {
-  Avatar,
   Typography,
-  Paper,
   Button,
-  Tooltip,
-  Chip,
   List,
   ListItem,
   ListItemText,
-  ListItemAvatar,
-  Grid
+  Grid,
 } from '@material-ui/core';
-import {
-  ArrowBack,
-  ArrowForward,
-  Done as VoteIcon,
-  Home as HomeIcon
-} from '@material-ui/icons';
 
-import { database } from '../services';
-import { getResults } from '../lib/voteCounter';
-import { getResults as getMWResults } from '../lib/wigm';
+import {database} from '../services';
+import {getResults} from '../lib/voteCounter';
+import {getResults as getMWResults} from '../lib/wigm';
 import Candidate from './chart/Candidate';
-import type { Results } from '../lib/voteTypes';
-
-const Green = require('../assets/Green.png');
-const Gray = require('../assets/Gray.png');
-const Purple = require('../assets/Purple.png');
-const Yellow = require('../assets/Yellow.png');
-const Orange = require('../assets/Orange.png');
-const Blue = require('../assets/Blue.png');
-const Pink = require('../assets/Pink.png');
+import type {Results} from '../lib/voteTypes';
 
 const finishLIne =
   'repeating-linear-gradient(to top, transparent, transparent 3%, #76911d 3%, #76911d 10%)';
 
-const styles = theme => {
+const styles = () => {
   return {
     wrapper: {
-      padding: 40
+      padding: 40,
     },
-    splitWrapper: { display: 'flex', justifyContent: 'space-between' },
-    results: { width: '100%' },
+    splitWrapper: {display: 'flex', justifyContent: 'space-between'},
+    results: {width: '100%'},
     chartHeader: {
       background: 'transparent',
-      height: 30
+      height: 30,
     },
     chartLabel: {
-      transform: 'translate(-100%, 0)'
+      transform: 'translate(-100%, 0)',
     },
     chart: {
-      display: 'flex'
+      display: 'flex',
     },
     bars: {
       width: '75%',
-      textAlign: 'right'
+      textAlign: 'right',
     },
     candidateName: {
       textAlign: 'right',
-      height: 85
+      height: 85,
     },
     candidateList: {
-      marginTop: 30
+      marginTop: 30,
     },
     diamond: {
       height: '3.5vh',
       width: '3.5vh',
       transform: 'rotate(45deg)',
-      backgroundColor: 'blue'
+      backgroundColor: 'blue',
     },
     electionNotices: {
       paddingTop: 30,
       paddingLeft: 20,
       paddingRight: 20,
       textAlign: 'left',
-      minHeight: 130
+      minHeight: 130,
     },
     buttonGroup: {
       display: 'flex',
       justifyContent: 'space-around',
-      marginTop: 20
+      marginTop: 20,
     },
     button: {
       fontWeight: 800,
       fontSize: 23,
       padding: 15,
-      textTransform: 'capitalize'
+      textTransform: 'capitalize',
     },
     buttonNarrow: {
-      width: '25%'
+      width: '25%',
     },
     sectionTitle: {
       color: '#272361',
-      fontWeight: 800
+      fontWeight: 800,
     },
     candidateColorRec: {
       height: 15,
       width: 40,
-      display: 'inline-block'
-    }
+      display: 'inline-block',
+    },
   };
 };
 
@@ -110,17 +91,17 @@ type Props = {
   match: {
     params: {
       key: string,
-      round: string
-    }
+      round: string,
+    },
   },
-  classes: Object
+  classes: Object,
 };
 
 type State = {
   election?: Object,
   candidates?: Array<Object>,
   votes?: Array<any>,
-  results?: Results
+  results?: Results,
 };
 
 class Monitor extends Component<Props, State> {
@@ -133,59 +114,59 @@ class Monitor extends Component<Props, State> {
     'Orange',
     'Blue',
     'Gray',
-    'Pink'
+    'Pink',
   ];
 
   componentDidMount() {
-    const { key } = this.props.match.params;
-    database.ref(`elections/${key}`).once('value', snapshot => {
-      const election = snapshot.val();
+    const {key} = this.props.match.params;
+    database.ref(`elections/${key}`).once('value', (electionSnapshot) => {
+      const election = electionSnapshot.val();
       election.id = key;
 
-      this.setState({ election });
+      this.setState({election});
 
-      database.ref(`candidates/${key}`).once('value', snapshot => {
-        const candidatesData = snapshot.val();
+      database.ref(`candidates/${key}`).once('value', (candidatesSnapshot) => {
+        const candidatesData = candidatesSnapshot.val();
         const candidateIds = Object.keys(candidatesData);
-        const candidatesArray = candidateIds.map((key, index) => ({
-          id: key,
-          name: candidatesData[key].name
+        const candidatesArray = candidateIds.map((id) => ({
+          id,
+          name: candidatesData[id].name,
         }));
 
         this.setState({
-          candidates: candidatesArray
+          candidates: candidatesArray,
         });
 
-        //Re-runs the election on every vote. Throttle this ?
-        database.ref(`votes/${key}`).on('value', snapshot => {
-          if (snapshot.val()) {
-            const { numberOfWinners } = this.state.election;
+        // Re-runs the election on every vote. Throttle this ?
+        database.ref(`votes/${key}`).on('value', (votesSnapshot) => {
+          if (votesSnapshot.val()) {
+            const {numberOfWinners} = this.state.election;
             let results;
-            const votes = Object.values(snapshot.val());
+            const votes = Object.values(votesSnapshot.val());
             if (numberOfWinners > 1) {
               results = getMWResults(
                 votes,
-                candidatesArray.map(c => c.id),
-                numberOfWinners
+                candidatesArray.map((c) => c.id),
+                numberOfWinners,
               );
             } else {
-              results = getResults(votes, candidatesArray.map(c => c.id));
+              results = getResults(votes, candidatesArray.map((c) => c.id));
             }
-            this.setState({ votes, results });
+            this.setState({votes, results});
           }
         });
       });
     });
   }
 
-  renderElectionNotice(
+  renderElectionNotice = (
     allWinners,
     numberOfWinners,
     roundInt,
     totalRounds,
     candidates,
-    results
-  ) {
+    results,
+  ) => {
     // intro text
     if (roundInt === 1) {
       const totalVotesObj = results.rounds[0].totals;
@@ -193,36 +174,39 @@ class Monitor extends Component<Props, State> {
       let winnerID = '';
       let winnerName = '';
 
+      /* eslint-disable no-restricted-syntax */
       for (const key of Object.keys(totalVotesObj)) {
         if (totalVotesObj[key] > winner) {
           winner = totalVotesObj[key];
           winnerID = key;
         }
       }
+      /* eslint-enable no-restricted-syntax */
 
-      for (let i = 0; i < candidates.length; i++) {
-        if (candidates[i].id == winnerID) {
+      for (let i = 0; i < candidates.length; i += 1) {
+        if (candidates[i].id === winnerID) {
           winnerName = candidates[i].name;
         }
       }
 
       if (numberOfWinners === 1) {
         return (
-          <Typography variant={'h6'}>
+          <Typography variant="h6">
             All the votes are in and at first glance this is what our results
             look like. In our current system, {winnerName} would have won.
           </Typography>
         );
-      } else {
-        return (
-          <Typography variant={'h6'}>
-            All the votes are in and at first glance this is what our results
-            look like.
-          </Typography>
-        );
       }
+      return (
+        <Typography variant="h6">
+          All the votes are in and at first glance this is what our results look
+          like.
+        </Typography>
+      );
+
       // checking for the most recent loser
-    } else if (
+    }
+    if (
       results.rounds[roundInt - 1].previousLosers.length >
         results.rounds[roundInt - 2].previousLosers.length &&
       !(allWinners.length >= numberOfWinners && roundInt === totalRounds)
@@ -231,19 +215,20 @@ class Monitor extends Component<Props, State> {
       const recentLoser = previousLosersArr[previousLosersArr.length - 1];
       let recentLoserName = '';
 
-      for (let i = 0; i < candidates.length; i++) {
-        if (candidates[i].id == recentLoser) {
+      for (let i = 0; i < candidates.length; i += 1) {
+        if (candidates[i].id === recentLoser) {
           recentLoserName = candidates[i].name;
         }
       }
 
       return (
-        <Typography variant={'h6'}>
+        <Typography variant="h6">
           {recentLoserName} is knocked out because they are in last place this
           round. Their votes are then redistributed to remaining candidates.
         </Typography>
       );
-    } else if (
+    }
+    if (
       results.rounds[roundInt - 1].winners.length >
         results.rounds[roundInt - 2].winners.length &&
       !(allWinners.length >= numberOfWinners && roundInt === totalRounds)
@@ -252,51 +237,44 @@ class Monitor extends Component<Props, State> {
       const recentWinner = winnersArr[winnersArr.length - 1];
       let recentWinnerName = '';
 
-      for (let i = 0; i < candidates.length; i++) {
-        if (candidates[i].id == recentWinner) {
+      for (let i = 0; i < candidates.length; i += 1) {
+        if (candidates[i].id === recentWinner) {
           recentWinnerName = candidates[i].name;
         }
       }
 
       return (
-        <Typography variant={'h6'}>
+        <Typography variant="h6">
           {recentWinnerName} has just crossed the threshold and is now a winner.
           Any of their extra votes will now be proportionally redistributed.
         </Typography>
       );
 
       // rendering a list of the winners at the end
-    } else if (
-      allWinners.length >= numberOfWinners &&
-      roundInt === totalRounds
-    ) {
+    }
+    if (allWinners.length >= numberOfWinners && roundInt === totalRounds) {
       let candidateWinners = '';
-      for (let i = 0; i < candidates.length; i++) {
+      for (let i = 0; i < candidates.length; i += 1) {
         if (allWinners.includes(candidates[i].id)) {
-          candidateWinners += candidates[i].name + ', ';
+          candidateWinners += `${candidates[i].name}, `;
         }
       }
 
-      let haveVsHas = 'have';
-      if (numberOfWinners === 1) {
-        let haveVsHas = 'has';
-      }
+      const haveVsHas = numberOfWinners === 1 ? 'has' : 'have';
 
       return (
-        <Typography variant={'h6'}>
+        <Typography variant="h6">
           With a majority a votes,{' '}
           {candidateWinners.substr(0, candidateWinners.length - 2)} {haveVsHas}{' '}
           won!
         </Typography>
       );
-    } else {
-      return null;
     }
-  }
+    return null;
+  };
 
   render() {
-    const { election, votes, candidates, results } = this.state;
-    console.log(results);
+    const {election, votes, candidates, results} = this.state;
     const elecKey = this.props.match.params.key;
     let totalRounds = 0;
     if (results) {
@@ -304,9 +282,10 @@ class Monitor extends Component<Props, State> {
     }
     if (!(election && candidates && votes && results)) {
       return (
-        <div class="no-votes-msg">
+        <div className="no-votes-msg">
           <Typography variant="h4">
-            It looks like we don't have any votes yet cast for this election.
+            It looks like we don&apos;t have any votes yet cast for this
+            election.
           </Typography>
           <Typography variant="h6">
             Cast some votes <a href={`/vote/${elecKey}`}>here</a>.
@@ -322,16 +301,17 @@ class Monitor extends Component<Props, State> {
     const {
       classes,
       match: {
-        params: { key, round }
-      }
+        params: {key, round},
+      },
     } = this.props;
     const numberOfWinners = election.numberOfWinners || 1;
     const roundInt = parseInt(round, 10);
-    const graphWidthInVotes = results.rounds.reduce((max, round) => {
-      Object.values(round.totals).forEach(value => {
-        if (value > max) max = value;
+    const graphWidthInVotes = results.rounds.reduce((lastMax, rnd) => {
+      let newMax = lastMax;
+      Object.values(rnd.totals).forEach((value) => {
+        if (value > lastMax) newMax = value;
       });
-      return max;
+      return newMax;
     }, 0);
     const thisRound = results.rounds[roundInt - 1];
     const totalVotes = thisRound.validVoteCount;
@@ -345,17 +325,17 @@ class Monitor extends Component<Props, State> {
     const colorMap = {};
 
     sortedCandidates.forEach(
-      (candidate, i) => (colorMap[candidate.id] = this.candidateColors[i])
+      (candidate, i) => (colorMap[candidate.id] = this.candidateColors[i]),
     );
 
     const allWinners = thisRound.winners;
-    const isWinner = candidate => allWinners.includes(candidate.id);
+    const isWinner = (candidate) => allWinners.includes(candidate.id);
 
-    const getSecondaryText = candidate => {
+    const getSecondaryText = (candidate) => {
       if (isWinner(candidate)) return 'Winner';
       if (thisRound.previousLosers.includes(candidate.id)) return 'Eliminated';
       return `${Math.round(
-        (thisRound.totals[candidate.id] / totalVotes) * 100
+        (thisRound.totals[candidate.id] / totalVotes) * 100,
       )}% (${+thisRound.totals[candidate.id].toFixed(2)} votes)`;
     };
 
@@ -376,12 +356,12 @@ class Monitor extends Component<Props, State> {
           </Typography>
           <Grid container>
             <Grid item className={classes.candidateList}>
-              <List disablePadding={true}>
+              <List disablePadding>
                 {sortedCandidates.map((candidate, i) => (
                   <ListItem className={classes.candidateName}>
                     <ListItemText
                       primary={candidate.name}
-                      primaryTypographyProps={{ noWrap: true }}
+                      primaryTypographyProps={{noWrap: true}}
                       secondary={
                         <React.Fragment>
                           {getSecondaryText(candidate)}
@@ -390,8 +370,9 @@ class Monitor extends Component<Props, State> {
                             <div
                               className={classes.candidateColorRec}
                               style={{
-                                backgroundImage:
-                                  'url(' + eval(this.candidateColors[i]) + ')'
+                                backgroundImage: `url(${
+                                  this.candidateColors[i]
+                                })`,
                               }}
                             />
                           ) : null}
@@ -404,13 +385,13 @@ class Monitor extends Component<Props, State> {
                   <ListItem className={classes.candidateName}>
                     <ListItemText
                       primary="Inactive Ballots"
-                      primaryTypographyProps={{ noWrap: true }}
+                      primaryTypographyProps={{noWrap: true}}
                       secondary={
                         <React.Fragment>
                           <Typography component="span">
                             No candidate choices left
                           </Typography>
-                          {lostVotes + ' votes'}
+                          {`${lostVotes} votes`}
                         </React.Fragment>
                       }
                     />
@@ -420,21 +401,21 @@ class Monitor extends Component<Props, State> {
             </Grid>
             <Grid item className={classes.bars}>
               <div className={classes.chartHeader}>
-                {/*<Chip
+                {/* <Chip
                   className={classes.chartLabel}
                   label={`${Math.round(
                     victoryPercentage * 100
                   )}% (${votesToWin} votes)`}
                   style={{ marginLeft: `${victoryPercentage * 10 * scalar}%` }}
-                />*/}
+                /> */}
 
                 <Typography
                   variant="span"
                   className={classes.chartLabel}
-                  style={{ display: 'inline-block' }}
+                  style={{display: 'inline-block'}}
                 >
                   {`${Math.round(
-                    victoryPercentage * 100
+                    victoryPercentage * 100,
                   )}% (${votesToWin.toFixed(2)} votes)`}
                 </Typography>
               </div>
@@ -442,17 +423,17 @@ class Monitor extends Component<Props, State> {
                 style={{
                   width: '100%',
                   // prettier-ignore
-                  backgroundImage: graphRulesGradient + ', ' + finishLIne,
+                  backgroundImage: `${graphRulesGradient  }, ${  finishLIne}`,
                   // prettier-ignore
                   backgroundPosition: `left, ${victoryPercentage * 10 * scalar + 0.5}%`,
                   // prettier-ignore
                   backgroundRepeat: 'no-repeat, no-repeat',
                   backgroundSize: 'contain, 0.5% 100%',
-                  border: '2px solid #000'
+                  border: '2px solid #000',
                 }}
                 // elevation={8}
               >
-                {sortedCandidates.map(candidate => {
+                {sortedCandidates.map((candidate) => {
                   const segments = thisRound.segments[candidate.id];
                   const total = thisRound.totals[candidate.id];
                   return (
@@ -478,7 +459,7 @@ class Monitor extends Component<Props, State> {
                     roundInt,
                     totalRounds,
                     candidates,
-                    results
+                    results,
                   )}
                 </div>
                 <div className={classes.buttonGroup}>

@@ -1,4 +1,4 @@
-//@flow
+// @flow
 import React from 'react';
 import {
   Typography,
@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Button
+  Button,
 } from '@material-ui/core';
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
   onCancel: () => void,
   cancelButtonText: string,
   onConfirm: () => void,
-  confirmButtonText: string
+  confirmButtonText: string,
 };
 
 const ConfirmationDialog = (props: Props) => {
@@ -27,7 +27,7 @@ const ConfirmationDialog = (props: Props) => {
     onCancel,
     cancelButtonText,
     onConfirm,
-    confirmButtonText
+    confirmButtonText,
   } = props;
 
   return (
@@ -37,7 +37,7 @@ const ConfirmationDialog = (props: Props) => {
         <Typography>{text}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onConfirm} style={{ color: 'red' }}>
+        <Button onClick={onConfirm} style={{color: 'red'}}>
           {confirmButtonText}
         </Button>
         <Button onClick={onCancel}>{cancelButtonText}</Button>
@@ -52,7 +52,7 @@ ConfirmationDialog.defaultProps = {
   cancelButtonText: 'Cancel',
   confirmButtonText: 'Ok',
   onConfirm: () => {},
-  onCancel: () => {}
+  onCancel: () => {},
 };
 
 export default ConfirmationDialog;

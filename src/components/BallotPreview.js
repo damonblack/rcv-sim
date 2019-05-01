@@ -1,27 +1,14 @@
-//@flow
-import React, { Component } from 'react';
-import { Redirect, Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/index';
-import {
-  Avatar,
-  IconButton,
-  Snackbar,
-  Tooltip,
-  Typography,
-  Grid,
-  Button
-} from '@material-ui/core';
-import {
-  Home as HomeIcon,
-  InsertChart as ChartIcon,
-  Close as CloseIcon,
-  Print as PrintIcon
-} from '@material-ui/icons';
+// @flow
+/* eslint-disable */
+import React, {Component} from 'react';
+import {Redirect} from 'react-router-dom';
+import {withStyles, Typography, Grid, Button} from '@material-ui/core';
+import {Print as PrintIcon} from '@material-ui/icons';
 
 import pdf from '../assets/candy_election_ballot.pdf';
 
-import { auth, electionRef, candidatesRef, votesRef } from '../services';
-import type { Election } from '../lib/voteTypes';
+import {auth, electionRef, candidatesRef, votesRef} from '../services';
+import type {Election} from '../lib/voteTypes';
 import LegacyBallot from './vote/LegacyBallot';
 
 const styles = {
@@ -29,65 +16,94 @@ const styles = {
     width: '80%',
     margin: '0 auto',
     marginBottom: 80,
-    marginTop: 80
+    marginTop: 80,
   },
   wrapper: {
-    display: 'flex'
+    display: 'flex',
   },
   navButton: {
     display: 'flex',
     justifyContent: 'center',
     width: '10vw',
-    maxWidth: '80px'
+    maxWidth: '80px',
   },
   ballotContainer: {
     backgroundColor: '#fff',
     border: '3px solid #000',
-    marginTop: 20
+    marginTop: 20,
   },
   title: {
     flexGrow: 1,
     color: '#272361',
-    fontWeight: 800
+    fontWeight: 800,
   },
   titleContainer: {
     borderBottom: '1px solid #000',
     paddingTop: 40,
-    paddingBottom: 40
+    paddingBottom: 40,
   },
   sectionTitle: {
     color: '#272361',
-    fontWeight: 800
+    fontWeight: 800,
   },
   button: {
     fontWeight: 800,
     fontSize: 23,
     padding: 15,
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   buttonNarrow: {
-    width: '25%'
-  }
+    width: '25%',
+  },
 };
 
 type Props = {
   classes: Object,
   match: {
     params: {
-      key: string
-    }
-  }
+      key: string,
+    },
+  },
 };
 type State = {
   election?: Election,
   votes: Object,
   lastAction: string,
   notifierOpen: boolean,
-  candidates: Array<{ id: string, name: string }>,
-  user: ?Object
+  candidates: Array<{id: string, name: string}>,
+  user: ?Object,
 };
 
 class Vote extends Component<Props, State> {
+  static rankName(number: number) {
+    if (number === 1) return 'first';
+    if (number === 2) return 'second';
+    if (number === 3) return 'third';
+    return `${number}th`;
+  }
+
+  static actionText(
+    candidateName: string,
+    displacedName: string,
+    position: number,
+    previousPosition: number,
+  ): string {
+    const replacing =
+      displacedName === '' ? '' : `, replacing ${displacedName}`;
+    const goFirstPlace = position === 1 ? ` Go ${candidateName}!` : '';
+
+    if (!previousPosition)
+      return `You've chosen ${candidateName} as your ${Vote.rankName(
+        position,
+      )} choice${replacing}.${goFirstPlace}`;
+
+    const verb = previousPosition > position ? 'promoting' : 'demoting';
+
+    return `You've changed your vote for ${candidateName}, ${verb} them to your ${Vote.rankName(
+      position,
+    )} choice${replacing}.`;
+  }
+
   defaultState = {
     candidates: [],
     votes: {},
@@ -95,7 +111,7 @@ class Vote extends Component<Props, State> {
     notifierOpen: false,
     user: auth.currentUser,
     copyErrMsg: '',
-    copyStatus: ''
+    copyStatus: '',
   };
 
   constructor(props: Props) {
@@ -103,7 +119,20 @@ class Vote extends Component<Props, State> {
     this.state = this.defaultState;
   }
 
-  copyToClipboard() {
+  componentDidMount() {
+    auth.onAuthStateChanged(this.updateUser);
+    const electionKey = this.props.match.params.key;
+    electionRef(electionKey).on('value', this.updateElection(electionKey));
+    candidatesRef(electionKey).on('value', this.updateCandidate);
+  }
+
+  componentWillUnmount() {
+    const electionKey = this.props.match.params.key;
+    electionRef(electionKey).off('value', this.updateElection(electionKey));
+    candidatesRef(electionKey).off('value', this.updateCandidate);
+  }
+
+  copyToClipboard = () => {
     try {
       const el = document.createElement('textarea');
       el.value = window.location.href;
@@ -122,101 +151,53 @@ class Vote extends Component<Props, State> {
         document.getSelection().removeAllRanges();
         document.getSelection().addRange(selected);
       }
-      this.setState({ copyErrMsg: 'Copied!', copyStatus: true });
-      setTimeout(
-        function() {
-          this.setState({ copyStatus: '', copyErrMsg: '' });
-        }.bind(this),
-        3000
-      );
+      this.setState({copyErrMsg: 'Copied!'});
+      setTimeout(() => this.setState({copyErrMsg: ''}), 3000);
     } catch (e) {
       this.setState({
         copyErrMsg: 'There was an error copying your ballot URL.',
-        copyStatus: false
       });
-      setTimeout(
-        function() {
-          this.setState({ copyStatus: '', copyErrMsg: '' });
-        }.bind(this),
-        3000
-      );
+      setTimeout(() => this.setState({copyErrMsg: ''}), 3000);
     }
-  }
-
-  static rankName(number: number) {
-    if (number === 1) return 'first';
-    if (number === 2) return 'second';
-    if (number === 3) return 'third';
-    return number + 'th';
-  }
-
-  static actionText(
-    candidateName: string,
-    displacedName: string,
-    position: number,
-    previousPosition: number
-  ): string {
-    const replacing =
-      displacedName === '' ? '' : `, replacing ${displacedName}`;
-    const goFirstPlace = position === 1 ? ` Go ${candidateName}!` : '';
-
-    if (!previousPosition)
-      return `You've chosen ${candidateName} as your ${Vote.rankName(
-        position
-      )} choice${replacing}.${goFirstPlace}`;
-
-    const verb = previousPosition > position ? 'promoting' : 'demoting';
-
-    return `You've changed your vote for ${candidateName}, ${verb} them to your ${Vote.rankName(
-      position
-    )} choice${replacing}.`;
-  }
-
-  updateUser = user => {
-    user ? this.setState({ user }) : this.setState(this.defaultState);
   };
 
-  updateElection = electionKey => snapshot => {
+  updateUser = (user) => {
+    if (user) {
+      this.setState({user});
+    } else {
+      this.setState(this.defaultState);
+    }
+  };
+
+  updateElection = (electionKey) => (snapshot) => {
     const election = snapshot.val();
     election.key = electionKey;
-    this.setState({ election: election });
+    this.setState({election});
   };
 
-  updateCandidate = snapshot => {
+  updateCandidate = (snapshot) => {
     const candidatesVal = snapshot.val();
-    const candidates = Object.keys(candidatesVal).map(key => ({
+    const candidates = Object.keys(candidatesVal).map((key) => ({
       id: key,
-      name: candidatesVal[key].name
+      name: candidatesVal[key].name,
     }));
-    this.setState({ candidates });
+    this.setState({candidates});
   };
-
-  componentDidMount() {
-    auth.onAuthStateChanged(this.updateUser);
-    const electionKey = this.props.match.params.key;
-    electionRef(electionKey).on('value', this.updateElection(electionKey));
-    candidatesRef(electionKey).on('value', this.updateCandidate);
-  }
-
-  componentWillUnmount() {
-    const electionKey = this.props.match.params.key;
-    electionRef(electionKey).off('value', this.updateElection(electionKey));
-    candidatesRef(electionKey).off('value', this.updateCandidate);
-  }
 
   updateVote = (candidateId: string, position: number) => {
+    this.setState();
     if (this.state.votes[position] === candidateId) return;
     const votes = Object.assign({}, this.state.votes);
 
     const candidateName = this.state.candidates.filter(
-      c => c.id === candidateId
+      (c) => c.id === candidateId,
     )[0].name;
     const displacedName = votes[position]
-      ? this.state.candidates.filter(c => c.id === votes[position])[0].name
+      ? this.state.candidates.filter((c) => c.id === votes[position])[0].name
       : '';
 
     let previousPosition = 0;
-    Object.keys(votes).forEach(key => {
+    Object.keys(votes).forEach((key) => {
       if (votes[key] === candidateId) {
         previousPosition = key;
         votes[key] = null;
@@ -228,20 +209,20 @@ class Vote extends Component<Props, State> {
       candidateName,
       displacedName,
       position,
-      previousPosition
+      previousPosition,
     );
 
-    this.setState({ votes, lastAction, notifierOpen: true });
+    this.setState({votes, lastAction, notifierOpen: true});
   };
 
   submitVote = () => {
     const electionKey = this.props.match.params.key;
     votesRef(electionKey).push(this.state.votes);
-    localStorage.setItem('RCV' + electionKey, JSON.stringify(this.state.votes));
-    this.setState({ votes: {} });
+    localStorage.setItem(`RCV${electionKey}`, JSON.stringify(this.state.votes));
+    this.setState({votes: {}});
   };
 
-  closeNotifier = () => this.setState({ notifierOpen: false });
+  closeNotifier = () => this.setState({notifierOpen: false});
 
   userIsElectionOwner = () => {
     return (
@@ -252,7 +233,7 @@ class Vote extends Component<Props, State> {
   };
 
   downloadBallot() {
-    const { election } = this.state;
+    const {election} = this.state;
     if (election.title === 'Which of these candies is the best?') {
       return (
         <Grid direction="row" justify="flex-end" alignItems="center" container>
@@ -262,10 +243,10 @@ class Vote extends Component<Props, State> {
               justify="flex-end"
               alignItems="center"
               container
-              style={{ cursor: 'pointer' }}
+              style={{cursor: 'pointer'}}
             >
               <Grid item>
-                <PrintIcon color="action" style={{ fontSize: '34px' }} />
+                <PrintIcon color="action" style={{fontSize: '34px'}} />
               </Grid>
               <Grid item>
                 <a
@@ -275,7 +256,7 @@ class Vote extends Component<Props, State> {
                     paddingLeft: '8px',
                     textDecoration: 'none',
                     color: 'rgba(0, 0, 0, 0.54)',
-                    fontFamily: 'Montserrat'
+                    fontFamily: 'Montserrat',
                   }}
                   href={pdf}
                   target="_blank"
@@ -299,24 +280,24 @@ class Vote extends Component<Props, State> {
       notifierOpen,
       lastAction,
       votes,
-      printing
+      printing,
     } = this.state;
     const {
       classes,
       match: {
-        params: { key }
-      }
+        params: {key},
+      },
     } = this.props;
 
     if (this.loaded()) {
-      if (!localStorage.getItem('RCV' + key) || this.userIsElectionOwner()) {
+      if (!localStorage.getItem(`RCV${key}`) || this.userIsElectionOwner()) {
         return (
           <div className={classes.container}>
             <Typography variant="h3" className={classes.sectionTitle}>
               RCV Ballot Preview
             </Typography>
             <div className={classes.ballotContainer}>
-              <div ref={el => (this.ballotRef = el)}>
+              <div ref={(el) => (this.ballotRef = el)}>
                 <div className={classes.titleContainer}>
                   <Typography
                     variant="h3"
@@ -354,31 +335,29 @@ class Vote extends Component<Props, State> {
                 display: 'flex',
                 alignItems: 'center',
                 'margin-top': '20px',
-                flexDirection: 'column'
+                flexDirection: 'column',
               }}
             >
               <Button
                 variant="raised"
                 color="secondary"
                 className={[classes.button, classes.buttonNarrow]}
-                style={{ cursor: 'copy' }}
+                style={{cursor: 'copy'}}
                 fullWidth
                 onClick={() => this.copyToClipboard()}
               >
                 Get Link to Ballot
               </Button>
-              <Typography style={{ marginTop: 10 }}>
+              <Typography style={{marginTop: 10}}>
                 {this.state.copyErrMsg}
               </Typography>
             </div>
           </div>
         );
-      } else {
-        return <Redirect to={`/monitor/${key}/round/1`} />;
       }
-    } else {
-      return 'Loading ...';
+      return <Redirect to={`/monitor/${key}/round/1`} />;
     }
+    return 'Loading ...';
   }
 }
 

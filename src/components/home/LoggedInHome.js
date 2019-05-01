@@ -1,26 +1,13 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
+import {withStyles} from '@material-ui/core/styles';
+import {Link} from 'react-router-dom';
 import {
-  electionsRef,
-  candidatesForElectionRef,
-  votesRef,
-  candidatesRef,
-  electionRef
-} from '../../services';
-import ConfirmationDialog from '../ConfirmationDialog';
-
-import {
-  Avatar,
   Button,
   ButtonBase,
   Grid,
-  IconButton,
   List,
   ListItem,
-  ListItemText,
-  Paper,
   Tooltip,
   Typography,
   Dialog,
@@ -28,73 +15,74 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Slide
+  Slide,
 } from '@material-ui/core';
-
+import {Delete as DeleteIcon, Add as AddIcon} from '@material-ui/icons';
 import {
-  InsertChart as ChartIcon,
-  Done as VoteIcon,
-  Cancel as LogoutIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon
-} from '@material-ui/icons';
+  electionsRef,
+  candidatesForElectionRef,
+  votesRef,
+  candidatesRef,
+  electionRef,
+} from '../../services';
+import ConfirmationDialog from '../ConfirmationDialog';
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     flexGrow: 1,
-    margin: 0
+    margin: 0,
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1
+    zIndex: theme.zIndex.drawer + 1,
   },
   title: {
     flexGrow: 1,
     color: '#272361',
-    fontWeight: 800
+    fontWeight: 800,
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20
+    marginRight: 20,
   },
   bold: {
-    fontWeight: 600
+    fontWeight: 600,
   },
   greyFont: {
-    color: '#616161'
+    color: '#616161',
   },
   subtitle: {
     flex: 1,
     textAlign: 'center',
     fontWeight: 700,
     paddingTop: 10,
-    fontSize: 25
+    fontSize: 25,
   },
   sectionTitle: {
     color: '#272361',
-    fontWeight: 800
+    fontWeight: 800,
   },
   sectionText: {
-    lineHeight: 1.2
+    lineHeight: 1.2,
   },
   rightSide: {
-    paddingTop: 45
+    paddingTop: 45,
   },
   leftSide: {
     paddingRight: 55,
-    paddingTop: 45
+    paddingTop: 45,
   },
   pageContainer: {
     marginLeft: 'auto',
-    marginRight: 'auto'
+    marginRight: 'auto',
   },
   subSectionContainer: {
-    paddingBottom: 25
+    paddingBottom: 25,
   },
   button: {
     fontWeight: 800,
     fontSize: 23,
     padding: 15,
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   thickerButton: {
     border: '4px solid',
@@ -103,16 +91,16 @@ const styles = theme => ({
     fontSize: 18,
     padding: '14px 20px',
     '&:hover': {
-      border: '4px solid'
-    }
+      border: '4px solid',
+    },
   },
   cssRoot: {
     color: 'green',
     backgroundColor: 'green',
     '&:hover': {
-      backgroundColor: 'green'
-    }
-  }
+      backgroundColor: 'green',
+    },
+  },
 });
 
 function Transition(props) {
@@ -128,8 +116,8 @@ const actionMovieSampleElection = {
     'The Terminator',
     'The Dark Knight',
     'The Matrix',
-    'The Bourne Identity'
-  ]
+    'The Bourne Identity',
+  ],
 };
 
 const candySampleElection = {
@@ -140,8 +128,8 @@ const candySampleElection = {
     "M & M's",
     "Peanut M & M's",
     'Skittles',
-    "Reese's Pieces"
-  ]
+    "Reese's Pieces",
+  ],
 };
 
 class LoggedInHome extends Component {
@@ -151,7 +139,7 @@ class LoggedInHome extends Component {
       open: false,
       election: '',
       confirmDeleteIsOpen: false,
-      confirmDeleteElectionKey: null
+      confirmDeleteElectionKey: null,
     };
   }
 
@@ -194,7 +182,7 @@ class LoggedInHome extends Component {
                       size="large"
                       color="primary"
                       component={Link}
-                      to={'/preview/' + election.id}
+                      to={`/preview/${election.id}`}
                       className={classes.thickerButton}
                     >
                       View Ballot
@@ -226,9 +214,7 @@ class LoggedInHome extends Component {
                   </Grid>
                   <Grid item>
                     <Button
-                      onClick={() =>
-                        this.setState({ election: election, open: true })
-                      }
+                      onClick={() => this.setState({election, open: true})}
                     >
                       Clear Results
                     </Button>
@@ -246,14 +232,13 @@ class LoggedInHome extends Component {
           ))}
         </List>
       );
-    } else {
-      return (
-        <Typography variant="h4" align="center">
-          You haven't created any elections yet. <br />
-          Get started by Creating a New Ballot or Adding a Sample Ballot.
-        </Typography>
-      );
     }
+    return (
+      <Typography variant="h4" align="center">
+        You haven't created any elections yet. <br />
+        Get started by Creating a New Ballot or Adding a Sample Ballot.
+      </Typography>
+    );
   }
 
   handleConfirmDeleteYes = () => {
@@ -261,67 +246,66 @@ class LoggedInHome extends Component {
     key && this.deleteMyElection(key);
     this.setState({
       confirmDeleteIsOpen: false,
-      confirmDeleteElectionKey: null
+      confirmDeleteElectionKey: null,
     });
   };
 
   handleConfirmDeleteNo = () => {
     this.setState({
       confirmDeleteIsOpen: false,
-      confirmDeleteElectionKey: null
+      confirmDeleteElectionKey: null,
     });
   };
 
-  confirmElectionDelete = electionKey => {
+  confirmElectionDelete = (electionKey) => {
     this.setState({
       confirmDeleteIsOpen: true,
-      confirmDeleteElectionKey: electionKey
+      confirmDeleteElectionKey: electionKey,
     });
   };
 
-  deleteMyElection = electionKey => {
+  deleteMyElection = (electionKey) => {
     votesRef(electionKey).remove();
     candidatesRef(electionKey).remove();
     electionRef(electionKey).remove();
   };
 
   handleClickOpen = () => {
-    this.setState({ open: true });
+    this.setState({open: true});
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({open: false});
   };
 
-  addSampleElection({ electionTitle, numberOfWinners, candidates }) {
+  addSampleElection({electionTitle, numberOfWinners, candidates}) {
     const title = electionTitle.trim();
-    const cleanTitle = title.replace(/[^\w\s]/gi, '');
     const key = Math.floor(Math.random() * 90000) + 10000;
     electionsRef()
       .child(key)
       .set({
-        title: title,
+        title,
         numberOfWinners,
         owner: this.props.user.uid,
-        created: Date.now()
+        created: Date.now(),
       })
-      .then(result => {
+      .then((result) => {
         const candidateDB = candidatesForElectionRef(key);
-        candidates.forEach(candidate => {
+        candidates.forEach((candidate) => {
           const candidateEntry = {
             name: candidate.trim(),
-            owner: this.props.user.uid
+            owner: this.props.user.uid,
           };
           candidateDB.push(candidateEntry);
         });
       })
-      .catch(error =>
-        alert('Unable to create election. Try a different name.')
+      .catch((error) =>
+        alert('Unable to create election. Try a different name.'),
       );
   }
 
   render() {
-    const { classes, elections } = this.props;
+    const {classes, elections} = this.props;
 
     return (
       <Grid container>
@@ -330,7 +314,7 @@ class LoggedInHome extends Component {
           <Typography
             variant="h3"
             className={classes.title}
-            style={{ 'padding-top': '30px' }}
+            style={{'padding-top': '30px'}}
           >
             Elections
           </Typography>
@@ -340,40 +324,40 @@ class LoggedInHome extends Component {
             direction="row"
             alignItems="center"
             container
-            style={{ 'padding-top': '30px' }}
+            style={{'padding-top': '30px'}}
           >
             <Grid item>
               <Typography variant="h4" className={classes.title}>
                 Create New Ballot
               </Typography>
             </Grid>
-            <Grid item style={{ 'padding-left': '40px' }}>
+            <Grid item style={{'padding-left': '40px'}}>
               <Button
                 variant="outlined"
                 size="large"
                 color="primary"
                 component={Link}
-                to={'/create'}
+                to="/create"
                 className={classes.thickerButton}
               >
                 Create Ballot
               </Button>
             </Grid>
           </Grid>
-          <div style={{ 'padding-top': '30px' }}>
+          <div style={{'padding-top': '30px'}}>
             <Typography variant="h4" className={classes.title}>
               My Elections
             </Typography>
             {this.renderElectionsOptions(classes, elections)}
           </div>
-          <div style={{ paddingTop: '30px', paddingBottom: '40px' }}>
+          <div style={{paddingTop: '30px', paddingBottom: '40px'}}>
             <Typography variant="h4" className={classes.title}>
               Sample Elections
             </Typography>
             <Typography
               variant="h6"
               className={classes.sectionText}
-              style={{ width: '85%' }}
+              style={{width: '85%'}}
             >
               Sample Elections have been created so that you can easily
               demonstrate Ranked Choice Voting. Sample results will show how
@@ -465,7 +449,7 @@ class LoggedInHome extends Component {
           <DialogActions>
             <Button
               onClick={() => this.clearVotes(this.state.election.id)}
-              style={{ color: 'red' }}
+              style={{color: 'red'}}
             >
               Clear Results
             </Button>
@@ -488,7 +472,7 @@ class LoggedInHome extends Component {
 }
 
 LoggedInHome.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(LoggedInHome);

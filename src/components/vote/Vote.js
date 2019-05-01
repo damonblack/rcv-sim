@@ -1,101 +1,75 @@
-//@flow
-import React, { Component } from 'react';
-import { Redirect, Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/index';
-import {
-  Avatar,
-  IconButton,
-  Snackbar,
-  Tooltip,
-  Typography
-} from '@material-ui/core';
-import {
-  Home as HomeIcon,
-  InsertChart as ChartIcon,
-  Close as CloseIcon,
-  Print as PrintIcon
-} from '@material-ui/icons';
-import ReactToPrint from 'react-to-print';
+// @flow
+import React, {Component} from 'react';
+import {Redirect} from 'react-router-dom';
+import {IconButton, Snackbar, Typography, withStyles} from '@material-ui/core';
+import {Close as CloseIcon} from '@material-ui/icons';
 
-import { auth, electionRef, candidatesRef, votesRef } from '../../services';
-import type { Election } from '../../lib/voteTypes';
+import {auth, electionRef, candidatesRef, votesRef} from '../../services';
+import type {Election} from '../../lib/voteTypes';
 import LegacyBallot from './LegacyBallot';
 
 const styles = {
   container: {
     width: '80%',
     margin: '0 auto',
-    marginBottom: 80
+    marginBottom: 80,
   },
   wrapper: {
-    display: 'flex'
+    display: 'flex',
   },
   navButton: {
     display: 'flex',
     justifyContent: 'center',
     width: '10vw',
-    maxWidth: '80px'
+    maxWidth: '80px',
   },
   ballotContainer: {
     backgroundColor: '#fff',
     border: '3px solid #000',
-    marginTop: 80
+    marginTop: 80,
   },
   title: {
     flexGrow: 1,
     color: '#272361',
-    fontWeight: 800
+    fontWeight: 800,
   },
   titleContainer: {
     borderBottom: '1px solid #000',
     paddingTop: 40,
-    paddingBottom: 40
-  }
+    paddingBottom: 40,
+  },
 };
 
 type Props = {
   classes: Object,
   match: {
     params: {
-      key: string
-    }
-  }
+      key: string,
+    },
+  },
 };
 type State = {
   election?: Election,
   votes: Object,
   lastAction: string,
   notifierOpen: boolean,
-  candidates: Array<{ id: string, name: string }>,
-  user: ?Object
+  candidates: Array<{id: string, name: string}>,
+  user: ?Object,
 };
 
 class Vote extends Component<Props, State> {
-  defaultState = {
-    candidates: [],
-    votes: {},
-    lastAction: '',
-    notifierOpen: false,
-    user: auth.currentUser
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.state = this.defaultState;
-  }
-
   static rankName(number: number) {
     if (number === 1) return 'first';
     if (number === 2) return 'second';
     if (number === 3) return 'third';
-    return number + 'th';
+    return `${number}th`;
   }
 
   static actionText(
     candidateName: string,
     displacedName: string,
     position: number,
-    previousPosition: number
+    previousPosition: number,
   ): string {
     const replacing =
       displacedName === '' ? '' : `, replacing ${displacedName}`;
@@ -103,34 +77,28 @@ class Vote extends Component<Props, State> {
 
     if (!previousPosition)
       return `You've chosen ${candidateName} as your ${Vote.rankName(
-        position
+        position,
       )} choice${replacing}.${goFirstPlace}`;
 
     const verb = previousPosition > position ? 'promoting' : 'demoting';
 
     return `You've changed your vote for ${candidateName}, ${verb} them to your ${Vote.rankName(
-      position
+      position,
     )} choice${replacing}.`;
   }
 
-  updateUser = user => {
-    user ? this.setState({ user }) : this.setState(this.defaultState);
+  defaultState = {
+    candidates: [],
+    votes: {},
+    lastAction: '',
+    notifierOpen: false,
+    user: auth.currentUser,
   };
 
-  updateElection = electionKey => snapshot => {
-    const election = snapshot.val();
-    election.key = electionKey;
-    this.setState({ election: election });
-  };
-
-  updateCandidate = snapshot => {
-    const candidatesVal = snapshot.val();
-    const candidates = Object.keys(candidatesVal).map(key => ({
-      id: key,
-      name: candidatesVal[key].name
-    }));
-    this.setState({ candidates });
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = this.defaultState;
+  }
 
   componentDidMount() {
     auth.onAuthStateChanged(this.updateUser);
@@ -145,44 +113,74 @@ class Vote extends Component<Props, State> {
     candidatesRef(electionKey).off('value', this.updateCandidate);
   }
 
-  updateVote = (candidateId: string, position: number) => {
-    if (this.state.votes[position] === candidateId) return;
-    const votes = Object.assign({}, this.state.votes);
+  updateUser = (user) => {
+    if (user) {
+      this.setState({user});
+    } else {
+      this.setState(this.defaultState);
+    }
+  };
 
-    const candidateName = this.state.candidates.filter(
-      c => c.id === candidateId
-    )[0].name;
-    const displacedName = votes[position]
-      ? this.state.candidates.filter(c => c.id === votes[position])[0].name
-      : '';
+  updateElection = (electionKey) => (snapshot) => {
+    const election = snapshot.val();
+    election.key = electionKey;
+    this.setState({election});
+  };
 
-    let previousPosition = 0;
-    Object.keys(votes).forEach(key => {
-      if (votes[key] === candidateId) {
-        previousPosition = key;
-        votes[key] = null;
+  updateCandidate = (snapshot) => {
+    const candidatesVal = snapshot.val();
+    const candidates = Object.keys(candidatesVal).map((key) => ({
+      id: key,
+      name: candidatesVal[key].name,
+    }));
+    this.setState({candidates});
+  };
+
+  updateVote = (candidateId, position) => {
+    this.setState(({votes: oldVotes}) => {
+      if (oldVotes[position] !== candidateId) {
+        const votes = Object.assign({}, oldVotes);
+
+        const candidateName = this.state.candidates.filter(
+          (c) => c.id === candidateId,
+        )[0].name;
+        const displacedName = votes[position]
+          ? this.state.candidates.filter((c) => c.id === votes[position])[0]
+              .name
+          : '';
+
+        let previousPosition = 0;
+        Object.keys(votes).forEach((key) => {
+          if (votes[key] === candidateId) {
+            previousPosition = key;
+            votes[key] = null;
+          }
+        });
+        votes[position] = candidateId;
+
+        const lastAction = Vote.actionText(
+          candidateName,
+          displacedName,
+          position,
+          previousPosition,
+        );
+        return {votes, lastAction, notifierOpen: true};
       }
+      return {};
     });
-    votes[position] = candidateId;
-
-    const lastAction = Vote.actionText(
-      candidateName,
-      displacedName,
-      position,
-      previousPosition
-    );
-
-    this.setState({ votes, lastAction, notifierOpen: true });
   };
 
   submitVote = () => {
     const electionKey = this.props.match.params.key;
     votesRef(electionKey).push(this.state.votes);
-    localStorage.setItem('RCV' + electionKey, JSON.stringify(this.state.votes));
-    this.setState({ votes: {} });
+    window.localStorage.setItem(
+      `RCV${electionKey}`,
+      JSON.stringify(this.state.votes),
+    );
+    this.setState({votes: {}});
   };
 
-  closeNotifier = () => this.setState({ notifierOpen: false });
+  closeNotifier = () => this.setState({notifierOpen: false});
 
   userIsElectionOwner = () => {
     return (
@@ -195,22 +193,19 @@ class Vote extends Component<Props, State> {
   loaded = () => this.state.election && this.state.candidates;
 
   render() {
-    const {
-      election,
-      candidates,
-      notifierOpen,
-      lastAction,
-      votes
-    } = this.state;
+    const {election, candidates, notifierOpen, lastAction, votes} = this.state;
     const {
       classes,
       match: {
-        params: { key }
-      }
+        params: {key},
+      },
     } = this.props;
 
     if (this.loaded()) {
-      if (!localStorage.getItem('RCV' + key) || this.userIsElectionOwner()) {
+      if (
+        !window.localStorage.getItem(`RCV${key}`) ||
+        this.userIsElectionOwner()
+      ) {
         return (
           <div className={classes.container}>
             <div className={classes.ballotContainer}>
@@ -233,18 +228,18 @@ class Vote extends Component<Props, State> {
                   updateVote={this.updateVote}
                   submitVote={this.submitVote}
                   closeNotifier={this.closeNotifier}
-                  ref={el => (this.ballotRef = el)}
+                  ref={(el) => (this.ballotRef = el)}
                 />
                 <Snackbar
                   anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'center'
+                    horizontal: 'center',
                   }}
                   open={notifierOpen}
                   autoHideDuration={4000}
                   onClose={this.closeNotifier}
                   SnackbarContentProps={{
-                    'aria-describedby': 'message-id'
+                    'aria-describedby': 'message-id',
                   }}
                   message={<span id="message-id">{lastAction}</span>}
                   action={[
@@ -256,19 +251,17 @@ class Vote extends Component<Props, State> {
                       onClick={this.closeNotifier}
                     >
                       <CloseIcon />
-                    </IconButton>
+                    </IconButton>,
                   ]}
                 />
               </div>
             </div>
           </div>
         );
-      } else {
-        return <Redirect to={`/monitor/${key}/round/1`} />;
       }
-    } else {
-      return 'Loading ...';
+      return <Redirect to={`/monitor/${key}/round/1`} />;
     }
+    return 'Loading ...';
   }
 }
 

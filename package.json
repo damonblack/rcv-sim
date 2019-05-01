@@ -4,9 +4,16 @@
   "private": true,
   "dependencies": {
     "@firebase/app-types": "^0.3.9",
+    "@firebase/util": "0.x",
+    "@hapi/cryptiles": "^4.2.0",
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
-    "cryptiles": "4.1.3",
+    "core-js": "3",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-no-only-tests": "^2.3.0",
+    "eslint-plugin-react": "^7.12.4",
     "firebase": "^5.10.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -14,7 +21,8 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "^3.0.0",
     "react-to-print": "^2.1.1",
-    "typeface-montserrat": "0.0.54"
+    "typeface-montserrat": "0.0.54",
+    "typescript": "*"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -25,7 +33,8 @@
     "deploy": "react-scripts build && yarn functions && firebase deploy",
     "deploy-prod": "react-scripts build && yarn functions && firebase deploy -P production",
     "fire": "react-scripts build && firebase deploy && yarn start",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged",
+    "lint": "eslint . --ext .js --ext .jsx"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -40,10 +49,15 @@
     "prettier": "^1.17.0",
     "pretty-quick": "^1.10.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint"
+    }
+  },
   "browserslist": [
     ">0.2%",
     "not dead",
-    "not ie <= 11",
+    "not ie < 11",
     "not op_mini all"
   ]
 }

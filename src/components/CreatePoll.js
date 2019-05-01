@@ -1,42 +1,20 @@
-//@flow
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// @flow
+import React, {Component} from 'react';
+import {withStyles} from '@material-ui/core/styles';
 import {
-  Paper,
   TextField,
   Button,
   ButtonBase,
-  Divider,
   InputAdornment,
   Grid,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import {
-  Delete as DeleteIcon,
-  DeleteSweep as DeleteSweepIcon
-} from '@material-ui/icons';
+import {Delete as DeleteIcon} from '@material-ui/icons';
 
-import { electionsRef, candidatesForElectionRef } from '../services';
-import { withRouter } from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
+import {electionsRef, candidatesForElectionRef} from '../services';
 
 import styles from '../styles/baseStyles';
-
-type Props = {
-  classes: { results: Object, candidateEntry: Object },
-  user: { uid: string },
-  onCancel: () => void
-};
-
-type State = {
-  creating: boolean,
-  electionTitle: string,
-  numberOfWinners: number,
-  candidates: Array<string>,
-  errors: {
-    electionTitle: string,
-    candidateNames: Array<string>
-  }
-};
 
 const moviePlaceholders = [
   'Pretty Woman',
@@ -44,7 +22,7 @@ const moviePlaceholders = [
   'Fight Club',
   'V for Vendetta',
   'Godfather',
-  'Wonder Woman'
+  'Wonder Woman',
 ];
 
 class CreatePoll extends Component {
@@ -53,7 +31,7 @@ class CreatePoll extends Component {
     electionTitle: '',
     numberOfWinners: 1,
     candidates: ['', '', ''],
-    errors: { electionTitle: '', candidateNames: ['', '', ''] }
+    errors: {electionTitle: '', candidateNames: ['', '', '']},
   };
 
   constructor(props) {
@@ -61,17 +39,17 @@ class CreatePoll extends Component {
     this.state = this.defaultState;
   }
 
-  handleChange = field => e => {
-    const value = e.target.value;
-    this.setState({ [field]: value });
+  handleChange = (field) => (e) => {
+    const {value} = e.target;
+    this.setState({[field]: value});
   };
 
-  updateNumberOfWinners = e => {
+  updateNumberOfWinners = (e) => {
     const numberOfWinners = Math.trunc(e.target.value) || '';
     if (isNaN(numberOfWinners) || numberOfWinners < 1 || numberOfWinners > 5) {
-      this.setState({ numberOfWinners, error: 'Must be between 1 and 5' });
+      this.setState({numberOfWinners, error: 'Must be between 1 and 5'});
     } else {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         const candidates = prevState.candidates.slice();
         while (candidates.length < numberOfWinners + 1) {
           candidates.push('');
@@ -79,60 +57,63 @@ class CreatePoll extends Component {
         return {
           candidates,
           numberOfWinners,
-          error: null
+          error: null,
         };
       });
     }
   };
 
-  handleChangeCandidate = index => e => {
-    const value = e.target.value;
-    const candidates = this.state.candidates.slice(0);
-    candidates[index] = value;
-    this.setState({ candidates });
+  handleChangeCandidate = (index) => (e) => {
+    const {value} = e.target;
+    this.setState((state) => {
+      const candidates = state.candidates.slice(0);
+      candidates[index] = value;
+      return {candidates};
+    });
   };
 
   addCandidate = () => {
-    this.setState({ candidates: [...this.state.candidates, ''] });
+    this.setState(({candidates}) => ({candidates: [...candidates, '']}));
   };
 
   removeCandidate = (i: number) => {
-    const candidates = this.state.candidates.slice(0);
-    candidates.splice(i, 1);
-
-    this.setState({ candidates });
+    this.setState(({candidates: oldCandidates}) => {
+      const candidates = oldCandidates.slice(0);
+      candidates.splice(i, 1);
+      return {candidates};
+    });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    const { electionTitle, numberOfWinners, candidates } = this.state;
+    const {electionTitle, numberOfWinners, candidates} = this.state;
     if (candidates.length < 1 + numberOfWinners) {
-      this.setState({ error: 'Must have more candidates than winners' });
+      this.setState({error: 'Must have more candidates than winners'});
       return;
     }
     const title = electionTitle.trim();
-    const cleanTitle = title.replace(/[^\w\s]/gi, '');
     const key = Math.floor(Math.random() * 90000) + 10000;
     electionsRef()
       .child(key)
       .set({
-        title: title,
+        title,
         numberOfWinners,
         owner: this.props.user.uid,
-        created: Date.now()
+        created: Date.now(),
       })
-      .then(result => {
+      .then(() => {
         const candidateDB = candidatesForElectionRef(key);
-        candidates.forEach(candidate => {
+        candidates.forEach((candidate) => {
           const candidateEntry = {
             name: candidate.trim(),
-            owner: this.props.user.uid
+            owner: this.props.user.uid,
           };
           candidateDB.push(candidateEntry);
         });
       })
-      .catch(error =>
-        alert('Unable to create election. Try a different name.')
+      .catch(() =>
+        // eslint-disable-next-line no-alert
+        window.alert('Unable to create election. Try a different name.'),
       );
 
     // redirect to /
@@ -144,10 +125,10 @@ class CreatePoll extends Component {
   };
 
   render() {
-    const { candidates, electionTitle, numberOfWinners, error } = this.state;
-    const { classes, onCancel } = this.props;
+    const {candidates, electionTitle, numberOfWinners, error} = this.state;
+    const {classes} = this.props;
     const disableRemove = candidates.length < 3 + numberOfWinners;
-    const disabbleAdd = candidates.length == 8;
+    const disabbleAdd = candidates.length === 8;
     return (
       <Grid container>
         <Grid item xs={0} sm={3} />
@@ -156,7 +137,7 @@ class CreatePoll extends Component {
             <Typography
               variant="h4"
               className={classes.sectionTitle}
-              style={{ fontSize: '2rem', padding: '20px 0' }}
+              style={{fontSize: '2rem', padding: '20px 0'}}
             >
               Create a Poll with Ranked Choice Voting
             </Typography>
@@ -177,8 +158,8 @@ class CreatePoll extends Component {
               type="number"
               InputProps={{
                 classes: {
-                  input: classes.textField
-                }
+                  input: classes.textField,
+                },
               }}
             />
             <Typography
@@ -198,8 +179,8 @@ class CreatePoll extends Component {
               fullWidth
               InputProps={{
                 classes: {
-                  input: classes.textField
-                }
+                  input: classes.textField,
+                },
               }}
             />
             <Typography
@@ -231,12 +212,12 @@ class CreatePoll extends Component {
                 onChange={this.handleChangeCandidate(i)}
                 margin="dense"
                 variant="outlined"
-                style={{ 'background-color': '#fff' }}
+                style={{'background-color': '#fff'}}
                 fullWidth
                 required
                 InputProps={{
                   classes: {
-                    input: classes.textField
+                    input: classes.textField,
                   },
                   endAdornment: (
                     <InputAdornment variant="outlined" position="end">
@@ -247,7 +228,7 @@ class CreatePoll extends Component {
                         <DeleteIcon />
                       </ButtonBase>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             ))}

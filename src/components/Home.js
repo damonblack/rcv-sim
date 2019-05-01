@@ -1,7 +1,7 @@
-//@flow
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
+// @flow
+import React, {Component} from 'react';
+import {withStyles} from '@material-ui/core/styles';
+import {Link} from 'react-router-dom';
 import {
   Typography,
   Chip,
@@ -12,13 +12,13 @@ import {
   Tooltip,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from '@material-ui/core';
 import {
   InsertChart as ChartIcon,
   Done as VoteIcon,
   Cancel as LogoutIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
 } from '@material-ui/icons';
 
 import {
@@ -27,45 +27,45 @@ import {
   myElectionsRef,
   votesRef,
   candidatesRef,
-  electionRef
+  electionRef,
 } from '../services';
 import ElectionForm from './ElectionForm';
 import ConfirmationDialog from './ConfirmationDialog';
 
-const styles = theme => {
+const styles = (theme) => {
   return {
-    avatarChip: { backgroundColor: theme.palette.primary.contrastText },
+    avatarChip: {backgroundColor: theme.palette.primary.contrastText},
     wrapper: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
-    results: { minWidth: '60vw' },
-    splitWrapper: { display: 'flex', justifyContent: 'space-between' },
-    deleteIcon: { paddingLeft: '1em', paddingRight: '1em' },
-    chartIcon: { fontSize: '2.5em' },
+    results: {minWidth: '60vw'},
+    splitWrapper: {display: 'flex', justifyContent: 'space-between'},
+    deleteIcon: {paddingLeft: '1em', paddingRight: '1em'},
+    chartIcon: {fontSize: '2.5em'},
     bold: {
-      fontWeight: 600
+      fontWeight: 600,
     },
     greyFont: {
-      color: '#757575'
+      color: '#757575',
     },
     subtitle: {
-      flex: 1
-    }
+      flex: 1,
+    },
   };
 };
 
 type Props = {
-  classes: Object
+  classes: Object,
 };
 
 type State = {
-  user: ?{ uid: string, displayName: string, photoURL: string, email: string },
+  user: ?{uid: string, displayName: string, photoURL: string, email: string},
   elections: Array<Object>,
   creating: boolean,
   confirmDeleteIsOpen: boolean,
-  confirmDeleteElectionKey: ?string
+  confirmDeleteElectionKey: ?string,
 };
 
 class Home extends Component<Props, State> {
@@ -74,7 +74,7 @@ class Home extends Component<Props, State> {
     elections: [],
     creating: false,
     confirmDeleteIsOpen: false,
-    confirmDeleteElectionKey: null
+    confirmDeleteElectionKey: null,
   };
 
   constructor() {
@@ -83,9 +83,9 @@ class Home extends Component<Props, State> {
   }
 
   componentDidMount() {
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       if (user) {
-        this.setState({ user });
+        this.setState({user});
         this.watchMyElections(user.uid);
       } else {
         this.setState(this.defaultState);
@@ -95,56 +95,54 @@ class Home extends Component<Props, State> {
 
   handleConfirmDeleteYes = () => {
     const key = this.state.confirmDeleteElectionKey;
-    key && this.deleteMyElection(key);
+    if (key) this.deleteMyElection(key);
     this.setState({
       confirmDeleteIsOpen: false,
-      confirmDeleteElectionKey: null
+      confirmDeleteElectionKey: null,
     });
   };
 
   handleConfirmDeleteNo = () => {
     this.setState({
       confirmDeleteIsOpen: false,
-      confirmDeleteElectionKey: null
+      confirmDeleteElectionKey: null,
     });
   };
 
-  confirmElectionDelete = electionKey => {
+  confirmElectionDelete = (electionKey) => {
     this.setState({
       confirmDeleteIsOpen: true,
-      confirmDeleteElectionKey: electionKey
+      confirmDeleteElectionKey: electionKey,
     });
   };
 
-  deleteMyElection = electionKey => {
+  deleteMyElection = (electionKey) => {
     votesRef(electionKey).remove();
     candidatesRef(electionKey).remove();
     electionRef(electionKey).remove();
   };
 
-  watchMyElections = uid => {
-    myElectionsRef(uid).on('value', snapshot => {
+  watchMyElections = (uid) => {
+    myElectionsRef(uid).on('value', (snapshot) => {
       const electionsVal = snapshot.val();
       let elections = [];
       if (electionsVal && this.state.user) {
-        elections = Object.keys(electionsVal).map(key => {
-          return { id: key, title: electionsVal[key].title };
+        elections = Object.keys(electionsVal).map((key) => {
+          return {id: key, title: electionsVal[key].title};
         });
       }
-      this.setState({ elections });
+      this.setState({elections});
     });
   };
 
   login = async () => {
     try {
-      console.log('before signin');
       const result = await auth.signInWithPopup(googleAuth);
-      console.log('signin results', result);
-      this.setState({ user: result.user });
+      this.setState({user: result.user});
       this.watchMyElections(result.user.uid);
     } catch (e) {
-      console.log('LOGIN FAILED: ', e.stack);
-      alert('login failed');
+      // eslint-disable-next-line no-alert
+      window.alert('login failed');
     }
   };
 
@@ -153,14 +151,14 @@ class Home extends Component<Props, State> {
       await auth.signOut();
       this.setState(this.defaultState);
     } catch (e) {
-      console.log('LOGOUT FAILED: ', e);
-      alert('logout failed');
+      // eslint-disable-next-line no-alert
+      window.alert('logout failed');
     }
   };
 
   render() {
-    const { user, elections, creating, confirmDeleteIsOpen } = this.state;
-    const { classes } = this.props;
+    const {user, elections, creating, confirmDeleteIsOpen} = this.state;
+    const {classes} = this.props;
 
     return (
       <div>
@@ -180,7 +178,7 @@ class Home extends Component<Props, State> {
               </Tooltip>
             ) : (
               <div>
-                {/*<Button onClick={this.login}>Sign In</Button>*/}
+                {/* <Button onClick={this.login}>Sign In</Button> */}
                 <Typography
                   variant="h5"
                   className={[classes.bold, classes.greyFont, classes.subtitle]}
@@ -197,7 +195,7 @@ class Home extends Component<Props, State> {
                 <Button
                   variant="raised"
                   color="secondary"
-                  onClick={() => this.setState({ creating: true })}
+                  onClick={() => this.setState({creating: true})}
                 >
                   Create an Election
                 </Button>
@@ -209,7 +207,7 @@ class Home extends Component<Props, State> {
           {user && creating && (
             <ElectionForm
               user={user}
-              onCancel={() => this.setState({ creating: false })}
+              onCancel={() => this.setState({creating: false})}
             />
           )}
         </div>
@@ -222,8 +220,8 @@ class Home extends Component<Props, State> {
                   Elections
                 </Typography>
                 <List component="nav">
-                  {elections.map((election, i) => (
-                    <ListItem key={i} divider>
+                  {elections.map((election) => (
+                    <ListItem key={election.id} divider>
                       <Tooltip title="View Results">
                         <ButtonBase
                           component={Link}

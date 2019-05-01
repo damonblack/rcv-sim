@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React, {Component} from 'react';
+import {withStyles} from '@material-ui/core/styles';
 import {
   AppBar,
   Toolbar,
@@ -11,11 +10,11 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import { Route, BrowserRouter, Switch, Link } from 'react-router-dom';
+import {Route, Link} from 'react-router-dom';
 
 import NewHome from './components/NewHome';
 import Vote from './components/vote/Vote';
@@ -28,63 +27,23 @@ import Footer from './components/Footer';
 
 import './index.css';
 
-import {
-  auth,
-  googleAuth,
-  myElectionsRef,
-  votesRef,
-  candidatesRef,
-  electionRef
-} from './services';
+import {auth, googleAuth, myElectionsRef} from './services';
 
-const styles = theme => ({});
-
-type Props = {
-  classes: Object
-};
-
-type State = {
-  user: ?{ uid: string, displayName: string, photoURL: string, email: string },
-  elections: Array<Object>,
-  creating: boolean,
-  confirmDeleteIsOpen: boolean,
-  confirmDeleteElectionKey: ?string
-};
-
-const defaultState = {
-  user: null,
-  elections: [],
-  creating: false,
-  confirmDeleteIsOpen: false,
-  confirmDeleteElectionKey: null
-};
+const styles = () => ({});
 
 class ButtonAppBar extends Component {
   constructor() {
     super();
     this.state = {
       open: false,
-      elections: []
+      elections: [],
     };
   }
 
-  watchMyElections = uid => {
-    myElectionsRef(uid).on('value', snapshot => {
-      const electionsVal = snapshot.val();
-      let elections = [];
-      if (electionsVal && this.state.user) {
-        elections = Object.keys(electionsVal).map(key => {
-          return { id: key, title: electionsVal[key].title };
-        });
-      }
-      this.setState({ elections });
-    });
-  };
-
   componentDidMount() {
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       if (user) {
-        this.setState({ user });
+        this.setState({user});
         this.watchMyElections(user.uid);
       } else {
         this.setState(this.defaultState);
@@ -92,17 +51,31 @@ class ButtonAppBar extends Component {
     });
   }
 
+  watchMyElections = (uid) => {
+    myElectionsRef(uid).on('value', (snapshot) => {
+      const electionsVal = snapshot.val();
+      let elections = [];
+      if (electionsVal && this.state.user) {
+        elections = Object.keys(electionsVal).map((key) => {
+          return {id: key, title: electionsVal[key].title};
+        });
+      }
+      this.setState({elections});
+    });
+  };
+
   handleDrawer = () => {
-    this.setState({ open: !this.state.open });
+    this.setState(({open}) => ({open: !open}));
   };
 
   login = async () => {
     try {
       const result = await auth.signInWithPopup(googleAuth);
-      this.setState({ user: result.user });
+      this.setState({user: result.user});
       this.watchMyElections(result.user.uid);
     } catch (e) {
-      alert('login failed');
+      // eslint-disable-next-line no-alert
+      window.alert('login failed');
     }
   };
 
@@ -111,31 +84,30 @@ class ButtonAppBar extends Component {
       await auth.signOut();
       this.setState(this.defaultState);
     } catch (e) {
-      alert('logout failed');
+      // eslint-disable-next-line no-alert
+      window.alert('logout failed');
     }
   };
 
   render() {
-    const { classes } = this.props;
-
-    const { user, elections } = this.state;
+    const {user, elections} = this.state;
 
     return (
       <div>
         <CssBaseline />
-        <AppBar position="static" className={'appBar'}>
+        <AppBar position="static" className="appBar">
           <Toolbar>
             <IconButton
-              className={'menuButton'}
+              className="menuButton"
               color="inherit"
               aria-label="Menu"
             >
               <MenuIcon onClick={this.handleDrawer} />
             </IconButton>
 
-            <Typography variant="h2" className={'headerTitle'}>
-              <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
-                <span className={'boldLogo'}>RCV</span>Tally
+            <Typography variant="h2" className="headerTitle">
+              <Link to="/" style={{textDecoration: 'none', color: '#fff'}}>
+                <span className="boldLogo">RCV</span>Tally
               </Link>
             </Typography>
             {user ? (
@@ -151,44 +123,40 @@ class ButtonAppBar extends Component {
         </AppBar>
         <Route
           exact
-          path={'/'}
-          render={props => (
+          path="/"
+          render={() => (
             <NewHome user={user} login={this.login} elections={elections} />
           )}
         />
-        <Route
-          exact
-          path={'/create'}
-          render={props => <CreatePoll user={user} />}
-        />
-        <Route path={'/vote/:key'} component={Vote} />
-        <Route path={'/preview/:key'} component={BallotPreview} />
-        <Route path={'/print/:key'} component={BallotPrint} />
-        <Route path={'/monitor/:key/round/:round'} component={Monitor} />
-        <Route path={'/faq'} component={Faq} />
+        <Route exact path="/create" render={() => <CreatePoll user={user} />} />
+        <Route path="/vote/:key" component={Vote} />
+        <Route path="/preview/:key" component={BallotPreview} />
+        <Route path="/print/:key" component={BallotPrint} />
+        <Route path="/monitor/:key/round/:round" component={Monitor} />
+        <Route path="/faq" component={Faq} />
 
         <Drawer
-          className={'drawer'}
+          className="drawer"
           open={this.state.open}
           onClose={this.handleDrawer}
           classes={{
-            paper: 'drawerPaper'
+            paper: 'drawerPaper',
           }}
         >
           <List>
-            <ListItem component="a" href="/" key={'faq'}>
-              <ListItemText primary={'Home'} />
+            <ListItem component="a" href="/" key="faq">
+              <ListItemText primary="Home" />
             </ListItem>
-            <ListItem component="a" href="/faq" key={'faq'}>
-              <ListItemText primary={'FAQ'} />
+            <ListItem component="a" href="/faq" key="faq">
+              <ListItemText primary="FAQ" />
             </ListItem>
             <ListItem
               component="a"
               target="_blank"
               href="https://goo.gl/forms/KHiHVaNh302TUZIG2"
-              key={'faq'}
+              key="faq"
             >
-              <ListItemText primary={'Provide Feedback'} />
+              <ListItemText primary="Provide Feedback" />
             </ListItem>
           </List>
         </Drawer>
@@ -197,9 +165,5 @@ class ButtonAppBar extends Component {
     );
   }
 }
-
-ButtonAppBar.propTypes = {
-  classes: PropTypes.object.isRequired
-};
 
 export default withStyles(styles)(ButtonAppBar);

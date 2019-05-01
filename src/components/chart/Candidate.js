@@ -1,17 +1,17 @@
-//@flow
+// @flow
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 
 import MultiBar from './MultiBar';
-import type { VoteSegments } from '../../lib/voteTypes';
+import type {VoteSegments} from '../../lib/voteTypes';
 
 const styles = {
   loser: {
-    textDecoration: 'line-through'
+    textDecoration: 'line-through',
   },
   barWrapper: {
-    transition: 'width 2s ease-in-out'
-  }
+    transition: 'width 2s ease-in-out',
+  },
 };
 
 type Props = {
@@ -20,10 +20,10 @@ type Props = {
   voteSegments: VoteSegments,
   totalVotesForCandidate: number,
   percentageOfWin: number,
-  candidate: { id: string, name: string },
+  candidate: {id: string, name: string},
   colorMap: Object,
   winner?: boolean,
-  loser?: boolean
+  loser?: boolean,
 };
 
 const Candidate = (props: Props) => {
@@ -33,8 +33,8 @@ const Candidate = (props: Props) => {
     voteSegments,
     totalVotesForCandidate,
     percentageOfWin,
-    candidate: { id, name },
-    colorMap
+    candidate: {id},
+    colorMap,
   } = props;
 
   const segments = [];
@@ -43,7 +43,7 @@ const Candidate = (props: Props) => {
     voteSegments.forEach((votes, key) => {
       const percent =
         totalVotesForCandidate > 0 ? (votes / graphWidthInVotes) * 100 : 0;
-      segments.push({ color: colorMap[key], percent: percent, votes });
+      segments.push({color: colorMap[key], percent, votes});
     });
     width = percentageOfWin;
   } else {

@@ -1,7 +1,8 @@
-//@flow
+// @flow
+/* eslint-disable */
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { Paper, Tooltip } from '@material-ui/core';
+import {withStyles} from '@material-ui/core/styles';
+import {Tooltip} from '@material-ui/core';
 
 const Green = require('../../assets/Green.png');
 const Gray = require('../../assets/Gray.png');
@@ -15,21 +16,21 @@ const styles = {
   multiBar: {
     display: 'flex',
     width: '100%',
-    justifyContent: 'left'
-  }
+    justifyContent: 'left',
+  },
 };
 
-const MultiBar = props => {
-  const { classes, segments } = props;
+const MultiBar = (props) => {
+  const {classes, segments} = props;
 
-  const getSegmentStyle = segment => {
+  const getSegmentStyle = (segment) => {
     const style = {
       width: `${segment.percent}%`,
       height: '60px',
       marginTop: '10px',
       marginBottom: '15px',
-      backgroundImage: 'url(' + eval(segment.color) + ')',
-      transition: 'width 3s ease-in-out'
+      backgroundImage: `url(${eval(segment.color)})`,
+      transition: 'width 3s ease-in-out',
     };
     return style;
   };

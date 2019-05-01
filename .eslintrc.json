@@ -1,0 +1,111 @@
+{
+  "parser": "babel-eslint",
+  "plugins": ["prettier", "no-only-tests"],
+  "env": {
+    "es6": true,
+    "jest": true
+  },
+  "globals": {
+    "newrelic": true,
+    "pendo": true,
+    "window": true,
+    "document": true,
+    "Image": true,
+    "Blob": true
+  },
+  "extends": ["airbnb", "prettier", "prettier/react"],
+  "rules": {
+    "array-callback-return": "warn",
+    "eqeqeq": "error",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "src/setupTests.js",
+          "**/*.spec.js",
+          "*.config.js",
+          "**/**/*.spec.jsx"
+        ]
+      }
+    ],
+    "import/prefer-default-export": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/media-has-caption": "off",
+    "no-console": "error",
+    "no-continue": "error",
+    "no-nested-ternary": "error",
+    "no-restricted-globals": ["error", "event", "fdescribe"],
+    "no-underscore-dangle": "error",
+    "no-use-before-define": ["error", {"functions": true, "variables": true}],
+    "no-var": "error",
+    "no-return-assign": ["error", "except-parens"],
+    "no-only-tests/no-only-tests": "error",
+    "prettier/prettier": "error",
+    "react/jsx-filename-extension": "off",
+    "react/prefer-stateless-function": [
+      "error",
+      {"ignorePureComponents": true}
+    ],
+    "react/prefer-es6-class": ["error", "always"],
+    "react/prop-types": [
+      "error",
+      {
+        "skipUndeclared": true,
+        "ignore": [
+          "classes",
+          "width",
+          "theme",
+          "className",
+          "match",
+          "logger",
+          "currentUser",
+          "snackbar",
+          "reload",
+          "setUrlState",
+          "urlState",
+          "style"
+        ]
+      }
+    ],
+    "react/destructuring-assignment": [
+      "off",
+      "always",
+      {"ignoreClassFields": true}
+    ],
+    "react/display-name": "warn",
+    "react/jsx-boolean-value": ["error", "never"],
+    "react/jsx-no-undef": "error",
+    "react/no-did-update-set-state": "off",
+    "react/no-did-mount-set-state": "off",
+    "react/no-multi-comp": "error",
+    "react/no-unknown-property": "error",
+    "react/no-unused-prop-types": "off",
+    "react/no-access-state-in-setstate": "error",
+    "react/forbid-foreign-prop-types": "error",
+    "strict": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**/index.jsx"],
+      "rules": {
+        "react/prop-types": [
+          "error",
+          {
+            "skipUndeclared": false,
+            "ignore": [
+              "classes",
+              "width",
+              "theme",
+              "className",
+              "logger",
+              "snackbar",
+              "setUrlState",
+              "urlState",
+              "style"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

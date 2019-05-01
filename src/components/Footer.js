@@ -1,47 +1,30 @@
-//@flow
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import {
-  Paper,
-  TextField,
-  Button,
-  ButtonBase,
-  Divider,
-  InputAdornment,
-  Grid,
-  Typography
-} from '@material-ui/core';
-import {
-  Delete as DeleteIcon,
-  DeleteSweep as DeleteSweepIcon
-} from '@material-ui/icons';
+// @flow
+import React from 'react';
 
-import { withRouter } from 'react-router-dom';
+import '../styles/baseStyles';
 
-import styles from '../styles/baseStyles';
+const Footer = () => (
+  <div className="footerBody">
+    <h4>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://goo.gl/forms/KHiHVaNh302TUZIG2"
+      >
+        Provide Feedback
+      </a>
+    </h4>
+    <p>
+      Built by{' '}
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://rcvforcolorado.org/"
+      >
+        RCV for Colorado
+      </a>
+    </p>
+  </div>
+);
 
-class Footer extends Component {
-  constructor() {
-    super();
-  }
-
-  render() {
-    return (
-      <div class="footerBody">
-        <h4>
-          <a target="_blank" href="https://goo.gl/forms/KHiHVaNh302TUZIG2">
-            Provide Feedback
-          </a>
-        </h4>
-        <p>
-          Built by{' '}
-          <a target="_blank" href="https://rcvforcolorado.org/">
-            RCV for Colorado
-          </a>
-        </p>
-      </div>
-    );
-  }
-}
-
-export default withRouter(withStyles(styles)(Footer));
+export default Footer;

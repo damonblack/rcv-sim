@@ -1,37 +1,37 @@
-//@flow
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// @flow
+import React, {Component} from 'react';
+import {withStyles} from '@material-ui/core/styles';
 import {
   Paper,
   TextField,
   Button,
   ButtonBase,
   Divider,
-  InputAdornment
+  InputAdornment,
 } from '@material-ui/core';
 import {
   Delete as DeleteIcon,
-  DeleteSweep as DeleteSweepIcon
+  DeleteSweep as DeleteSweepIcon,
 } from '@material-ui/icons';
 
-import { electionsRef, candidatesForElectionRef } from '../services';
+import {electionsRef, candidatesForElectionRef} from '../services';
 
-const styles = theme => ({
+const styles = (theme) => ({
   results: {
     minWidth: '30%',
-    padding: 2 * theme.spacing.unit
+    padding: 2 * theme.spacing.unit,
   },
   // candidateEntry: { display: 'flex', justifyContent: 'space-between' },
   buttonTray: {
     display: 'flex',
-    justifyContent: 'space-around'
-  }
+    justifyContent: 'space-around',
+  },
 });
 
 type Props = {
-  classes: { results: Object, candidateEntry: Object },
-  user: { uid: string },
-  onCancel: () => void
+  classes: {results: Object, candidateEntry: Object},
+  user: {uid: string},
+  onCancel: () => void,
 };
 
 type State = {
@@ -41,8 +41,8 @@ type State = {
   candidates: Array<string>,
   errors: {
     electionTitle: string,
-    candidateNames: Array<string>
-  }
+    candidateNames: Array<string>,
+  },
 };
 
 class ElectionForm extends Component<Props, State> {
@@ -51,7 +51,7 @@ class ElectionForm extends Component<Props, State> {
     electionTitle: '',
     numberOfWinners: 1,
     candidates: ['', '', ''],
-    errors: { electionTitle: '', candidateNames: ['', '', ''] }
+    errors: {electionTitle: '', candidateNames: ['', '', '']},
   };
 
   constructor(props) {
@@ -59,17 +59,17 @@ class ElectionForm extends Component<Props, State> {
     this.state = this.defaultState;
   }
 
-  handleChange = field => e => {
-    const value = e.target.value;
-    this.setState({ [field]: value });
+  handleChange = (field) => (e) => {
+    const {value} = e.target;
+    this.setState({[field]: value});
   };
 
-  updateNumberOfWinners = e => {
+  updateNumberOfWinners = (e) => {
     const numberOfWinners = Math.trunc(e.target.value) || '';
     if (isNaN(numberOfWinners) || numberOfWinners < 1 || numberOfWinners > 20) {
-      this.setState({ numberOfWinners, error: 'Must be between 1 and 20' });
+      this.setState({numberOfWinners, error: 'Must be between 1 and 20'});
     } else {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         const candidates = prevState.candidates.slice();
         while (candidates.length < numberOfWinners + 1) {
           candidates.push('');
@@ -77,35 +77,35 @@ class ElectionForm extends Component<Props, State> {
         return {
           candidates,
           numberOfWinners,
-          error: null
+          error: null,
         };
       });
     }
   };
 
-  handleChangeCandidate = index => e => {
-    const value = e.target.value;
+  handleChangeCandidate = (index) => (e) => {
+    const {value} = e.target;
     const candidates = this.state.candidates.slice(0);
     candidates[index] = value;
-    this.setState({ candidates });
+    this.setState({candidates});
   };
 
   addCandidate = () => {
-    this.setState({ candidates: [...this.state.candidates, ''] });
+    this.setState({candidates: [...this.state.candidates, '']});
   };
 
   removeCandidate = (i: number) => {
     const candidates = this.state.candidates.slice(0);
     candidates.splice(i, 1);
 
-    this.setState({ candidates });
+    this.setState({candidates});
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    const { electionTitle, numberOfWinners, candidates } = this.state;
+    const {electionTitle, numberOfWinners, candidates} = this.state;
     if (candidates.length < 1 + numberOfWinners) {
-      this.setState({ error: 'Must have more candidates than winners' });
+      this.setState({error: 'Must have more candidates than winners'});
       return;
     }
     const title = electionTitle.trim();
@@ -114,31 +114,31 @@ class ElectionForm extends Component<Props, State> {
     electionsRef()
       .child(key)
       .set({
-        title: title,
+        title,
         numberOfWinners,
         owner: this.props.user.uid,
-        created: Date.now()
+        created: Date.now(),
       })
-      .then(result => {
+      .then((result) => {
         const candidateDB = candidatesForElectionRef(key);
-        candidates.forEach(candidate => {
+        candidates.forEach((candidate) => {
           const candidateEntry = {
             name: candidate.trim(),
-            owner: this.props.user.uid
+            owner: this.props.user.uid,
           };
           candidateDB.push(candidateEntry);
         });
       })
-      .catch(error =>
-        alert('Unable to create election. Try a different name.')
+      .catch((error) =>
+        alert('Unable to create election. Try a different name.'),
       );
 
     this.props.onCancel();
   };
 
   render() {
-    const { candidates, electionTitle, numberOfWinners, error } = this.state;
-    const { classes, onCancel } = this.props;
+    const {candidates, electionTitle, numberOfWinners, error} = this.state;
+    const {classes, onCancel} = this.props;
     const disableRemove = candidates.length < 2 + numberOfWinners;
     return (
       <Paper className={classes.results} elevation={5}>
@@ -193,7 +193,7 @@ class ElectionForm extends Component<Props, State> {
                         <DeleteIcon />
                       </ButtonBase>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </div>

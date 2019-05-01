@@ -1,4 +1,4 @@
-//@flow
+// @flow
 import firebase from 'firebase';
 
 const config = {
@@ -7,7 +7,7 @@ const config = {
   databaseURL: 'https://rcv-tally-app.firebaseio.com',
   projectId: 'rcv-tally-app',
   storageBucket: 'rcv-tally-app.appspot.com',
-  messagingSenderId: '867195006035'
+  messagingSenderId: '867195006035',
 
   // config info for rcv-sim.firebaseapp.com
   // apiKey: 'AIzaSyCHtzTb8Fmgy1tu3tQ2ghmaTH_1lhgr6s4',

@@ -1,6 +1,6 @@
-//@flow
+// @flow
 import React from 'react';
-import { withStyles } from '@material-ui/core/index';
+import {withStyles} from '@material-ui/core/index';
 import {
   Table,
   TableBody,
@@ -9,64 +9,63 @@ import {
   TableCell,
   Button,
   IconButton,
-  Paper,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import {
   Done as CheckIcon,
-  PanoramaWideAngle as EmptyIcon
+  PanoramaWideAngle as EmptyIcon,
 } from '@material-ui/icons';
 
 const styles = {
   voting: {
-    width: '100vw'
+    width: '100vw',
   },
   cell: {
     padding: '0',
     textAlign: 'center',
     borderLeft: '1px solid rgba(224, 224, 224, 1)',
-    borderBottom: 'none'
+    borderBottom: 'none',
   },
   nameCell: {
     paddingLeft: '1vw',
     textAlign: 'right',
-    borderBottom: 'none'
+    borderBottom: 'none',
   },
   actionRow: {
     display: 'flex',
     justifyContent: 'center',
-    margin: '2em'
+    margin: '2em',
   },
   headerCell: {
     textAlign: 'center',
     borderLeft: '1px solid rgba(224, 224, 224, 1)',
     padding: '4px 30px',
-    borderBottom: '1px solid #000'
+    borderBottom: '1px solid #000',
   },
   introCell: {
-    borderBottom: '1px solid #000'
+    borderBottom: '1px solid #000',
   },
   button: {
     fontWeight: 800,
     fontSize: 23,
     padding: 15,
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   buttonNarrow: {
-    width: '25%'
-  }
+    width: '25%',
+  },
 };
 
 type Props = {
-  candidates: Array<{ id: string, name: string }>,
+  candidates: Array<{id: string, name: string}>,
   votes: Object,
   updateVote: (candidateId: string, position: number) => void,
   submitVote: () => void,
-  classes: Object
+  classes: Object,
 };
 
 const LegacyBallot = (props: Props) => {
-  const { classes, candidates, votes, updateVote, submitVote, preview } = props;
+  const {classes, candidates, votes, updateVote, submitVote, preview} = props;
   return (
     <div className={classes.voting}>
       <Table>
@@ -100,7 +99,7 @@ const LegacyBallot = (props: Props) => {
                 <TableCell className={classes.cell} key={i + 1}>
                   <IconButton
                     disabled={preview}
-                    onClick={e => updateVote(candidate.id, i + 1)}
+                    onClick={(e) => updateVote(candidate.id, i + 1)}
                   >
                     {votes[i + 1] === candidate.id ? (
                       <CheckIcon />
@@ -118,11 +117,11 @@ const LegacyBallot = (props: Props) => {
         <Button
           variant="raised"
           color="secondary"
-          style={preview ? { display: 'none' } : null}
+          style={preview ? {display: 'none'} : null}
           onClick={submitVote}
           className={[classes.button, classes.buttonNarrow]}
           fullWidth
-          disabled={Object.keys(votes).length ? false : true}
+          disabled={!Object.keys(votes).length}
         >
           Vote Now
         </Button>
